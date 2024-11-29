@@ -3,6 +3,11 @@ import axios from "axios";
 import { debounce, max } from "lodash";
 import Select from "react-select";
 import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+import './Home.css'
+
+
+
 const Home = () => {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState({ common: [], branded: [] });
@@ -18,7 +23,7 @@ const Home = () => {
   const [mealQuantity, setMealQuantity] = useState(1);
   const [SelectedFoodData, setSelectedFoodData] = useState({ foods: [] });
   const [selectCategory, setSelectCategory] = useState("");
-
+  const navigate = useNavigate();
   // API Data on serch bar
 
   const debouncedFetchSuggestions = debounce(async (query) => {
@@ -99,6 +104,8 @@ const Home = () => {
     setModal(true);
   };
 
+    // Meal data category
+
   const handleModalData = () => {
     if (selectCategory === "Breakfast") {
       setBreakfast((prev) => [
@@ -143,7 +150,7 @@ const Home = () => {
 
   const calculateCalories =
     SelectedFoodData.foods.length > 0
-      ? (SelectedFoodData.foods[0].nf_calories /
+      ? Math.round(SelectedFoodData.foods[0].nf_calories /
           SelectedFoodData.foods[0].serving_weight_grams) *
         selectquantity
       : "no data";
@@ -155,16 +162,22 @@ const Home = () => {
     return combine.reduce((acc, item) => acc + (item.calories || 0), 0);
   };
   
-
+const handleLogout = ()=>{
+    localStorage.setItem("isAuthenticated","false")
+      navigate("/")
+}
  console.log("total",totalcalorieHandler());
 
  console.log(selectCategory);
   console.log(breakfast);
   console.log(lunch);
+
+
   return (
     <>
+  <button type="submit" onClick={handleLogout}>LogOut</button>
       <h1>Nutrition-Tracker</h1>
-
+         
       <Select
         options={groupedOptions}
         onChange={handleSelectChange}
