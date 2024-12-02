@@ -4,26 +4,25 @@ import { debounce, max } from "lodash";
 import Select from "react-select";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
-import './Home.css'
-
-
+import "./Home.css";
+import { useDispatch, useSelector } from "react-redux";
+import { addMeal } from "../Redux/counterSlice";
 
 const Home = () => {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState({ common: [], branded: [] });
   const [selectItem, setSelectItem] = useState({});
   const [modal, setModal] = useState(false);
-  const [breakfast, setBreakfast] = useState([]);
-  const [lunch, setLunch] = useState([]);
-  const [dinner, setDinner] = useState([]);
-  const [snack, setSnack] = useState([]);
-  const [serveCalorie, setServeCalorie] = useState(0); //for item select
-  const [TotalCalorie, setTotalcalorie] = useState(0);
-  const [selectquantity, setSelectquantity] = useState(0);
-  const [mealQuantity, setMealQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
+  const [selectquantity, setSelectquantity] = useState(1);
   const [SelectedFoodData, setSelectedFoodData] = useState({ foods: [] });
   const [selectCategory, setSelectCategory] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { breakfast, lunch, dinner, snack, totalCalories } = useSelector(
+    (state) => state.meals
+  );
+
   // API Data on serch bar
 
   const debouncedFetchSuggestions = debounce(async (query) => {
@@ -104,80 +103,41 @@ const Home = () => {
     setModal(true);
   };
 
-    // Meal data category
+  // Meal data category
 
   const handleModalData = () => {
-    if (selectCategory === "Breakfast") {
-      setBreakfast((prev) => [
-        ...prev,
-        {
-          name: selectItem.label,
-          quantity: selectquantity,
-          calories: calculateCalories,
-        },
-      ]);
-    } else if (selectCategory === "Lunch") {
-      setLunch((prev) => [
-        ...prev,
-        {
-          name: selectItem.label,
-          quantity: selectquantity,
-          calories: Math.floor(calculateCalories),
-        },
-      ]);
-    } else if (selectCategory === "Snack") {
-      setSnack((prev) => [
-        ...prev,
-        {
-          name: selectItem.label,
-          quantity: selectquantity,
-          calories: Math.floor(calculateCalories),
-        },
-      ]);
-    } else if (selectCategory === "Dinner") {
-      setDinner((prev) => [
-        ...prev,
-        {
-          name: selectItem.label,
-          quantity: selectquantity,
-          calories: Math.floor(calculateCalories),
-        },
-      ]);
-    }
-
+    dispatch(
+      addMeal({
+        mealCategory: selectCategory,
+        name: selectItem.label,
+        calories: calculateCalories,
+      })
+    );
     setModal(false);
   };
 
   const calculateCalories =
     SelectedFoodData.foods.length > 0
-      ? Math.round(SelectedFoodData.foods[0].nf_calories /
-          SelectedFoodData.foods[0].serving_weight_grams) *
-        selectquantity
+      ? Math.round(
+          SelectedFoodData.foods[0].nf_calories /
+            SelectedFoodData.foods[0].serving_weight_grams
+        ) *
+        selectquantity *
+        quantity
       : "no data";
 
-      
- 
-   const totalcalorieHandler = () => {
-    const combine = [ ...breakfast,...lunch,...snack,...dinner]
-    return combine.reduce((acc, item) => acc + (item.calories || 0), 0);
+  const handleLogout = () => {
+    localStorage.setItem("isAuthenticated", "false");
+    navigate("/");
   };
-  
-const handleLogout = ()=>{
-    localStorage.setItem("isAuthenticated","false")
-      navigate("/")
-}
- console.log("total",totalcalorieHandler());
-
- console.log(selectCategory);
-  console.log(breakfast);
-  console.log(lunch);
-
 
   return (
     <>
-  <button type="submit" onClick={handleLogout}>LogOut</button>
+      <button type="submit" onClick={handleLogout}>
+        LogOut
+      </button>
       <h1>Nutrition-Tracker</h1>
-         
+
       <Select
         options={groupedOptions}
         onChange={handleSelectChange}
@@ -198,15 +158,30 @@ const handleLogout = ()=>{
           },
         }}
       >
-        <h2>Your Meal</h2>
+        <h2>Your Meal</h2> 
+        <button
+    onClick={() => setModal(false)}
+    style={{
+      position: "absolute",
+      top: "10px",
+      right: "10px",
+      border: "none",
+      backgroundColor: "blue",
+      fontSize: "20px",
+      cursor: "pointer",
+    }}
+  >
+    x
+  </button>
 
         <b>{selectItem.label}</b>
 
         <input
           type="text"
           placeholder="1"
-          value={inputValue}
-          onChange={(e) => setSelectquantity(e.target.value)}
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
+           step="1"
         />
 
         <br />
@@ -214,20 +189,17 @@ const handleLogout = ()=>{
         <select
           onChange={(e) => {
             const selectedMeasure = e.target.value;
-
             console.log(selectedMeasure);
             setSelectquantity(selectedMeasure);
           }}
         >
           {SelectedFoodData.foods.map((food, foodIndex) =>
             food.alt_measures.map((measure, index) => (
-              
-              <option 
+              <option
                 key={`${foodIndex}-${index}`}
                 value={measure.serving_weight}
-              > 
+              >
                 {` ${measure.measure} `}
-               
               </option>
             ))
           )}
@@ -244,7 +216,9 @@ const handleLogout = ()=>{
           }}
         >
           {" "}
-          <option value="" selected disabled hidden>Choose here</option>
+          <option value="" selected disabled hidden>
+            Choose here
+          </option>
           <option value="Breakfast">Breakfast</option>
           <option value="Lunch">Lunch</option>
           <option value="Snack">Snack</option>
@@ -252,20 +226,21 @@ const handleLogout = ()=>{
         </select>
         <button onClick={handleModalData}> Add Meal</button>
 
-        <button onClick={()=>  setModal(false)}>x</button>
+        {/* <button onClick={() => setModal(false)}>x</button> */}
       </Modal>
 
-<h3> Total Calorie Consumption :{totalcalorieHandler()}</h3>
- <br />
- <span>Min: 0</span>
-      <input 
-      id="typeinp" 
-      type="range" 
-      min="0" max="2000" 
-      value={totalcalorieHandler()} 
-      // onChange={ totalcalorieHandler()}
+      <h3> Total Calorie Consumption :{totalCalories}</h3>
+      <br />
+      <span>Min: 0</span>
+      <input
+        id="typeinp"
+        type="range"
+        min="0"
+        max="2000"
+        value={totalCalories}
+        // onChange={ totalcalorieHandler()}
       />
-     <span>Max:2000</span>
+      <span>Max:2000</span>
 
       <h3>Breakfast</h3>
       <ul>
@@ -317,14 +292,9 @@ const handleLogout = ()=>{
         ) : (
           <li>No dinner item</li>
         )}
-
-
-
       </ul>
     </>
   );
 };
 
 export default Home;
-
-

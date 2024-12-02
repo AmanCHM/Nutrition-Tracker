@@ -10,6 +10,7 @@ import Home from "./Component/Home";
 import SignUp from "./Component/Pages/SignUp";
 import Login from "./Component/Pages/Login";
 import Reset from "./Component/Pages/Reset";
+import Dashboard from "./Component/Dashboard";
 const App = () => {
 
   const PrivateRoute = ()=>{
@@ -26,6 +27,7 @@ const App = () => {
     <Route  path="/signup" element={<SignUp/>}></Route>
     <Route  path="/" element={<Login/>}></Route>
     <Route  path="/home" element={<PrivateRoute><Home/></PrivateRoute>}></Route>
+    <Route  path="/dashboard" element={<Dashboard/>}></Route>
     <Route  path="/reset" element={<Reset/>}></Route>
     </Routes>
    </Router>
