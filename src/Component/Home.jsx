@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { debounce, max } from "lodash";
+import { debounce } from "lodash";
 import Select from "react-select";
 import Modal from "react-modal";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Home.css";
 import { useDispatch, useSelector } from "react-redux";
-import { addMeal } from "../Redux/counterSlice";
+import {  arrayUnion, doc, getDoc, setDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { db } from "../firebase";
+import { loggedout } from "../Redux/Slice";
+
+
 
 const Home = () => {
   const [inputValue, setInputValue] = useState("");
@@ -19,9 +24,8 @@ const Home = () => {
   const [selectCategory, setSelectCategory] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { breakfast, lunch, dinner, snack, totalCalories } = useSelector(
-    (state) => state.meals
-  );
+  const  [data,setData] = useState(null);
+  const [loading,setloading] =useState(true);
 
   // API Data on serch bar
 
@@ -31,8 +35,8 @@ const Home = () => {
         `https://trackapi.nutritionix.com/v2/search/instant/?query=${query}`,
         {
           headers: {
-            "x-app-id": "0d7c04b7",
-            "x-app-key": "c643c4d194390f87b154278db24af26b",
+            "x-app-id": import.meta.env.VITE_NUTRITIONIX_APP_ID,
+            "x-app-key": import.meta.env.VITE_NUTRITIONIX_APP_KEY,
             "Content-Type": "application/json",
           },
         }
@@ -47,7 +51,6 @@ const Home = () => {
 
   const foodData = async (select) => {
     try {
-      console.log("inside foodData");
       const response = await axios.post(
         `https://trackapi.nutritionix.com/v2/natural/nutrients`,
         {
@@ -55,8 +58,8 @@ const Home = () => {
         },
         {
           headers: {
-            "x-app-id": "0d7c04b7",
-            "x-app-key": "c643c4d194390f87b154278db24af26b",
+            "x-app-id": import.meta.env.VITE_NUTRITIONIX_APP_ID,
+            "x-app-key": import.meta.env.VITE_NUTRITIONIX_APP_KEY,
             "Content-Type": "application/json",
           },
         }
@@ -103,39 +106,95 @@ const Home = () => {
     setModal(true);
   };
 
-  // Meal data category
+  // Add Meal data
 
-  const handleModalData = () => {
-    dispatch(
-      addMeal({
-        mealCategory: selectCategory,
+  const handleModalData = async () => {
+    try {
+      console.log("inside modal");
+      const auth = getAuth();
+      const user = auth.currentUser;
+      const data = {
         name: selectItem.label,
-        calories: calculateCalories,
-      })
-    );
+        calories: Math.round(calculateCalories),
+      };
+      if (user) {
+        const userId = user.uid;
+        const date = new Date().toISOString().split("T")[0];
+        const docRef = doc(db, "users", userId, "dailyLogs", date);
+        const categorisedData = {[selectCategory]: arrayUnion(data)}
+        await setDoc(docRef,categorisedData, { merge: true });
+        console.log("Data saved successfully!");
+      } else {
+        console.log("User not authenticated.");
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
     setModal(false);
   };
 
+  // Get meal data
+
+  useEffect(()=>{
+
+  const handleGetData = async () => {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) {
+        console.log("User is not authenticated");
+        setloading(false)
+        return;
+      }
+      const userId = user.uid;
+      const date = new Date().toISOString().split("T")[0];
+      const docRef = doc(db, "users", userId, "dailyLogs", date);
+      const docSnap = await getDoc(docRef);
+
+     
+        const logData = docSnap.data()?.Lunch;
+
+        setData(logData);
+        console.log("Document data:", logData);
+      
+    } catch (error) {
+      console.error("error fetching data", error);
+    }
+  };
+  handleGetData()
+}
+,[])
+
+
   const calculateCalories =
     SelectedFoodData.foods.length > 0
-      ? Math.round(
-          SelectedFoodData.foods[0].nf_calories /
-            SelectedFoodData.foods[0].serving_weight_grams
-        ) *
+      ? (SelectedFoodData.foods[0].nf_calories /
+          SelectedFoodData.foods[0].serving_weight_grams) *
         selectquantity *
         quantity
       : "no data";
 
   const handleLogout = () => {
-    localStorage.setItem("isAuthenticated", "false");
+    dispatch(loggedout())
     navigate("/");
   };
 
+  const date = new Date();
+  const today = date.toDateString();
+
+
+
+  console.log(data);
   return (
     <>
+    
+
+
       <button type="submit" onClick={handleLogout}>
         LogOut
       </button>
+      <label htmlFor="">{today}</label>
+      <NavLink to={"/dashboard"}> Dashboard</NavLink>
       <h1>Nutrition-Tracker</h1>
 
       <Select
@@ -158,21 +217,21 @@ const Home = () => {
           },
         }}
       >
-        <h2>Your Meal</h2> 
+        <h2>Your Meal</h2>
         <button
-    onClick={() => setModal(false)}
-    style={{
-      position: "absolute",
-      top: "10px",
-      right: "10px",
-      border: "none",
-      backgroundColor: "blue",
-      fontSize: "20px",
-      cursor: "pointer",
-    }}
-  >
-    x
-  </button>
+          onClick={() => setModal(false)}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            border: "none",
+            backgroundColor: "blue",
+            fontSize: "20px",
+            cursor: "pointer",
+          }}
+        >
+          x
+        </button>
 
         <b>{selectItem.label}</b>
 
@@ -181,7 +240,7 @@ const Home = () => {
           placeholder="1"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
-           step="1"
+          step="1"
         />
 
         <br />
@@ -189,7 +248,7 @@ const Home = () => {
         <select
           onChange={(e) => {
             const selectedMeasure = e.target.value;
-            console.log(selectedMeasure);
+     
             setSelectquantity(selectedMeasure);
           }}
         >
@@ -204,7 +263,7 @@ const Home = () => {
             ))
           )}
         </select>
-        <p>Calorie:{calculateCalories}</p>
+        <p>Calorie:{Math.round(calculateCalories)}</p>
 
         <br />
         <select
@@ -229,7 +288,7 @@ const Home = () => {
         {/* <button onClick={() => setModal(false)}>x</button> */}
       </Modal>
 
-      <h3> Total Calorie Consumption :{totalCalories}</h3>
+      {/* <h3> Total Calorie Consumption :{totalCalories}</h3> */}
       <br />
       <span>Min: 0</span>
       <input
@@ -237,15 +296,36 @@ const Home = () => {
         type="range"
         min="0"
         max="2000"
-        value={totalCalories}
+        // value={totalCalories}
         // onChange={ totalcalorieHandler()}
       />
       <span>Max:2000</span>
 
       <h3>Breakfast</h3>
+     
+      <div>
+    {loading ? (
+      <p>Loading...</p>
+    ) : data ? (
       <ul>
-        {breakfast.length > 0 ? (
-          breakfast.map((item, index) => (
+        {data.Breakfast ? (
+          data.Breakfast.map((item, index) => (
+            <li key={index}>
+              {item.name} - {item.calories} kcal
+            </li>
+          ))
+        ) : (
+          <p>No breakfast items logged for today.</p>
+        )}
+      </ul>
+    ) : (
+      <p>No data available for today.</p>
+    )}
+  </div>
+ 
+       <ul>
+       {data?.Breakfast?.length > 0 ? (
+          data.Breakfast.map((item, index) => (
             <li key={index}>
               {item.name} - {item.calories} kcal
             </li>
@@ -255,10 +335,11 @@ const Home = () => {
         )}
       </ul>
 
-      <h3>Lunch</h3>
+      
+ <h3>Lunch</h3>
       <ul>
-        {lunch.length > 0 ? (
-          lunch.map((item, index) => (
+      {data?.Lunch?.length > 0 ? (
+         data.Lunch.map((item, index) => (
             <li key={index}>
               {item.name} - {item.calories} kcal
             </li>
@@ -270,8 +351,8 @@ const Home = () => {
 
       <h3>Snacks</h3>
       <ul>
-        {snack.length > 0 ? (
-          snack.map((item, index) => (
+      {data?.Snack?.length > 0 ? (
+          data.Snack.map((item, index) => (
             <li key={index}>
               {item.name} - {item.calories} kcal
             </li>
@@ -281,10 +362,10 @@ const Home = () => {
         )}
       </ul>
 
-      <h3>Dinner</h3>
-      <ul>
-        {dinner.length > 0 ? (
-          dinner.map((item, index) => (
+      <h3>Dinner</h3> 
+    <ul>
+    {data?.Dinner?.length > 0 ? (
+          data.Dinner.map((item, index) => (
             <li key={index}>
               {item.name} - {item.calories} kcal
             </li>
@@ -292,7 +373,7 @@ const Home = () => {
         ) : (
           <li>No dinner item</li>
         )}
-      </ul>
+      </ul>   
     </>
   );
 };
