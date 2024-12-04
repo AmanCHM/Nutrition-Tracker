@@ -9,7 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {  arrayUnion, doc, getDoc, setDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "../firebase";
-import { loggedout } from "../Redux/Slice";
+import { loggedout } from "../Redux/counterSlice";
+
 
 
 
@@ -24,7 +25,7 @@ const Home = () => {
   const [selectCategory, setSelectCategory] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const  [data,setData] = useState(null);
+  const  [logData,setLogdata] = useState({});
   const [loading,setloading] =useState(true);
 
   // API Data on serch bar
@@ -122,7 +123,9 @@ const Home = () => {
         const date = new Date().toISOString().split("T")[0];
         const docRef = doc(db, "users", userId, "dailyLogs", date);
         const categorisedData = {[selectCategory]: arrayUnion(data)}
+
         await setDoc(docRef,categorisedData, { merge: true });
+
         console.log("Data saved successfully!");
       } else {
         console.log("User not authenticated.");
@@ -152,10 +155,10 @@ const Home = () => {
       const docSnap = await getDoc(docRef);
 
      
-        const logData = docSnap.data()?.Lunch;
+        const mealData = docSnap.data();
 
-        setData(logData);
-        console.log("Document data:", logData);
+        setLogdata(mealData)
+        console.log("Document data:", mealData);
       
     } catch (error) {
       console.error("error fetching data", error);
@@ -179,21 +182,20 @@ const Home = () => {
     navigate("/");
   };
 
-  const date = new Date();
-  const today = date.toDateString();
+// const totalCalories =
+// logData.Breakfast.reduce((total, item) => total + item.calories, 0) +
+// logData.Lunch.reduce((total, item) => total + item.calories, 0) +
+// logData.Dinner.reduce((total, item) => total + item.calories, 0) +
+// logData.Snack.reduce((total, item) => total + item.calories, 0);
 
 
-
-  console.log(data);
+  console.log(logData.Breakfast);
   return (
     <>
-    
-
-
       <button type="submit" onClick={handleLogout}>
         LogOut
       </button>
-      <label htmlFor="">{today}</label>
+       {/* <p>Total calorie ={totalCalories}</p> */}
       <NavLink to={"/dashboard"}> Dashboard</NavLink>
       <h1>Nutrition-Tracker</h1>
 
@@ -303,29 +305,11 @@ const Home = () => {
 
       <h3>Breakfast</h3>
      
-      <div>
-    {loading ? (
-      <p>Loading...</p>
-    ) : data ? (
-      <ul>
-        {data.Breakfast ? (
-          data.Breakfast.map((item, index) => (
-            <li key={index}>
-              {item.name} - {item.calories} kcal
-            </li>
-          ))
-        ) : (
-          <p>No breakfast items logged for today.</p>
-        )}
-      </ul>
-    ) : (
-      <p>No data available for today.</p>
-    )}
-  </div>
+    
  
        <ul>
-       {data?.Breakfast?.length > 0 ? (
-          data.Breakfast.map((item, index) => (
+       {logData?.Breakfast?.length > 0 ? (
+          logData.Breakfast.map((item, index) => (
             <li key={index}>
               {item.name} - {item.calories} kcal
             </li>
@@ -338,8 +322,8 @@ const Home = () => {
       
  <h3>Lunch</h3>
       <ul>
-      {data?.Lunch?.length > 0 ? (
-         data.Lunch.map((item, index) => (
+      {logData?.Lunch?.length > 0 ? (
+         logData.Lunch.map((item, index) => (
             <li key={index}>
               {item.name} - {item.calories} kcal
             </li>
@@ -351,8 +335,8 @@ const Home = () => {
 
       <h3>Snacks</h3>
       <ul>
-      {data?.Snack?.length > 0 ? (
-          data.Snack.map((item, index) => (
+      {logData?.Snack?.length > 0 ? (
+         logData.Snack.map((item, index) => (
             <li key={index}>
               {item.name} - {item.calories} kcal
             </li>
@@ -364,8 +348,8 @@ const Home = () => {
 
       <h3>Dinner</h3> 
     <ul>
-    {data?.Dinner?.length > 0 ? (
-          data.Dinner.map((item, index) => (
+    {logData?.Dinner?.length > 0 ? (
+          logData.Dinner.map((item, index) => (
             <li key={index}>
               {item.name} - {item.calories} kcal
             </li>

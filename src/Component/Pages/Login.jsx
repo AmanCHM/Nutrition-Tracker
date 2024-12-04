@@ -7,9 +7,17 @@ import "react-toastify/dist/ReactToastify.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import "./Signup.css";
+import { useDispatch, useSelector } from "react-redux";
+import { loggedin } from "../../Redux/counterSlice";
+
+
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const log = useSelector ((state)=>state.logged)
+
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -26,7 +34,8 @@ const Login = () => {
           const user = userCredential.user;
           toast.success("Successfully loggedIn!");
           console.log(user);
-          localStorage.setItem("isAuthenticated", true);
+          dispatch(loggedin())
+          // localStorage.setItem("isAuthenticated", true);
         })
         .then(() => {
           navigate("/home");
@@ -41,7 +50,7 @@ const Login = () => {
 
   return (
     <>
-    <h2>Log-in Form</h2>
+      <h2>Log-in Form</h2>
       <form onSubmit={formik.handleSubmit}>
         <label htmlFor="email">Email Address</label>
         <input
