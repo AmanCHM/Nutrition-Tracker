@@ -12,7 +12,7 @@ import { store } from './Redux/store.js';
 const persistor = persistStore(store);
 
 createRoot(document.getElementById('root')).render(
-
+  <StrictMode>
     <Provider store={store}>
       <PersistGate 
         persistor={persistor} 
@@ -21,5 +21,5 @@ createRoot(document.getElementById('root')).render(
         <App />
       </PersistGate>
     </Provider>
-
+  </StrictMode>
 );
