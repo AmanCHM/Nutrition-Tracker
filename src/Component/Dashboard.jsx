@@ -1,19 +1,21 @@
 import { getAuth } from "firebase/auth";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getDatabase, ref, set } from "firebase/database";
 import { doc, getDoc } from "firebase/firestore";
 
 import { loggedout } from "../Redux/counterSlice";
 import { db } from "../firebase";
 
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [userData, setUserData] = useState(null); 
+  const [loading, setLoading] = useState(false);
 
+  // Fetch User Data from Firestore
   const handleGetData = async () => {
+    setLoading(true); // Start loading
     try {
       const auth = getAuth();
       const user = auth.currentUser;
@@ -27,31 +29,51 @@ const Dashboard = () => {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        console.log("Document data:", docSnap.data());
+        const mealData = docSnap.data();
+        setUserData(mealData); // Set fetched data
       } else {
         console.log("No such document!");
+        setUserData({}); // Fallback to empty object
       }
     } catch (error) {
-      console.error("error fetching data", error);
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
+  // Fetch data on component mount
+  useEffect(() => {
+    handleGetData();
+  }, []);
 
-
+  // Handle Logout
   const handleLogout = () => {
-    dispatch(loggedout())
+    dispatch(loggedout());
     navigate("/");
   };
 
+  // Render UI
   return (
     <>
-
-<button onClick={handleGetData}>get data</button>
-
       <button type="submit" onClick={handleLogout}>
         LogOut
       </button>
- 
+      <br />
+      <label htmlFor="">Breakfast</label>
+      <ul>
+        {loading ? ( // Show loading indicator
+          <p>Loading...</p>
+        ) : userData?.Breakfast?.length > 0 ? ( // Check for breakfast items
+          userData.Breakfast.map((item, index) => (
+            <li key={index}>
+              {item.name} - {item.calories} kcal
+            </li>
+          ))
+        ) : (
+          <li>No breakfast items</li> // No data fallback
+        )}
+      </ul>
     </>
   );
 };

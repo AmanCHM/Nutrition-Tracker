@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { debounce } from "lodash";
+import { debounce, truncate } from "lodash";
 import Select from "react-select";
 import Modal from "react-modal";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./Home.css";
 import { useDispatch, useSelector } from "react-redux";
-import {  arrayUnion, doc, getDoc, setDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { db } from "../firebase";
+import {  arrayUnion, doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 import { loggedout } from "../Redux/counterSlice";
+import { onAuthStateChanged } from "firebase/auth";
 
 
 
 
 const Home = () => {
+
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState({ common: [], branded: [] });
   const [selectItem, setSelectItem] = useState({});
@@ -25,8 +26,8 @@ const Home = () => {
   const [selectCategory, setSelectCategory] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const  [logData,setLogdata] = useState({});
-  const [loading,setloading] =useState(true);
+  const  [logData,setLogdata] = useState();
+  const [loading,setloading] =useState(false);
 
   // API Data on serch bar
 
@@ -112,7 +113,6 @@ const Home = () => {
   const handleModalData = async () => {
     try {
       console.log("inside modal");
-      const auth = getAuth();
       const user = auth.currentUser;
       const data = {
         name: selectItem.label,
@@ -138,35 +138,63 @@ const Home = () => {
 
   // Get meal data
 
-  useEffect(()=>{
+  // console.log("auth", auth);
+  
+    const handleGetData = async (user) => {
+      try {
+        // console.log("user", user)
+        
+        if (!user) {
+          console.log("User is not authenticated");
+          setloading(false)
+          return;
+        }
+        const userId = user.uid;
+    
+        const date = new Date().toISOString().split("T")[0];
 
-  const handleGetData = async () => {
-    try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (!user) {
-        console.log("User is not authenticated");
-        setloading(false)
-        return;
+        const docRef = doc(db, "users", userId, "dailyLogs", date);
+
+         const sanpdata=  onSnapshot(docRef,(docRef)=>{
+                  console.log(docRef.data());
+           });
+        //    const unsub = onSnapshot(docRef, (doc) => {
+        //     console.log("Current data: ", doc.data());
+        // });
+    console.log("snapdata",sanpdata);
+        const docSnap = await getDoc(docRef);
+        console.log("snapdata",docSnap);
+
+           if(docSnap.exists()){
+          const mealData = docSnap.data()
+          console.log("mealdata",mealData);
+          setLogdata(mealData)}
+          else{
+            setLogdata({})
+          }
+          
+      } catch (error) {
+        console.error("error fetching data", error);
       }
-      const userId = user.uid;
-      const date = new Date().toISOString().split("T")[0];
-      const docRef = doc(db, "users", userId, "dailyLogs", date);
-      const docSnap = await getDoc(docRef);
+      finally{
+        setloading(false)
+      }
+    };
 
-     
-        const mealData = docSnap.data();
-
-        setLogdata(mealData)
-        console.log("Document data:", mealData);
-      
-    } catch (error) {
-      console.error("error fetching data", error);
-    }
-  };
-  handleGetData()
-}
-,[])
+    useEffect(() => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // console.log("User authenticated:", user);
+          setloading(true)
+          handleGetData(user); // Pass the user object to fetch data
+        } else {
+          console.log("No user authenticated");
+          setloading(false);
+        }
+      });
+    
+      return () => unsubscribe(); // Clean up the listener on unmount
+    }, []);
 
 
   const calculateCalories =
@@ -182,14 +210,16 @@ const Home = () => {
     navigate("/");
   };
 
-// const totalCalories =
-// logData.Breakfast.reduce((total, item) => total + item.calories, 0) +
-// logData.Lunch.reduce((total, item) => total + item.calories, 0) +
-// logData.Dinner.reduce((total, item) => total + item.calories, 0) +
+// const totalCalories = logData.Breakfast.reduce((acc,item)=> acc+item.calories,0)+
+// logData.Lunch.reduce((total, item) => total + item.calories, 0)
+//  +
+// logData.Dinner.reduce((total, item) => total + item.calories, 0) 
+// +
 // logData.Snack.reduce((total, item) => total + item.calories, 0);
 
+// console.log("total calories",totalCalories);
 
-  console.log(logData.Breakfast);
+  console.log("logdata",logData);
   return (
     <>
       <button type="submit" onClick={handleLogout}>
