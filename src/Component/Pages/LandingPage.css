@@ -1,0 +1,83 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* background-image: url('https://media.gettyimages.com/id/1305072532/photo/pregnant-woman-using-mobile-app-to-track-nutrition-and-count-calories-with-smartphone-while.jpg?s=612x612&w=0&k=20&c=yyL5_yskKMo9gvzi3_WbjUdXEy-Cbqcnam3lJ1GaYWQ='); */
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    line-height: 1.6;
+  }
+  
+  /* Navbar */
+  /* .navbar {
+    width: 220vh;
+    height: 100px;
+    position: sticky;
+    top: 0;
+    background: rgba(145, 143, 143, 0.8);
+    color: white;
+    display: flex;
+    gap: 50px;
+    align-items: center;
+    padding: 10px 20px;
+    z-index: 1000;
+  }
+  
+  .navbar .logo {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .navbar .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+  }
+  
+  .navbar .nav-links li a {
+    text-decoration: none;
+    color: white;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .navbar .nav-links li a:hover {
+    background-color: #77797b;
+    border-radius: 5px;
+  }
+   */
+  /* Hero Section */
+  .hero {
+  
+      /* background-image: url('https://media.gettyimages.com/id/1305072532/photo/pregnant-woman-using-mobile-app-to-track-nutrition-and-count-calories-with-smartphone-while.jpg?s=612x612&w=0&k=20&c=yyL5_yskKMo9gvzi3_WbjUdXEy-Cbqcnam3lJ1GaYWQ='); */
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .hero .content h1 {
+    font-size: 3.5rem;
+  }
+  
+  .hero .content p {
+    font-size: 2.5rem;
+  }
+
+/*   
+  
+  footer {
+    text-align: center;
+    padding: 10px;
+    background: #050505;
+    color: #f4f4f4;
+  } */
+  

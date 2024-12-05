@@ -106,18 +106,54 @@ body {
   }
   
   ul li button {
-    background-color: #e74c3c;
+    background-color: #758fd3;
     color: white;
     border: none;
     padding: 5px 10px;
     border-radius: 3px;
-    margin-left: 10px;
+    margin-left:40px;
     cursor: pointer;
   }
   
   ul li button:hover {
-    background-color: #c0392b;
+    background-color: #2777e9;
   }
   
-
+.navbar {
+    width: 220vh;
+    height: 100px;
+    position: sticky;
+    top: 0;
+    background: rgba(145, 143, 143, 0.8);
+    color: white;
+    display: flex;
+    gap: 50px;
+    align-items: center;
+    padding: 10px 20px;
+    z-index: 1000;
+  }
+  
+  .navbar .logo {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .navbar .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+  }
+  
+  .navbar .nav-links li a {
+    text-decoration: none;
+    color: white;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .navbar .nav-links li a:hover {
+    background-color: #77797b;
+    border-radius: 5px;
+  }
+  
   

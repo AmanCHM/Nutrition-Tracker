@@ -8,6 +8,7 @@ import "./Home.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
   arrayUnion,
+  deleteDoc,
   doc,
   getDoc,
   onSnapshot,
@@ -165,7 +166,7 @@ const Home = () => {
 
       const docRef = doc(db, "users", userId, "dailyLogs", date);
 
-      const sanpdata = onSnapshot(docRef, (docRef) => {
+      const sanpdata =  onSnapshot(docRef, (docRef) => {
         console.log(docRef.data());
       });
       //    const unsub = onSnapshot(docRef, (doc) => {
@@ -246,12 +247,28 @@ const Home = () => {
     ],
   };
 
+
+  const handleDeleteLog=  async (id)=>{
+ console.log("inside delete");
+    try{
+      const userId = user.uid;
+      const date= new Date().toISOString().split("T")[0];
+       const docRef  = doc(db,"users",userId,"dailyLogs", date)
+       await deleteDoc(docRef,id)
+  console.log(" data deleted");
+    }catch(error){
+      console.log(error);
+    }
+    }
+
 //  console.log("breakfast",breakfastCalorie);
 //   console.log("total calories", totalCalories);
 
   console.log("logdata", logData);
   return (
     <>
+
+    
       <button type="submit" onClick={handleLogout}>
         LogOut
       </button>
@@ -370,7 +387,7 @@ const Home = () => {
         {logData?.Breakfast?.length > 0 ? (
           logData.Breakfast.map((item, index) => (
             <li key={index}>
-              {item.name} - {item.calories} kcal
+              {item.name} - {item.calories} kcal <button onClick={()=>handleDeleteLog(index)}> Delete</button>
             </li>
           ))
         ) : (
@@ -383,7 +400,7 @@ const Home = () => {
         {logData?.Lunch?.length > 0 ? (
           logData.Lunch.map((item, index) => (
             <li key={index}>
-              {item.name} - {item.calories} kcal
+              {item.name} - {item.calories} kcal <button onClick={()=>handleDeleteLog(index)}> Delete</button>
             </li>
           ))
         ) : (
@@ -396,7 +413,7 @@ const Home = () => {
         {logData?.Snack?.length > 0 ? (
           logData.Snack.map((item, index) => (
             <li key={index}>
-              {item.name} - {item.calories} kcal
+              {item.name} - {item.calories} kcal <button onClick={()=>handleDeleteLog(index)}> Delete</button>
             </li>
           ))
         ) : (
@@ -409,7 +426,7 @@ const Home = () => {
         {logData?.Dinner?.length > 0 ? (
           logData.Dinner.map((item, index) => (
             <li key={index}>
-              {item.name} - {item.calories} kcal
+              {item.name} - {item.calories} kcal <button onClick={()=>handleDeleteLog(index)}> Delete</button>
             </li>
           ))
         ) : (

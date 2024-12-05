@@ -10,22 +10,33 @@ import Home from "./Component/Home";
 import SignUp from "./Component/Pages/SignUp";
 import Login from "./Component/Pages/Login";
 import Reset from "./Component/Pages/Reset";
-
 import { useSelector } from "react-redux";
 import Dashboard from "./Component/Dashboard";
+import LandingPage from "./Component/Pages/LandingPage";
+import AboutUs from "./Component/Pages/AboutUs";
+import ImageSearch from "./Component/Pages/ImageSearch";
+
+
 const App = () => {
   const islogged = useSelector ((state)=>state.logged)
   const PrivateRoute = ()=>{
     return islogged==true?<Home/>:<Navigate to ="/"/>  
   }
+
+
   return(
     <>
 
    <Router>
     <Routes>
     <Route  path="/signup" element={<SignUp/>}></Route>
-    <Route  path="/" element={<Login/>}></Route>
-    <Route  path="/home" element={<PrivateRoute><Home/></PrivateRoute>}></Route>
+    <Route path="/" element={<LandingPage/>}>
+      
+       </Route> 
+    <Route path="/aboutus" element={<AboutUs/>}> </Route> 
+    <Route  path="/image-search" element={<ImageSearch/>}></Route>
+    <Route  path="/login" element={<Login/>}></Route>
+    <Route  path="/food" element={<PrivateRoute><Home/></PrivateRoute>}></Route>
     <Route  path="/reset" element={<Reset/>}></Route>
     <Route  path="/dashboard" element={<Dashboard/>}></Route>
     </Routes>
