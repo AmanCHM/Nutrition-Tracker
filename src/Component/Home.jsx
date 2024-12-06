@@ -20,6 +20,8 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import { Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import Navbar from "./Page-Components/Navbar";
+import Footer from "./Page-Components/Footer";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -267,7 +269,7 @@ const Home = () => {
   console.log("logdata", logData);
   return (
     <>
-
+    <Navbar/>
     
       <button type="submit" onClick={handleLogout}>
         LogOut
@@ -342,6 +344,8 @@ const Home = () => {
             ))
           )}
         </select>
+
+        
         <p>Calorie:{Math.round(calculateCalories)}</p>
 
         <br />
@@ -434,7 +438,7 @@ const Home = () => {
         )}
       </ul>
 
-     
+     <Footer/>
     </>
   );
 };

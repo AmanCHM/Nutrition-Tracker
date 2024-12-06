@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+     import React, { useState } from 'react';
 import './LandingPage.css';
 
 import Navbar from '../Page-Components/Navbar';
 import Footer from '../Page-Components/Footer';
+import { NavLink } from 'react-router-dom';
 
 const LandingPage = () => {
 
@@ -11,24 +12,30 @@ const LandingPage = () => {
   return (
     <div>
     
-     <Navbar/>
+     <Navbar className="navbar"/>
 
    
-      <section id="home" className="hero">
+      <section  className="hero">
         <div className="content">
           <h1>Welcome to Nutrition Tracker</h1>
           <p>Track your meals and stay healthy!</p>
         </div>
       </section>
 
-     <section id='signup'>
-     
-     <h1> <b>Eat smarter. Live better.</b></h1>
-     <h3>Track your calories, exercise,
-biometrics and health data.</h3>
- <button id='signup'> SignUp</button>
- <h4>Track your calories, exercise,
-biometrics and health data.</h4>
+     <section className='signup'>
+     <div>
+     <h1 > Eat smarter, <br />Live better.</h1>
+    
+     <p>Track your calories, exercise,<br />
+      biometrics and health data.</p>
+ <br />
+ <div>
+ <button id='button' > <NavLink to={'/signup'}>SignUp</NavLink> </button>
+ </div>
+
+ </div>
+ 
+
      </section>
     
 

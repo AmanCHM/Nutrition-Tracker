@@ -1,9 +1,9 @@
-.navbar {
+/* .navbar {
     width: 220vh;
     height: 100px;
     position: sticky;
     top: 0;
-    background: rgba(145, 143, 143, 0.8);
+    background: rgba(107, 106, 106, 0.8);
     color: white;
     display: flex;
     gap: 50px;
@@ -11,6 +11,7 @@
     padding: 10px 20px;
     z-index: 1000;
     margin-top: 0px;
+    
   }
   
   .navbar .logo {
@@ -25,6 +26,7 @@
     list-style: none;
     display: flex;
     gap: 20px;
+    
   }
   
   .navbar .nav-links li a {
@@ -39,3 +41,50 @@
     background-color: #77797b;
     border-radius: 5px;
   }
+  .active{
+    color: #131416;
+  }
+
+ */
+
+
+
+
+  .navbar {
+    width: 100%; /* Ensure the navbar spans the full width of the viewport */
+    height: 100px;
+    position: sticky;
+    top: 0;
+    background: rgba(145, 143, 143, 0.8);
+    color: white;
+    display: flex;
+    justify-content: flex-end; /* Align items to the right */
+    align-items: center;
+    gap: 50px;
+    padding: 0 20px; /* Add padding for spacing */
+    z-index: 1000;
+}
+
+.navbar .logo {
+    margin-right: auto; /* Pushes the logo to the left */
+    font-size: larger;
+    font-weight: bold;
+}
+
+.navbar .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px; /* Space between nav links */
+}
+
+.navbar .nav-links li a {
+    text-decoration: none;
+    color: white;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease;
+}
+
+.navbar .nav-links li a:hover {
+    background-color: #77797b;
+    border-radius: 5px;
+}

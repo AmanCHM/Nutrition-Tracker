@@ -3,7 +3,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f6f9;
+    background-color: #BEEBC2;
   }
   
   /* Header Section */
@@ -44,7 +44,7 @@ body {
     border-radius: 5px;
   }
   
-  /* Modal Styling */
+
   .ReactModal__Overlay {
     background-color: rgba(0, 0, 0, 0.5) !important;
   }
@@ -86,7 +86,7 @@ body {
     color: #2c3e50;
   }
   
-  /* Calorie Range Styling */
+ 
   input[type="range"] {
     width: 100%;
     margin: 10px 0;
@@ -98,12 +98,11 @@ body {
     margin: 5px;
     color: #2c3e50;
   }
-  
-  /* Meal Sections */
-  h3 {
+ 
+  /* h3 {
     color: #16a085;
     margin-top: 20px;
-  }
+  } */
   
   ul li button {
     background-color: #758fd3;
@@ -116,44 +115,5 @@ body {
   }
   
   ul li button:hover {
-    background-color: #2777e9;
+    background-color: #7589a7;
   }
-  
-.navbar {
-    width: 220vh;
-    height: 100px;
-    position: sticky;
-    top: 0;
-    background: rgba(145, 143, 143, 0.8);
-    color: white;
-    display: flex;
-    gap: 50px;
-    align-items: center;
-    padding: 10px 20px;
-    z-index: 1000;
-  }
-  
-  .navbar .logo {
-    font-size: 20px;
-    font-weight: bold;
-  }
-  
-  .navbar .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 15px;
-  }
-  
-  .navbar .nav-links li a {
-    text-decoration: none;
-    color: white;
-    padding: 5px 10px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .navbar .nav-links li a:hover {
-    background-color: #77797b;
-    border-radius: 5px;
-  }
-  
-  

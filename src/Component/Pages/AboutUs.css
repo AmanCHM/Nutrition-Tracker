@@ -1,0 +1,15 @@
+*{
+    margin: 0px;
+    
+}
+
+body{
+    background-color: rgb(242, 242, 243);
+     height: 80vh;
+}
+.navbar{
+    margin-top: 0px;
+}
+.footer{
+    margin-bottom: 0px;
+}

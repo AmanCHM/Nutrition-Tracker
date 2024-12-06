@@ -1,32 +1,72 @@
-import React, { useState } from 'react'
-import Navbar from '../Page-Components/Navbar';
-
+import React, { useState } from "react";
+import Navbar from "../Page-Components/Navbar";
+import Footer from "../Page-Components/Footer";
+import "./ImageSearch.css";
+import axios from "axios";
+import FormData from "form-data";
 const ImageSearch = () => {
+  const [fileUrl, setFileUrl] = useState();
 
-    const [file,setFile]= useState()
-     const handleInput = (e)=>{
-    
-        setFile(URL.createObjectURL(e.target.files[0]));
+  const [imageData, setImageData] = useState();
+
+  const [blob, setBlob] = useState(null);
+ 
+
+
+  const handleFile = (e) => {
+   const { files } = e.target;
+   console.log("files", files);
+   if (files.length > 0) {
+     const url = URL.createObjectURL(files[0]);
+     setFileUrl(url); 
+     console.log("url", url);
+     const imageBlob = new Blob([files[0]], { type: files[0].type });
+     setBlob(imageBlob);
+   } else {
+     setFileUrl(null);
+   }
+ };
+ 
+ const handleUpload = async () => {
+   console.log("filedata getimage", fileUrl);
+   const formdata = new FormData();
+   formdata.append("media", blob);
+ 
+   console.log("blob", blob);
+ 
+   try {
+     const response = await fetch('https://www.caloriemama.ai/api/food_recognition_proxy', {
+       method: 'POST',
+       mode: 'no-cors',
+              body: formdata,
+     });
+ 
+     if (!response.ok) {
+       throw new Error(`HTTP error! status: ${response.status}`);
      }
-     console.log("file:",file);
+ 
+     const responseData = await response.json();
+     setImageData(responseData);
+   } catch (error) {
+     console.log("error caught", error);
+   }
+ };
+
+  console.log("filedata", fileUrl);
+  console.log("imagedata", imageData);
   return (
-   <>
+    <>
+      <Navbar />
 
-   {/* <div ><Navbar /></div> */}
+      <div className="image-upload">
+        <h2>Add Image </h2>
+        <input type="file" onChange={handleFile} />
+        <button onClick={handleUpload}>Upload</button>
+      </div>
 
+      <Footer className="footer" />
+    </>
+  );
+};
 
-
-
-    <h2>Add Image </h2>
-   <input type="file"
-     onChange={handleInput}
-   />
-   
-   
-   </>
-
-    
-  )
-}
-
-export default ImageSearch
+export default ImageSearch;

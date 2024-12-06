@@ -10,6 +10,7 @@ import { auth, db } from "../firebase";
 import { Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import Navbar from "./Page-Components/Navbar";
+import Footer from "./Page-Components/Footer";
 ChartJS.register(ArcElement, Tooltip, Legend);
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -122,7 +123,7 @@ const Dashboard = () => {
   // Render UI
   return (
     <>
-<div  style={{width:"80vh"}}> <Navbar/></div>
+       <Navbar/>
     
     <label htmlFor="">WelCome {}</label>
       <button type="submit" onClick={handleLogout}>
@@ -137,7 +138,7 @@ const Dashboard = () => {
       <br />
         <Pie data={chartData}></Pie>
       <label htmlFor="">Breakfast</label>
-      
+       <Footer/>
     </>
   );
 };

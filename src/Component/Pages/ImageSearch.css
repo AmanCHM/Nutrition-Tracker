@@ -1,3 +1,17 @@
-.navbar{
-    margin-top: 0px;
+body{
+    margin: 0px;
+    padding: 0px;
+    height: 1000vh;
+   background-color:white;
+}
+
+.footer{
+      
+    margin-bottom: 0px;
+}
+.image-search{
+ 
+width: 50vh;
+height: 60vh;
+
 }

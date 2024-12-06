@@ -13,9 +13,9 @@ const Footer = () => {
      
       <div className="footer-section">
         <h4>Contact</h4>
-        <p>Email: support@nutritiontracker.com</p>
-        <p>Phone: +1 (123) 456-7890</p>
-        <p>Location: Anywhere, Earth</p>
+        <p>Email: aman.kumar@gmail.com</p>
+        <p>Phone: +91 987 373 4838</p>
+        <p>Location: Varanasi, India</p>
       </div>
     </div>
     <div className="footer-bottom">

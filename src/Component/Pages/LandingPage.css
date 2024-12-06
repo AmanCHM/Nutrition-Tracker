@@ -6,57 +6,19 @@
 }
 
 body {
-    /* background-image: url('https://media.gettyimages.com/id/1305072532/photo/pregnant-woman-using-mobile-app-to-track-nutrition-and-count-calories-with-smartphone-while.jpg?s=612x612&w=0&k=20&c=yyL5_yskKMo9gvzi3_WbjUdXEy-Cbqcnam3lJ1GaYWQ='); */
+    background-image: 'ngwing 2.svg';
     font-family: Arial, sans-serif;
-    background: #f4f4f4;
+    background-color: #BEEBC2;
     line-height: 1.6;
   }
   
-  /* Navbar */
-  /* .navbar {
-    width: 220vh;
-    height: 100px;
-    position: sticky;
-    top: 0;
-    background: rgba(145, 143, 143, 0.8);
-    color: white;
-    display: flex;
-    gap: 50px;
-    align-items: center;
-    padding: 10px 20px;
-    z-index: 1000;
-  }
-  
-  .navbar .logo {
-    font-size: 20px;
-    font-weight: bold;
-  }
-  
-  .navbar .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 15px;
-  }
-  
-  .navbar .nav-links li a {
-    text-decoration: none;
-    color: white;
-    padding: 5px 10px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .navbar .nav-links li a:hover {
-    background-color: #77797b;
-    border-radius: 5px;
-  }
-   */
-  /* Hero Section */
+ 
   .hero {
   
-      /* background-image: url('https://media.gettyimages.com/id/1305072532/photo/pregnant-woman-using-mobile-app-to-track-nutrition-and-count-calories-with-smartphone-while.jpg?s=612x612&w=0&k=20&c=yyL5_yskKMo9gvzi3_WbjUdXEy-Cbqcnam3lJ1GaYWQ='); */
+     
     background-size: cover;
     background-position: center;
-    height: 100vh;
+    height: 60vh;
     color: white;
     display: flex;
     justify-content: center;
@@ -72,12 +34,42 @@ body {
     font-size: 2.5rem;
   }
 
-/*   
-  
-  footer {
+.signup{
+  background-size: cover;
+    background-position: center;
+    height: 40vh;
+    color: white;
+    display: flex;
+    
+    justify-content: center;
+    align-items: center;
     text-align: center;
-    padding: 10px;
-    background: #050505;
-    color: #f4f4f4;
-  } */
+}
+p{
+  color: rgb(83, 81, 81);
+
+    font-size: 1.5rem;
   
+}
+h1{
+  font-size: 2.5rem;
+}
+
+#button{
+
+width: 180px;
+height: 60px;
+border-radius: 20;
+background-color: rgb(139, 59, 33);
+font-size: 1.25rem;
+font-family: Arial, sans-serif;
+margin-left: 40px;
+}
+
+.navbar{
+  position: sticky;
+}
+footer{
+  margin-bottom: 0px;
+
+}
