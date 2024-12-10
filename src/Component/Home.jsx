@@ -8,6 +8,7 @@ import "./Home.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
   arrayUnion,
+  deleteDoc,
   doc,
   getDoc,
   onSnapshot,
@@ -19,6 +20,8 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import { Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import Navbar from "./Page-Components/Navbar";
+import Footer from "./Page-Components/Footer";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -122,6 +125,7 @@ const Home = () => {
       console.log("inside modal");
       const user = auth.currentUser;
       const data = {
+        id:Date.now(),
         name: selectItem.label,
         calories: Math.round(calculateCalories),
       };
@@ -165,19 +169,19 @@ const Home = () => {
 
       const docRef = doc(db, "users", userId, "dailyLogs", date);
 
-      const sanpdata = onSnapshot(docRef, (docRef) => {
-        console.log(docRef.data());
-      });
+      // const sanpdata =  onSnapshot(docRef, (docRef) => {
+      //   console.log(docRef.data());
+      // });
       //    const unsub = onSnapshot(docRef, (doc) => {
       //     console.log("Current data: ", doc.data());
       // });
-      console.log("snapdata", sanpdata);
+      // console.log("snapdata", sanpdata);
       const docSnap = await getDoc(docRef);
-      console.log("snapdata", docSnap);
+      // console.log("snapdata", docSnap);
 
       if (docSnap.exists()) {
         const mealData = docSnap.data();
-        console.log("mealdata", mealData);
+        // console.log("mealdata", mealData);
         setLogdata(mealData);
       } else {
         setLogdata({});
@@ -190,18 +194,20 @@ const Home = () => {
   };
 
   useEffect(() => {
+
+    console.log("inside useeffect get data");
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // console.log("User authenticated:", user);
+       
         setloading(true);
-        handleGetData(user); // Pass the user object to fetch data
+        handleGetData(user); 
       } else {
         console.log("No user authenticated");
         setloading(false);
       }
     });
 
-    return () => unsubscribe(); // Clean up the listener on unmount
+    return () => unsubscribe(); 
   }, []);
 
   const calculateCalories =
@@ -212,10 +218,10 @@ const Home = () => {
         quantity
       : "no data";
 
-  const handleLogout = () => {
-    dispatch(loggedout());
-    navigate("/");
-  };
+  // const handleLogout = () => {
+  //   dispatch(loggedout());
+  //   navigate("/");
+  // };
 
   const breakfastCalorie = logData?.Breakfast?.length > 0 ?logData.Breakfast.reduce(
     (acc, item) => acc + item.calories,0):0;
@@ -246,27 +252,47 @@ const Home = () => {
     ],
   };
 
+
+  const handleDeleteLog=  async (id)=>{
+ console.log("inside delete");
+    try{
+      
+      const user = auth.currentUser
+      const userId = user.uid;
+      const date= new Date().toISOString().split("T")[0];
+       const docRef  = doc(db,"users",userId,"dailyLogs", date)
+       await deleteDoc(docRef,id)
+  console.log(" data deleted");
+    }catch(error){
+      console.log(error);
+    }
+    }
+
 //  console.log("breakfast",breakfastCalorie);
 //   console.log("total calories", totalCalories);
 
-  console.log("logdata", logData);
+  // console.log("logdata", logData);
   return (
     <>
-      <button type="submit" onClick={handleLogout}>
+    <Navbar/>
+    
+      {/* <button type="submit" onClick={handleLogout}>
         LogOut
       </button>
       {/* <p>Total calorie ={totalCalories}</p> */}
-      <NavLink to={"/dashboard"}> Dashboard</NavLink>
-      <h1>Nutrition-Tracker</h1>
+      {/* <NavLink to={"/dashboard"}> Dashboard</NavLink>  */}
 
-      <Select
+        <div className="search">
+      <h1 id="header-text">Select a food item</h1>
+
+      <Select  id="search-box"
         options={groupedOptions}
         onChange={handleSelectChange}
         onInputChange={handleInputChange}
-        placeholder="Select a food item"
+        placeholder="Search here ..."
       />
-
-      <Modal
+   </div>
+      <Modal className="modal"
         isOpen={modal}
         style={{
           overlay: { backgroundColor: "rgba(0, 0, 0, 0.5)" },
@@ -325,6 +351,8 @@ const Home = () => {
             ))
           )}
         </select>
+
+        
         <p>Calorie:{Math.round(calculateCalories)}</p>
 
         <br />
@@ -350,8 +378,12 @@ const Home = () => {
       
       </Modal>
 
-      <Pie data={chartData}  style={{ marginRight:"20px", marginTop:"50px"}}></Pie>
-      <h3> Total Calorie Consumption :{totalCalories}</h3>
+
+  
+
+
+      <div className="calorie-range">
+      <h2> Total Calorie Consumption :{totalCalories}</h2>
       <br />
       <span>Min: 0</span>
       <input
@@ -363,14 +395,19 @@ const Home = () => {
         // onChange={ totalcalorieHandler()}
       />
       <span>Max:2000</span>
+      </div>
 
+
+
+      <div className="list-item">
       <h3>Breakfast</h3>
+
 
       <ul>
         {logData?.Breakfast?.length > 0 ? (
           logData.Breakfast.map((item, index) => (
             <li key={index}>
-              {item.name} - {item.calories} kcal
+              {item.name} - {item.calories} kcal <button onClick={()=>handleDeleteLog(item.id)}> Delete</button>
             </li>
           ))
         ) : (
@@ -383,7 +420,7 @@ const Home = () => {
         {logData?.Lunch?.length > 0 ? (
           logData.Lunch.map((item, index) => (
             <li key={index}>
-              {item.name} - {item.calories} kcal
+              {item.name} - {item.calories} kcal <button onClick={()=>handleDeleteLog(item.id)}> Delete</button>
             </li>
           ))
         ) : (
@@ -396,7 +433,7 @@ const Home = () => {
         {logData?.Snack?.length > 0 ? (
           logData.Snack.map((item, index) => (
             <li key={index}>
-              {item.name} - {item.calories} kcal
+              {item.name} - {item.calories} kcal <button onClick={()=>handleDeleteLog(item.id)}> Delete</button>
             </li>
           ))
         ) : (
@@ -408,8 +445,8 @@ const Home = () => {
       <ul>
         {logData?.Dinner?.length > 0 ? (
           logData.Dinner.map((item, index) => (
-            <li key={index}>
-              {item.name} - {item.calories} kcal
+            <li key={item.id}>
+              {item.name} - {item.calories} kcal <button onClick={()=>handleDeleteLog(item.id)}> Delete</button>
             </li>
           ))
         ) : (
@@ -417,7 +454,15 @@ const Home = () => {
         )}
       </ul>
 
-     
+      </div>
+
+       <div className="pie-chart">
+      <Pie data={chartData}  style={{ marginRight:"20px", marginTop:"50px"}}></Pie>
+
+      </div>
+
+
+     <Footer className ="footer"/>
     </>
   );
 };

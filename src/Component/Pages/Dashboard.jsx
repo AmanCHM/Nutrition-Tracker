@@ -4,11 +4,13 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
-import { loggedout } from "../Redux/counterSlice";
-import { auth, db } from "../firebase";
+import { loggedout } from "../../Redux/counterSlice";
+import { auth, db } from "../../firebase";
 
 import { Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import Navbar from "../Page-Components/Navbar";
+import Footer from "../Page-Components/Footer";
 ChartJS.register(ArcElement, Tooltip, Legend);
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -61,14 +63,14 @@ const Dashboard = () => {
       if (user) {
         // console.log("User authenticated:", user);
         setLoading(true);
-        handleGetData(user); // Pass the user object to fetch data
+        handleGetData(user); 
       } else {
         console.log("No user authenticated");
         setLoading(false);
       }
     });
 
-    return () => unsubscribe(); // Clean up the listener on unmount
+    return () => unsubscribe(); 
   }, []);
 
 
@@ -121,6 +123,8 @@ const Dashboard = () => {
   // Render UI
   return (
     <>
+       <Navbar/>
+    
     <label htmlFor="">WelCome {}</label>
       <button type="submit" onClick={handleLogout}>
         LogOut
@@ -132,9 +136,14 @@ const Dashboard = () => {
       />
     <p>TotalCalories:{totalCalories}</p>
       <br />
-        <Pie data={chartData}></Pie>
-      <label htmlFor="">Breakfast</label>
-      
+
+
+       <div className="pie-chart">
+      <Pie data={chartData}  style={{ marginRight:"20px", marginTop:"50px"}}></Pie>
+
+      </div>
+     
+       <Footer/>
     </>
   );
 };
