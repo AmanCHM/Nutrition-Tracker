@@ -3,15 +3,12 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #BEEBC2;
+    height: 100%;
+    width: 100%;
+    background-color: #343834;
   }
   
-  /* Header Section */
-  h1 {
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 20px;
-  }
+
   
   button {
     background-color: #3498db;
@@ -27,23 +24,7 @@ body {
     background-color: #2980b9;
   }
   
-  /* Select Dropdown */
-  select {
-    padding: 8px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 100%;
-  }
-  
-  input[type="text"] {
-    padding: 8px;
-    width: 90%;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
+
 
   .ReactModal__Overlay {
     background-color: rgba(0, 0, 0, 0.5) !important;
@@ -63,14 +44,7 @@ body {
     color: #34495e;
   }
   
-  p {
-    font-size: 16px;
-    color: #2c3e50;
-  }
-  
-  b {
-    color: #2c3e50;
-  }
+
   
   ul {
     list-style-type: none;
@@ -83,7 +57,7 @@ body {
     background: #ecf0f1;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    color: #2c3e50;
+    color: #cfd3d7;
   }
   
  
@@ -96,14 +70,10 @@ body {
   span {
     display: inline-block;
     margin: 5px;
-    color: #2c3e50;
+    color: #c6c7c9;
   }
  
-  /* h3 {
-    color: #16a085;
-    margin-top: 20px;
-  } */
-  
+
   ul li button {
     background-color: #758fd3;
     color: white;
@@ -117,3 +87,54 @@ body {
   ul li button:hover {
     background-color: #7589a7;
   }
+
+
+  .pie-chart{
+    width: 35%;
+    margin-left: 32%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .search{
+     width: 100%;
+     height: 20vh;
+     background-color: hsl(193, 22%, 43%);
+     color: white;
+  }
+  #header-text{
+    color: rgb(219, 215, 215);
+    text-align: center;
+    
+    /* margin-top: 20px; */
+  }
+ #search-box{
+  width: 30%;
+  height: 20%;
+  margin-left: 35vw;
+  margin-top: 30px;
+ }
+
+ .calorie-range{
+  margin-top: 20px;
+  margin-left: 30%;
+  width: 40vw;
+  height: auto;
+ }
+ .list-item{
+  margin-top: 15vh;
+  margin-left: 30%;
+  width: 40vw;
+  height: auto;
+ }
+
+ #typeinp{
+  /* margin-left: 10vw; */
+  width: 14vw;
+ }
+
+
+ .footer{
+  margin-bottom: 0;
+ }

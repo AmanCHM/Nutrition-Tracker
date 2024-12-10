@@ -10,49 +10,42 @@ const ImageSearch = () => {
   const [imageData, setImageData] = useState();
 
   const [blob, setBlob] = useState(null);
- 
-
 
   const handleFile = (e) => {
-   const { files } = e.target;
-   console.log("files", files);
-   if (files.length > 0) {
-     const url = URL.createObjectURL(files[0]);
-     setFileUrl(url); 
-     console.log("url", url);
-     const imageBlob = new Blob([files[0]], { type: files[0].type });
-     setBlob(imageBlob);
-   } else {
-     setFileUrl(null);
-   }
- };
- 
- const handleUpload = async () => {
-   console.log("filedata getimage", fileUrl);
-   const formdata = new FormData();
-   formdata.append("media", blob);
- 
-   console.log("blob", blob);
- 
-   try {
-     const response = await fetch('https://www.caloriemama.ai/api/food_recognition_proxy', {
-       method: 'POST',
-       mode: 'no-cors',
-              body: formdata,
-     });
- 
-     if (!response.ok) {
-       throw new Error(`HTTP error! status: ${response.status}`);
-     }
- 
-     const responseData = await response.json();
-     setImageData(responseData);
-   } catch (error) {
-     console.log("error caught", error);
-   }
- };
+    const { files } = e.target;
+    console.log("files", files);
+    //  const url = URL.createObjectURL(files[0]);
+    const imageBlob = new Blob([files[0]], { type: files[0].type });
+    setBlob(imageBlob);
+  };
 
-  console.log("filedata", fileUrl);
+  const handleUpload = async () => {
+    // console.log("filedata getimage", fileUrl);
+     const formdata = new FormData();
+    formdata.append("media", blob);
+    console.log("blob", blob);
+
+     try {
+      //  const response = await fetch('https://www.caloriemama.ai/api/food_recognition_proxy', {
+      //    method: 'POST',
+      //    mode: 'no-cors',
+      //    body: formdata,
+      //  });
+
+  const response = await axios.post(`https://platform.fatsecret.com/rest/image-recognition/v1`)
+
+       if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const responseData = await response.json();
+        setImageData(responseData);
+
+     } catch (error) {
+       console.log("error caught", error);
+     }
+  };
+
+  // console.log("filedata", fileUrl);
   console.log("imagedata", imageData);
   return (
     <>

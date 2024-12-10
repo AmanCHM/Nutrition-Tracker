@@ -11,10 +11,11 @@ import SignUp from "./Component/Pages/SignUp";
 import Login from "./Component/Pages/Login";
 import Reset from "./Component/Pages/Reset";
 import { useSelector } from "react-redux";
-import Dashboard from "./Component/Dashboard";
+
 import LandingPage from "./Component/Pages/LandingPage";
 import AboutUs from "./Component/Pages/AboutUs";
 import ImageSearch from "./Component/Pages/ImageSearch";
+import Dashboard from "./Component/Pages/Dashboard";
 
 
 const App = () => {

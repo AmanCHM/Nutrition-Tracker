@@ -1,64 +1,7 @@
-/* Footer Styling
-.footer {
-    background-color: #060606;
-    color: white;
-    padding: 20px 0;
-    width: 220vh;
-  }
-  
-  .footer-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 0 20px;
-    flex-wrap: wrap;
-  }
-  
-  .footer-section {
-    flex: 1;
-    margin: 10px;
-    min-width: 200px;
-  }
-  
-  .footer-section h4 {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
-  
-  .footer-section p,
-  .footer-section ul {
-    font-size: 14px;
-    line-height: 1.6;
-  }
-  
-  .footer-section ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .footer-section ul li a {
-    text-decoration: none;
-    color: white;
-    transition: color 0.3s ease;
-  }
-  
-  .footer-section ul li a:hover {
-    color: #ffdd57;
-  }
-  
-  .footer-bottom {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-  }
-  
-  p{
-    color: rgb(223, 223, 223);
-  } */
 
 
 
-  /* Set the entire page to use flex layout */
+
 body {
   display: flex;
   flex-direction: column;
@@ -66,17 +9,16 @@ body {
   margin: 0;
 }
 
-/* Main content area should take up available space */
 .main-content {
   flex: 1;
 }
 
-/* Footer styling */
+
 .footer {
   background-color: #060606;
   color: white;
   padding: 20px 0;
-  width: 100%; /* Make sure the footer spans the full width */
+  width: 100
 }
 
 .footer-container {
