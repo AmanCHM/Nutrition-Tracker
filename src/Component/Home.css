@@ -31,12 +31,13 @@ body {
   }
   
   .ReactModal__Content {
-    background-color: #d8e5f7;
+    background-color: #ebc69f;
     border-radius: 10px;
     padding: 20px;
     width: 400px;
     margin: 50px auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 2;
   }
   
   h2 {
@@ -57,7 +58,7 @@ body {
     background: #ecf0f1;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    color: #cfd3d7;
+    color: #626262;
   }
   
  
@@ -70,7 +71,7 @@ body {
   span {
     display: inline-block;
     margin: 5px;
-    color: #c6c7c9;
+    color: #575859;
   }
  
 
@@ -100,8 +101,8 @@ body {
   .search{
      width: 100%;
      height: 20vh;
-     background-color: hsl(193, 22%, 43%);
-     color: white;
+     background-color: #0077b6;
+     color: rgb(94, 93, 93);
   }
   #header-text{
     color: rgb(219, 215, 215);

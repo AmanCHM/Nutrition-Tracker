@@ -4,20 +4,24 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
-import { loggedout } from "../../Redux/counterSlice";
 import { auth, db } from "../../firebase";
 
-import { Pie } from 'react-chartjs-2'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
 ChartJS.register(ArcElement, Tooltip, Legend);
+import "./Dashboard.css";
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [logData, setlLogdata] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [selectDate, setSelectDate] = useState(new Date().toISOString().split("T")[0])
+  const [selectDate, setSelectDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+
   // Fetch User Data from Firestore
   const handleGetData = async (user) => {
     try {
@@ -37,7 +41,7 @@ const Dashboard = () => {
       const sanpdata = onSnapshot(docRef, (docRef) => {
         console.log(docRef.data());
       });
-      //    const unsub = onSnapshot(docRef, (doc) => 
+      //    const unsub = onSnapshot(docRef, (doc) =>
       //     console.log("Current data: ", doc.data());
       // });
       console.log("snapdata", sanpdata);
@@ -63,19 +67,17 @@ const Dashboard = () => {
       if (user) {
         // console.log("User authenticated:", user);
         setLoading(true);
-        handleGetData(user); 
+        handleGetData(user);
       } else {
         console.log("No user authenticated");
         setLoading(false);
       }
     });
 
-    return () => unsubscribe(); 
+    return () => unsubscribe();
   }, []);
 
-
-
-   //Calculate calorie
+  //Calculate calorie
   const breakfastCalorie =
     logData?.Breakfast?.length > 0
       ? logData.Breakfast.reduce((acc, item) => acc + item.calories, 0)
@@ -97,53 +99,120 @@ const Dashboard = () => {
   const totalCalories =
     breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
-
-    const chartData = {
-      labels: ["BreakFast", "Lunch","Snack","Dinner"],
-      datasets: [
-        {
-          data: [breakfastCalorie, lunchCalorie,snackCalorie,dinnerCalorie],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(115, 212, 132, 0.2)',
-            'rgba(175, 150, 163, 0.2)',
-          ],
-          borderWidth: 1,
-        },
-      ],
-    };
-
-  // Handle Logout
-  const handleLogout = () => {
-    dispatch(loggedout());
-    navigate("/");
+  const chartData = {
+    labels: ["BreakFast", "Lunch", "Snack", "Dinner"],
+    datasets: [
+      {
+        data: [breakfastCalorie, lunchCalorie, snackCalorie, dinnerCalorie],
+        backgroundColor: [
+          "#8AD1C2",
+          "#9F8AD1",
+          "#D18A99",
+          "#BCD18A",
+          "#D1C28A",
+        ],
+        borderWidth: 1,
+      },
+    ],
   };
- console.log(selectDate);
-  // Render UI
+
+  console.log(selectDate);
+
   return (
     <>
-       <Navbar/>
+      <Navbar />
+
     
-    <label htmlFor="">WelCome {}</label>
-      <button type="submit" onClick={handleLogout}>
-        LogOut
-      </button>
-
-      <input type="Date"
-      value={selectDate}
-      onChange={(e)=> setSelectDate(e.target.value)}
-      />
-    <p>TotalCalories:{totalCalories}</p>
-      <br />
-
-
-       <div className="pie-chart">
-      <Pie data={chartData}  style={{ marginRight:"20px", marginTop:"50px"}}></Pie>
-
+      <div className="select-date">
+        <input
+          type="Date"
+          value={selectDate}
+          onChange={(e) => setSelectDate(e.target.value)}
+        />
+        <p>TotalCalories:{totalCalories}</p>
+        <br />
       </div>
-     
-       <Footer/>
+
+      <section className="view-data">
+
+        <div className="list-items">
+          <h3>Breakfast</h3>
+
+          <ul>
+            {logData?.Breakfast?.length > 0 ? (
+              logData.Breakfast.map((item, index) => (
+                <li key={index}>
+                  {item.name} - {item.calories} kcal{" "}
+                  <button onClick={() => handleDeleteLog(item.id)}>
+                    {" "}
+                    Delete
+                  </button>
+                </li>
+              ))
+            ) : (
+              <li>No breakfast items</li>
+            )}
+          </ul>
+
+          <h3>Lunch</h3>
+          <ul>
+            {logData?.Lunch?.length > 0 ? (
+              logData.Lunch.map((item, index) => (
+                <li key={index}>
+                  {item.name} - {item.calories} kcal{" "}
+                  <button onClick={() => handleDeleteLog(item.id)}>
+                    {" "}
+                    Delete
+                  </button>
+                </li>
+              ))
+            ) : (
+              <li>No lunch items</li>
+            )}
+          </ul>
+
+          <h3>Snacks</h3>
+          <ul>
+            {logData?.Snack?.length > 0 ? (
+              logData.Snack.map((item, index) => (
+                <li key={index}>
+                  {item.name} - {item.calories} kcal{" "}
+                  <button onClick={() => handleDeleteLog(item.id)}>
+                    {" "}
+                    Delete
+                  </button>
+                </li>
+              ))
+            ) : (
+              <li>No snacks item</li>
+            )}
+          </ul>
+
+          <h3>Dinner</h3>
+          <ul>
+            {logData?.Dinner?.length > 0 ? (
+              logData.Dinner.map((item, index) => (
+                <li key={item.id}>
+                  {item.name} - {item.calories} kcal{" "}
+                  <button onClick={() => handleDeleteLog(item.id)}>
+                    {" "}
+                    Delete
+                  </button>
+                </li>
+              ))
+            ) : (
+              <li>No dinner item</li>
+            )}
+          </ul>
+        </div>
+        <div className="pie-chart">
+          <Pie
+            data={chartData}
+            style={{ marginRight: "20px", marginTop: "50px" }}
+          ></Pie>
+        </div>
+      </section>
+      <Footer />
     </>
   );
 };

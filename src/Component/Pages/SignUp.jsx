@@ -29,7 +29,7 @@ const Signup = () => {
           console.log(user.password);
           toast.success("Successfully Signed-Up!");
         })
-        .then(() => navigate("/"))
+        .then(() => navigate("/login"))
         .catch((error) => {
           const errorCode = error.code;
 
@@ -42,7 +42,7 @@ const Signup = () => {
     <>
 
     <h2>Sign-Up Form</h2>
-      <form onSubmit={formik.handleSubmit}>
+      <form className="form" onSubmit={formik.handleSubmit}>
         <label htmlFor="email">Email Address</label>
         <input
           id="email"

@@ -38,7 +38,7 @@ const Login = () => {
           // localStorage.setItem("isAuthenticated", true);
         })
         .then(() => {
-          navigate("/home");
+          navigate("/");
         })
         .catch((error) => {
           const errorCode = error.code;
