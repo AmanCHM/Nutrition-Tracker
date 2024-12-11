@@ -3,13 +3,14 @@ import { useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import { loggedout } from "../../Redux/counterSlice";
+import { MdLogout } from "react-icons/md";
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(loggedout());
-    navigate("/");
+    navigate("/login");
   };
   return (
     <div>
@@ -21,8 +22,9 @@ const Navbar = () => {
         <NavLink to={"/image-search"}>ImageSearch</NavLink>
         <NavLink to={"/dashboard"}>Dashboard</NavLink>
         <NavLink to={"/aboutus"}>About</NavLink>
-
-        <button type="submit" onClick={handleLogout}>Logout</button>
+             
+        <button id="nav-button"    type="submit" onClick={handleLogout}> 
+<MdLogout /></button>
       </nav>
     </div>
   );

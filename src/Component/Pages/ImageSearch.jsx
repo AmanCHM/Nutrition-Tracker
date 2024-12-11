@@ -1,61 +1,106 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
 import "./ImageSearch.css";
 import axios from "axios";
-import FormData from "form-data";
+import * as mobilenet from "@tensorflow-models/mobilenet";
+import * as tf from "@tensorflow/tfjs";
+
 const ImageSearch = () => {
-  const [fileUrl, setFileUrl] = useState();
-
+  const [imageSrc, setImageSrc] = useState(null);
   const [imageData, setImageData] = useState();
-
-  const [blob, setBlob] = useState(null);
-
-  const handleFile = (e) => {
-    const { files } = e.target;
-    console.log("files", files);
-    //  const url = URL.createObjectURL(files[0]);
-    const imageBlob = new Blob([files[0]], { type: files[0].type });
-    setBlob(imageBlob);
-  };
+  const [predictedData, setPredictedData] = useState();
+  const [foodName, setFoodname] = useState("");
+  const canvasRef = useRef(null);
+  const imageRef = useRef(null);
 
   const handleUpload = async () => {
-    // console.log("filedata getimage", fileUrl);
-     const formdata = new FormData();
-    formdata.append("media", blob);
-    console.log("blob", blob);
+    console.log("handle upload clicked");
+    try {
+      const isReady = await mobilenet.load();
+      console.log("loaded successfully");
 
-     try {
-      //  const response = await fetch('https://www.caloriemama.ai/api/food_recognition_proxy', {
-      //    method: 'POST',
-      //    mode: 'no-cors',
-      //    body: formdata,
-      //  });
+      const data = await isReady.classify(imageData);
 
-  const response = await axios.post(`https://platform.fatsecret.com/rest/image-recognition/v1`)
-
-       if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const responseData = await response.json();
-        setImageData(responseData);
-
-     } catch (error) {
-       console.log("error caught", error);
-     }
+      console.log("image capture data", data[0].className);
+      setFoodname(data[0].className);
+      await nutrientPredictions(foodName);
+    } catch (error) {
+      console.log("error caught", error);
+    }
   };
 
-  // console.log("filedata", fileUrl);
-  console.log("imagedata", imageData);
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImageSrc(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageLoad = () => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    const image = imageRef.current;
+    canvas.width = image.width;
+    canvas.height = image.height;
+    context.drawImage(image, 0, 0);
+    const data = context.getImageData(0, 0, canvas.width, canvas.height);
+    console.log("ImageData:", data);
+    const tensor = tf.browser.fromPixels(canvas);
+    setImageData(data);
+  };
+
+  const nutrientPredictions = async (foodname) => {
+    try {
+      const response = await axios.post(
+        `https://trackapi.nutritionix.com/v2/natural/nutrients`,
+        {
+          query: `${foodname}`,
+        },
+        {
+          headers: {
+            "x-app-id": import.meta.env.VITE_NUTRITIONIX_APP_ID,
+            "x-app-key": import.meta.env.VITE_NUTRITIONIX_APP_KEY,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setPredictedData(response.data);
+    } catch (error) {
+      console.log("error caught", error);
+    }
+  };
+
+  // console.log("predicted-data",predictedData.foods[0].food_name);
   return (
     <>
       <Navbar />
 
       <div className="image-upload">
-        <h2>Add Image </h2>
-        <input type="file" onChange={handleFile} />
+        <h1>Choose Image </h1>
+
+        <input type="file" accept="image/*" onChange={handleFileChange} />
+
+        <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
         <button onClick={handleUpload}>Upload</button>
+
+        {imageSrc && (
+          <img
+            id="show-image"
+            ref={imageRef}
+            src={imageSrc}
+            alt="uploaded"
+            onLoad={handleImageLoad}
+            style={{ width: "300px", marginTop: "20px" }}
+          />
+        )}
+       
       </div>
+    
 
       <Footer className="footer" />
     </>
