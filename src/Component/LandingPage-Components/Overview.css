@@ -1,0 +1,23 @@
+
+
+.overview{
+    width: 100%;
+    height: 1000px;
+    background-color:white;
+}
+.overview-cards{
+    display: flex;
+   justify-content: space-between;
+    margin-top: 10vh;
+    flex-wrap: wrap;
+    margin-left: 5%;
+    margin-right: 5%; 
+  
+}
+
+#header{
+    text-align: center;
+    margin-top: 7vh;
+    margin-left: 25%;
+
+}

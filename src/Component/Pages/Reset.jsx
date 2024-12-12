@@ -36,7 +36,7 @@ const Reset = () => {
         </div>
         <button type="submit">Reset-Password</button>
         <p>
-   Go to login page <NavLink to="/">Log-in</NavLink>
+   Go to login page <NavLink to="/login">Log-in</NavLink>
   </p>
       </form>
     </>
