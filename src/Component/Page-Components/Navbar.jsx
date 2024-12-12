@@ -17,8 +17,8 @@ const Navbar = () => {
       <nav className="navbar">
         <div id="company-name">Nutrition Tracker</div>
 
-        <NavLink to={"/"}>Home</NavLink>
-        <NavLink to={"/food"}>Search-Food</NavLink>
+        <NavLink to={"/"}>Feature</NavLink>
+        <NavLink to={"/home"}>Home</NavLink>
         <NavLink to={"/image-search"}>ImageSearch</NavLink>
         <NavLink to={"/dashboard"}>Dashboard</NavLink>
         <NavLink to={"/aboutus"}>About</NavLink>

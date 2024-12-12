@@ -76,7 +76,7 @@ const Signup = () => {
         <button type="submit">Submit</button>
 
         <p>
-          Already have account?<NavLink to="/">log in </NavLink>
+          Already have account?<NavLink to="/login">log in </NavLink>
         </p>
       </form>
       <ToastContainer></ToastContainer>

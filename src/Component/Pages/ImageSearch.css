@@ -24,3 +24,9 @@ body{
     height: 300px;
     margin-top: 10vh;
 }
+.list-items{
+    margin-top: 0;
+    margin-left: 10vw;
+    width: 40vw;
+  }
+  

@@ -1,0 +1,37 @@
+#feature-header {
+    font-family: inter;
+    text-align: center;
+  
+    
+    /* margin-left: 7%; */
+  }
+  
+  .feature{
+      width: 100%;
+      height: 1000px;
+      background-color:#2d3748;
+     
+  }
+  .feature-component {
+    
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  
+  #feature-image {
+    height: 700px;
+    width: 360px;
+    margin-top: 7vh;
+    border-radius: 15px;
+    box-shadow: 2px;
+    margin-left: 10vw;
+  }
+  
+  #feature-card {
+    margin-left: 30%;
+    width: 20%;
+    height: auto;
+  
+  }
+  

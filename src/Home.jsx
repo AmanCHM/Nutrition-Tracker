@@ -12,13 +12,13 @@ import {
   onSnapshot,
   setDoc,
 } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
-import { Pie } from "react-chartjs-2";
+import { Doughnut, Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import Navbar from "./Page-Components/Navbar";
-import Footer from "./Page-Components/Footer";
+import Navbar from "./Component/Page-Components/Navbar";
+import Footer from "./Component/Page-Components/Footer";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -178,6 +178,7 @@ const Home = () => {
       } else {
         setLogdata({});
       }
+
     } catch (error) {
       console.error("error fetching data", error);
     } finally {
@@ -188,9 +189,9 @@ const Home = () => {
   useEffect(() => {
     console.log("inside useeffect get data");
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      handleGetData(user);
       if (user) {
         setloading(true);
-        handleGetData(user);
       } else {
         console.log("No user authenticated");
         setloading(false);
@@ -199,6 +200,13 @@ const Home = () => {
 
     return () => unsubscribe();
   }, []);
+
+  // useEffect(()=>{
+
+
+  //   handleGetData(user)
+
+  // })
 
   const calculateCalories =
     SelectedFoodData.foods.length > 0
@@ -229,21 +237,44 @@ const Home = () => {
   const totalCalories =
     breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
+  //pie chart
   const chartData = {
     labels: ["BreakFast", "Lunch", "Snack", "Dinner"],
     datasets: [
       {
         data: [breakfastCalorie, lunchCalorie, snackCalorie, dinnerCalorie],
         backgroundColor: [
-          "#8AD1C2",
-          "#9F8AD1",
-          "#D18A99",
+          'rgb(255, 99, 132)',
+          'rgb(54, 162, 235)',
+          // 'rgb(255, 205, 86)',
           "#BCD18A",
           "#D1C28A",
         ],
         borderWidth: 1,
       },
     ],
+  };
+
+  //doughnut
+
+  const doughnutdata = {
+    // labels: [
+    //   'Red',
+    //   'Blue',
+    //   'Yellow'
+    // ],
+    datasets: [
+      {
+        label: "Total Calories",
+        data: [totalCalories],
+        backgroundColor: ["rgb(255, 99, 132)"],
+        hoverOffset: 1,
+      },
+    ],
+  };
+  const config = {
+    type: "doughnut",
+    data: doughnutdata,
   };
 
   const handleDeleteLog = async (id) => {
@@ -267,8 +298,6 @@ const Home = () => {
   return (
     <>
       <Navbar />
-
-
       <div className="search">
         <h1 id="header-text">Select a food item</h1>
 
@@ -363,22 +392,9 @@ const Home = () => {
         </select>
         <button onClick={handleModalData}> Add Meal</button>
       </Modal>
+     
 
-      <div className="calorie-range">
-        <h2> Total Calorie Consumption :{totalCalories}</h2>
-        <br />
-        <span>Min: 0</span>
-        <input
-          id="typeinp"
-          type="range"
-          min="0"
-          max="2000"
-          // value={totalCalories}
-          // onChange={ totalcalorieHandler()}
-        />
-        <span>Max:2000</span>
-      </div>
-
+      <section className="view-data"> 
       <div className="list-item">
         <h3>Breakfast</h3>
 
@@ -448,15 +464,22 @@ const Home = () => {
             <li>No dinner item</li>
           )}
         </ul>
+        </div>
+          <h2> Total Calorie Consumption :{totalCalories}</h2>
+         <div className="doughnut-data">
+
+          <Doughnut data={doughnutdata} /> 
       </div>
 
-      <div className="pie-chart">
+
+      </section>
+      <div className="pie-data">
+        <h2>Meals Details</h2>
         <Pie
           data={chartData}
           style={{ marginRight: "20px", marginTop: "50px" }}
         ></Pie>
       </div>
-
       <Footer className="footer" />
     </>
   );

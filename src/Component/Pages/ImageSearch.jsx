@@ -21,9 +21,10 @@ const ImageSearch = () => {
       console.log("loaded successfully");
 
       const data = await isReady.classify(imageData);
-
-      console.log("image capture data", data[0].className);
+      console.log("fetch-iamge-data",data);
+      // console.log("image capture data", data[0].className);  
       setFoodname(data[0].className);
+      setPredictedData()
       await nutrientPredictions(foodName);
     } catch (error) {
       console.log("error caught", error);
@@ -49,7 +50,7 @@ const ImageSearch = () => {
     canvas.height = image.height;
     context.drawImage(image, 0, 0);
     const data = context.getImageData(0, 0, canvas.width, canvas.height);
-    console.log("ImageData:", data);
+    // console.log("ImageData:", data);
     const tensor = tf.browser.fromPixels(canvas);
     setImageData(data);
   };
@@ -74,8 +75,8 @@ const ImageSearch = () => {
       console.log("error caught", error);
     }
   };
-
-  // console.log("predicted-data",predictedData.foods[0].food_name);
+ 
+  console.log("predicted-data",predictedData);
   return (
     <>
       <Navbar />
@@ -83,7 +84,7 @@ const ImageSearch = () => {
       <div className="image-upload">
         <h1>Choose Image </h1>
 
-        <input type="file" accept="image/*" onChange={handleFileChange} />
+        <input id="input-box" type="file" accept="image/*" onChange={handleFileChange} />
 
         <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
         <button onClick={handleUpload}>Upload</button>
@@ -100,7 +101,21 @@ const ImageSearch = () => {
         )}
        
       </div>
-    
+      
+      <div className="list-item"> 
+         {/* <ul>  {predictedData} */}
+      
+       <li> <b>Name:</b> {predictedData?.foods[0].food_name }</li>
+      <li> <b>Total Calories:</b>{predictedData?.foods[0].nf_calories }</li>
+      <li> <b>Total Protein: </b>{predictedData?.foods[0].nf_protein }</li>
+      <li> <b>Total fat: </b>{predictedData?.foods[0].nf_total_fat }</li>
+      <li> <b>Cholesterol:</b> {predictedData?.foods[0].nf_cholesterol }</li>
+      <li> <b>Sodium:</b> {predictedData?.foods[0].nf_sodium }</li>
+      <li> <b>Potassium:</b> {predictedData?.foods[0].nf_potassium }</li>  
+
+      {/* </ul> */}
+
+      </div>
 
       <Footer className="footer" />
     </>
