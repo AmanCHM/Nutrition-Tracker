@@ -19,7 +19,7 @@ const Dashboard = () => {
   const [logData, setlLogdata] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectDate, setSelectDate] = useState(
-    new Date().toISOString().split("T")[0]
+   null
   );
 
   // Fetch User Data from Firestore
@@ -41,9 +41,7 @@ const Dashboard = () => {
       const sanpdata = onSnapshot(docRef, (docRef) => {
         console.log(docRef.data());
       });
-      //    const unsub = onSnapshot(docRef, (doc) =>
-      //     console.log("Current data: ", doc.data());
-      // });
+    
       console.log("snapdata", sanpdata);
       const docSnap = await getDoc(docRef);
       console.log("snapdata", docSnap);
@@ -75,29 +73,21 @@ const Dashboard = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [selectDate]);
 
   //Calculate calorie
-  const breakfastCalorie =
-    logData?.Breakfast?.length > 0
-      ? logData.Breakfast.reduce((acc, item) => acc + item.calories, 0)
+  const calculateMealCalories = (mealData) => {
+    return mealData?.length > 0
+      ? mealData.reduce((total, item) => total + item.calories, 0)
       : 0;
+  };
+  
+  const breakfastCalorie = calculateMealCalories(logData?.Breakfast);
+  const lunchCalorie = calculateMealCalories(logData?.Lunch);
+  const snackCalorie = calculateMealCalories(logData?.Snack);
+  const dinnerCalorie = calculateMealCalories(logData?.Dinner);
 
-  const lunchCalorie =
-    logData?.Lunch?.length > 0
-      ? logData.Lunch.reduce((total, item) => total + item.calories, 0)
-      : 0;
-  const snackCalorie =
-    logData?.Snack?.length > 0
-      ? logData.Snack.reduce((total, item) => total + item.calories, 0)
-      : 0;
-
-  const dinnerCalorie =
-    logData?.Dinner?.length > 0
-      ? logData.Dinner.reduce((total, item) => total + item.calories, 0)
-      : 0;
-  const totalCalories =
-    breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
+  const totalCalories = breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
   const chartData = {
     labels: ["BreakFast", "Lunch", "Snack", "Dinner"],

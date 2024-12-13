@@ -17,7 +17,8 @@ import Dashboard from "./Component/Pages/Dashboard";
 import Signup from "./Component/Pages/SignUp";
 import Login from "./Component/Pages/Login";
 import Reset from "./Component/Pages/Reset";
-import Home from "./Home";
+import Home from './Component/Pages/Home';
+
 
 
 const App = () => {

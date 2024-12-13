@@ -1,33 +1,28 @@
-import React, { useEffect, useRef, useState } from "react";
-import Navbar from "../Page-Components/Navbar";
-import Footer from "../Page-Components/Footer";
-import "./ImageSearch.css";
-import axios from "axios";
+import React, { useRef, useState } from "react";
 import * as mobilenet from "@tensorflow-models/mobilenet";
 import * as tf from "@tensorflow/tfjs";
+import axios from "axios";
+import "./ImageSearch.css";
+import Navbar from './../Page-Components/Navbar';
+import Footer from './../Page-Components/Footer';
 
 const ImageSearch = () => {
   const [imageSrc, setImageSrc] = useState(null);
-  const [imageData, setImageData] = useState();
-  const [predictedData, setPredictedData] = useState();
-  const [foodName, setFoodname] = useState("");
+  const [predictedData, setPredictedData] = useState(null);
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
 
   const handleUpload = async () => {
-    console.log("handle upload clicked");
     try {
       const isReady = await mobilenet.load();
-      console.log("loaded successfully");
+      const data = await isReady.classify(imageRef.current);
 
-      const data = await isReady.classify(imageData);
-      console.log("fetch-iamge-data",data);
-      // console.log("image capture data", data[0].className);  
-      setFoodname(data[0].className);
-      setPredictedData()
-      await nutrientPredictions(foodName);
+      if (data && data[0]?.className) {
+        const foodName = data[0].className;
+        await nutrientPredictions(foodName);
+      }
     } catch (error) {
-      console.log("error caught", error);
+      console.log("Error during upload:", error);
     }
   };
 
@@ -49,19 +44,13 @@ const ImageSearch = () => {
     canvas.width = image.width;
     canvas.height = image.height;
     context.drawImage(image, 0, 0);
-    const data = context.getImageData(0, 0, canvas.width, canvas.height);
-    // console.log("ImageData:", data);
-    const tensor = tf.browser.fromPixels(canvas);
-    setImageData(data);
   };
 
-  const nutrientPredictions = async (foodname) => {
+  const nutrientPredictions = async (foodName) => {
     try {
       const response = await axios.post(
         `https://trackapi.nutritionix.com/v2/natural/nutrients`,
-        {
-          query: `${foodname}`,
-        },
+        { query: foodName },
         {
           headers: {
             "x-app-id": import.meta.env.VITE_NUTRITIONIX_APP_ID,
@@ -70,54 +59,70 @@ const ImageSearch = () => {
           },
         }
       );
-      setPredictedData(response.data);
+      setPredictedData(response.data.foods);
     } catch (error) {
-      console.log("error caught", error);
+      console.log("Error fetching nutritional data:", error);
     }
   };
- 
-  console.log("predicted-data",predictedData);
+
   return (
     <>
-      <Navbar />
-
-      <div className="image-upload">
-        <h1>Choose Image </h1>
-
-        <input id="input-box" type="file" accept="image/*" onChange={handleFileChange} />
-
-        <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
-        <button onClick={handleUpload}>Upload</button>
-
-        {imageSrc && (
+      <Navbar/>
+    <div className="image-search-container">
+      <h1 className="title">Image-Based Food Search</h1>
+      <div className="upload-section">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="file-input"
+        />
+      </div>
+      {imageSrc && (
+        <div className="image-preview">
           <img
-            id="show-image"
             ref={imageRef}
             src={imageSrc}
-            alt="uploaded"
+            alt="Uploaded Preview"
+            className="preview-image"
             onLoad={handleImageLoad}
-            style={{ width: "300px", marginTop: "20px" }}
           />
-        )}
-       
-      </div>
-      
-      <div className="list-item"> 
-         {/* <ul>  {predictedData} */}
-      
-       <li> <b>Name:</b> {predictedData?.foods[0].food_name }</li>
-      <li> <b>Total Calories:</b>{predictedData?.foods[0].nf_calories }</li>
-      <li> <b>Total Protein: </b>{predictedData?.foods[0].nf_protein }</li>
-      <li> <b>Total fat: </b>{predictedData?.foods[0].nf_total_fat }</li>
-      <li> <b>Cholesterol:</b> {predictedData?.foods[0].nf_cholesterol }</li>
-      <li> <b>Sodium:</b> {predictedData?.foods[0].nf_sodium }</li>
-      <li> <b>Potassium:</b> {predictedData?.foods[0].nf_potassium }</li>  
+          <canvas ref={canvasRef} style={{ display: "none" }} />
+        </div>
+      )}
+      <button onClick={handleUpload} className="upload-button">
+        Predict
+      </button>
+      {predictedData && (
+        <div className="results-section">
+          <h2 className="results-title">Nutritional Information</h2>
+          <table className="results-table">
+            <thead>
+              <tr>
+                <th>Food Name</th>
+                <th>Calories</th>
+                <th>Protein (g)</th>
+                <th>Carbs (g)</th>
+                <th>Fat (g)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {predictedData.map((food, index) => (
+                <tr key={index}>
+                  <td>{food.food_name}</td>
+                  <td>{food.nf_calories}</td>
+                  <td>{food.nf_protein}</td>
+                  <td>{food.nf_total_carbohydrate}</td>
+                  <td>{food.nf_total_fat}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+      <Footer/>
 
-      {/* </ul> */}
-
-      </div>
-
-      <Footer className="footer" />
     </>
   );
 };

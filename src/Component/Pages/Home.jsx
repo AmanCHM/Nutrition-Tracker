@@ -12,13 +12,13 @@ import {
   onSnapshot,
   setDoc,
 } from "firebase/firestore";
-import { auth, db } from "./firebase";
+import { auth, db } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 import { Doughnut, Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import Navbar from "./Component/Page-Components/Navbar";
-import Footer from "./Component/Page-Components/Footer";
+import Navbar from "../Page-Components/Navbar";
+import Footer from "../Page-Components/Footer";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -131,7 +131,7 @@ const Home = () => {
         const categorisedData = { [selectCategory]: arrayUnion(data) };
 
         await setDoc(docRef, categorisedData, { merge: true });
-
+        await handleGetData(user);
         console.log("Data saved successfully!");
       } else {
         console.log("User not authenticated.");
@@ -216,26 +216,20 @@ const Home = () => {
         quantity
       : "no data";
 
-  const breakfastCalorie =
-    logData?.Breakfast?.length > 0
-      ? logData.Breakfast.reduce((acc, item) => acc + item.calories, 0)
-      : 0;
-
-  const lunchCalorie =
-    logData?.Lunch?.length > 0
-      ? logData.Lunch.reduce((total, item) => total + item.calories, 0)
-      : 0;
-  const snackCalorie =
-    logData?.Snack?.length > 0
-      ? logData.Snack.reduce((total, item) => total + item.calories, 0)
-      : 0;
-
-  const dinnerCalorie =
-    logData?.Dinner?.length > 0
-      ? logData.Dinner.reduce((total, item) => total + item.calories, 0)
-      : 0;
-  const totalCalories =
-    breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
+      const calculateMealCalories = (mealData) => {
+        return mealData?.length > 0
+          ? mealData.reduce((total, item) => total + item.calories, 0)
+          : 0;
+      };
+      
+      
+      const breakfastCalorie = calculateMealCalories(logData?.Breakfast);
+      const lunchCalorie = calculateMealCalories(logData?.Lunch);
+      const snackCalorie = calculateMealCalories(logData?.Snack);
+      const dinnerCalorie = calculateMealCalories(logData?.Dinner);
+      
+      
+      const totalCalories = breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
   //pie chart
   const chartData = {
@@ -395,76 +389,104 @@ const Home = () => {
      
 
       <section className="view-data"> 
-      <div className="list-item">
-        <h3>Breakfast</h3>
+      <div className="meal-log">
+  <table className="meal-table">
+    <thead>
+      <tr>
+        <th>Meal</th>
+        <th>Food Name</th>
+        <th>Calories (kcal)</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {/* Breakfast */}
+      {logData?.Breakfast?.length > 0 ? (
+        logData.Breakfast.map((item, index) => (
+          <tr key={`breakfast-${index}`}>
+            <td>Breakfast</td>
+            <td>{item.name}</td>
+            <td>{item.calories}</td>
+            <td>
+              <button onClick={() => handleDeleteLog("Breakfast", item.id)}>
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td>Breakfast</td>
+          <td colSpan="3">No breakfast items</td>
+        </tr>
+      )}
 
-        <ul>
-          {logData?.Breakfast?.length > 0 ? (
-            logData.Breakfast.map((item, index) => (
-              <li key={index}>
-                {item.name} - {item.calories} kcal{" "}
-                <button onClick={() => handleDeleteLog(item.id)}>
-                  {" "}
-                  Delete
-                </button>
-              </li>
-            ))
-          ) : (
-            <li>No breakfast items</li>
-          )}
-        </ul>
+      {/* Lunch */}
+      {logData?.Lunch?.length > 0 ? (
+        logData.Lunch.map((item, index) => (
+          <tr key={`lunch-${index}`}>
+            <td>Lunch</td>
+            <td>{item.name}</td>
+            <td>{item.calories}</td>
+            <td>
+              <button onClick={() => handleDeleteLog("Lunch", item.id)}>
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td>Lunch</td>
+          <td colSpan="3">No lunch items</td>
+        </tr>
+      )}
 
-        <h3>Lunch</h3>
-        <ul>
-          {logData?.Lunch?.length > 0 ? (
-            logData.Lunch.map((item, index) => (
-              <li key={index}>
-                {item.name} - {item.calories} kcal{" "}
-                <button onClick={() => handleDeleteLog(item.id)}>
-                  {" "}
-                  Delete
-                </button>
-              </li>
-            ))
-          ) : (
-            <li>No lunch items</li>
-          )}
-        </ul>
+      {/* Snacks */}
+      {logData?.Snack?.length > 0 ? (
+        logData.Snack.map((item, index) => (
+          <tr key={`snack-${index}`}>
+            <td>Snack</td>
+            <td>{item.name}</td>
+            <td>{item.calories}</td>
+            <td>
+              <button onClick={() => handleDeleteLog("Snack", item.id)}>
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td>Snack</td>
+          <td colSpan="3">No snack items</td>
+        </tr>
+      )}
 
-        <h3>Snacks</h3>
-        <ul>
-          {logData?.Snack?.length > 0 ? (
-            logData.Snack.map((item, index) => (
-              <li key={index}>
-                {item.name} - {item.calories} kcal{" "}
-                <button onClick={() => handleDeleteLog(item.id)}>
-                  {" "}
-                  Delete
-                </button>
-              </li>
-            ))
-          ) : (
-            <li>No snacks item</li>
-          )}
-        </ul>
+      {/* Dinner */}
+      {logData?.Dinner?.length > 0 ? (
+        logData.Dinner.map((item, index) => (
+          <tr key={`dinner-${index}`}>
+            <td>Dinner</td>
+            <td>{item.name}</td>
+            <td>{item.calories}</td>
+            <td>
+              <button onClick={() => handleDeleteLog("Dinner", item.id)}>
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td>Dinner</td>
+          <td colSpan="3">No dinner items</td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
 
-        <h3>Dinner</h3>
-        <ul>
-          {logData?.Dinner?.length > 0 ? (
-            logData.Dinner.map((item, index) => (
-              <li key={item.id}>
-                {item.name} - {item.calories} kcal{" "}
-                <button onClick={() => handleDeleteLog(item.id)}>
-                  {" "}
-                  Delete
-                </button>
-              </li>
-            ))
-          ) : (
-            <li>No dinner item</li>
-          )}
-        </ul>
-        </div>
           <h2> Total Calorie Consumption :{totalCalories}</h2>
          <div className="doughnut-data">
 
