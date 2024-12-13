@@ -1,25 +1,25 @@
-/* General container styling */
+
 .image-search-container {
     font-family: Arial, sans-serif;
     text-align: center;
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
-    height: auto;
+    height: 80vh;
     width: 50vw;
     margin: 20px auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
-  /* Title */
+ 
   .title {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
-    color: #333;
+    color: #e8e8e8;
+    background-color: #0077b6;
   }
   
-  /* Upload section */
   .upload-section {
     margin-bottom: 20px;
   }
@@ -33,7 +33,7 @@
     cursor: pointer;
   }
   
-  /* Image preview */
+
   .image-preview {
     margin: 20px auto;
     text-align: center;
@@ -47,9 +47,9 @@
     margin-bottom: 20px;
   }
   
-  /* Button styling */
+  
   .upload-button {
-    background-color: #0e1528;
+    background-color: #0077b6;
     color: white;
     padding: 10px 20px;
     font-size: 16px;
@@ -60,10 +60,10 @@
   }
   
   .upload-button:hover {
-    background-color: #1f344e;
+    background-color: #274870;
   }
   
-  /* Results section */
+
   .results-section {
     margin-top: 20px;
     padding: 20px;
@@ -78,7 +78,7 @@
     color: #444;
   }
   
-  /* Table styling */
+
   .results-table {
     width: 100%;
     border-collapse: collapse;
@@ -92,7 +92,7 @@
   }
   
   .results-table th {
-    background-color: #c96b29;
+    background-color: #0077b6;
     color: white;
     text-align: left;
   }

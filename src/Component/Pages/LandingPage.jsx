@@ -10,25 +10,24 @@ import AIFeature from "../LandingPage-Components/AIFeature";
 const LandingPage = () => {
   return (
     <>
-    
-    {/* <Navbar/>  */}
-      <div className="landing-page" >
+      <Navbar/> 
+      <div className="landing-page">
         <section className="hero">
           <div className="content">
-            <b style={{color:"grey"}}>Welcome to Nutrition Tracker</b>
+            <b style={{ color: "grey" }}>Welcome to Nutrition Tracker</b>
             <p>Track your meals and stay healthy!</p>
           </div>
         </section>
 
         <section className="signup">
           <div className="description">
-            <h1 style={{color:"grey"}}>
+            <h1 style={{ color: "grey" }}>
               {" "}
               Eat smarter, <br />
               Live better.
             </h1>
 
-            <h4 style={{color:"grey"}}>
+            <h4 style={{ color: "grey" }}>
               Track your calories, exercise,
               <br />
               biometrics and health data.
@@ -36,11 +35,17 @@ const LandingPage = () => {
 
             <button id="button">
               {" "}
-              <NavLink to={"/signup"} style={{color:"white",fontSize:"17px"}}>SignUp</NavLink>{" "}
+              <NavLink
+                to={"/signup"}
+                style={{ color: "white", fontSize: "17px" }}
+              >
+                SignUp
+              </NavLink>{" "}
             </button>
           </div>
           <div>
-            <img id="front-image"
+            <img
+              id="front-image"
               src={
                 "https://raw.githubusercontent.com/harshu878/nutrimeter/b24e158e4f21902c1fe890e3fcec626ae022ebaf/client/public/Images/mobile.svg"
               }
@@ -50,9 +55,9 @@ const LandingPage = () => {
         </section>
       </div>
 
-    <Feature/>
-    <Overview/>
- <AIFeature/>
+      <Feature />
+      <Overview />
+      <AIFeature />
       <Footer />
     </>
   );

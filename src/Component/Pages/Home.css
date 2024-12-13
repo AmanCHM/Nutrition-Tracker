@@ -26,18 +26,24 @@ body {
   
 
 
+  .modal{
+    width: auto;
+    height: 50vh;
+
+  }
+
   .ReactModal__Overlay {
     background-color: rgba(0, 0, 0, 0.5) !important;
   }
   
   .ReactModal__Content {
-    background-color: #ebc69f;
+    background-color: #8e939b;
     border-radius: 10px;
     padding: 20px;
     width: 400px;
     margin: 50px auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    /* z-index: 2; */
+    z-index: 1;
   }
   
   h2 {
@@ -140,28 +146,39 @@ body {
   margin-bottom: 0;
  }
 
-
- .doughnut-data{
-  width: 30%;
-   margin-top: auto;
-  /* margin-right: 20vw;  */
-  
- }
-
-
  .view-data{
-  width: 100vw;
-   display: flex;
-   align-items: center;
-   justify-content: center;
+  margin-top: 5vh;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+ 
+}
+
+.meal-log{
+  height: auto;
+  width: 60vw ;
+}
+
+.total-calorie{
+  margin-top: 3vh; 
+  width: 30%;
+  width: 50%;
+  height: auto;
+
 }
 
 
+.doughnut-data{
+   width: 50%;
+   margin-left: 30%;
+}
+
 .pie-data{
-  margin-top: 15vh;
-  width: 35%;
-  
-  margin-left: 33%;
+  margin-top: 10vh;
+  width: 33%  ;
+  height: 35%;
+  margin-left: 37%;
  }    
 
  .meal-table {
@@ -179,8 +196,9 @@ body {
 }
 
 .meal-table th {
-  background-color: #f4f4f4;
+  background-color: rgb(36, 136, 203);
   font-weight: bold;
+  color: rgb(230, 226, 226);
 }
 
 .meal-table tr:nth-child(even) {
@@ -192,8 +210,8 @@ body {
 }
 
 .meal-table button {
-  background-color: #ff4d4d;
-  color: white;
+  background-color: #d1b7a4;
+  color: rgb(255, 255, 255);
   border: none;
   padding: 5px 10px;
   cursor: pointer;
@@ -201,5 +219,5 @@ body {
 }
 
 .meal-table button:hover {
-  background-color: #d8251c;
+  background-color: #29272f;
 }

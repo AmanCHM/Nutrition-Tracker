@@ -17,11 +17,21 @@ body {
 
   .select-date{
      
-      width: 30%;
-      margin-left: 35vw;
-      margin-top: 30px;
-      background-color: white;
+      width: 100%;
+      /* margin-left: 45vw; */
+      margin-top: 0%;
+      height: 20vh;
+      background-color: #0077b6;
      
+  }
+  .date-input{
+    display: block;
+    width: 20%;
+    margin-left: 40vw;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
   }
 
   p{
@@ -39,4 +49,8 @@ body {
     margin-top: 0;
     margin-left: 10vw;
     width: 40vw;
+  }
+  .piechart-data{
+    width: 50%;
+   margin-left: 25%;
   }

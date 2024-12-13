@@ -25,17 +25,20 @@ const AIFeature = () => {
 
       
           <FeatureCards
-            header="Accurate nutrition data"
-            description="Be confident that the food you log has the correct nutrition data. We verify every food submission for accuracy."
+            header="INSTANT FOOD RECOGNITION
+            "
+            description="Simply upload a food photo and get the nutritional information of your meal.
+
+            Our App is powered by our Food AI API. Food AI API is based on the latest innovations in deep learning and image classification technology to quickly and accurately identify food items."
           />
-          <FeatureCards
+          {/* <FeatureCards
             header="Over many users"
             description="Join the community to get tips and inspiration from other users on our forums and Facebook "
           />
           <FeatureCards
             header="Data privacy & security"
             description="We take the security of our users' accounts seriously - we will never sell your account data to third parties."
-          />
+          /> */}
         </div>
       </div>
 

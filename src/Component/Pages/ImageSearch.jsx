@@ -13,11 +13,15 @@ const ImageSearch = () => {
   const imageRef = useRef(null);
 
   const handleUpload = async () => {
+    // setPredictedData()
     try {
       const isReady = await mobilenet.load();
       const data = await isReady.classify(imageRef.current);
 
       if (data && data[0]?.className) {
+
+        console.log("data",data);
+        // console.log("foodname",data[0].className);
         const foodName = data[0].className;
         await nutrientPredictions(foodName);
       }
@@ -28,23 +32,19 @@ const ImageSearch = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    // console.log(file);
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
+        //  console.log(event.target.result);
         setImageSrc(event.target.result);
       };
       reader.readAsDataURL(file);
     }
+    setPredictedData()
   };
 
-  const handleImageLoad = () => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    const image = imageRef.current;
-    canvas.width = image.width;
-    canvas.height = image.height;
-    context.drawImage(image, 0, 0);
-  };
+
 
   const nutrientPredictions = async (foodName) => {
     try {
@@ -64,7 +64,8 @@ const ImageSearch = () => {
       console.log("Error fetching nutritional data:", error);
     }
   };
-
+ console.log("predicted data",predictedData);
+ console.log("imageref",imageRef);
   return (
     <>
       <Navbar/>
@@ -73,7 +74,6 @@ const ImageSearch = () => {
       <div className="upload-section">
         <input
           type="file"
-          accept="image/*"
           onChange={handleFileChange}
           className="file-input"
         />
@@ -85,13 +85,12 @@ const ImageSearch = () => {
             src={imageSrc}
             alt="Uploaded Preview"
             className="preview-image"
-            onLoad={handleImageLoad}
           />
-          <canvas ref={canvasRef} style={{ display: "none" }} />
+      
         </div>
       )}
       <button onClick={handleUpload} className="upload-button">
-        Predict
+        Get Data
       </button>
       {predictedData && (
         <div className="results-section">

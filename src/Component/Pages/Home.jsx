@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { debounce } from "lodash";
+import { debounce, get } from "lodash";
 import Select from "react-select";
 import Modal from "react-modal";
 import "./Home.css";
@@ -11,6 +11,7 @@ import {
   getDoc,
   onSnapshot,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -161,15 +162,7 @@ const Home = () => {
 
       const docRef = doc(db, "users", userId, "dailyLogs", date);
 
-      // const sanpdata =  onSnapshot(docRef, (docRef) => {
-      //   console.log(docRef.data());
-      // });
-      //    const unsub = onSnapshot(docRef, (doc) => {
-      //     console.log("Current data: ", doc.data());
-      // });
-      // console.log("snapdata", sanpdata);
       const docSnap = await getDoc(docRef);
-      // console.log("snapdata", docSnap);
 
       if (docSnap.exists()) {
         const mealData = docSnap.data();
@@ -178,7 +171,6 @@ const Home = () => {
       } else {
         setLogdata({});
       }
-
     } catch (error) {
       console.error("error fetching data", error);
     } finally {
@@ -201,13 +193,6 @@ const Home = () => {
     return () => unsubscribe();
   }, []);
 
-  // useEffect(()=>{
-
-
-  //   handleGetData(user)
-
-  // })
-
   const calculateCalories =
     SelectedFoodData.foods.length > 0
       ? (SelectedFoodData.foods[0].nf_calories /
@@ -216,20 +201,19 @@ const Home = () => {
         quantity
       : "no data";
 
-      const calculateMealCalories = (mealData) => {
-        return mealData?.length > 0
-          ? mealData.reduce((total, item) => total + item.calories, 0)
-          : 0;
-      };
-      
-      
-      const breakfastCalorie = calculateMealCalories(logData?.Breakfast);
-      const lunchCalorie = calculateMealCalories(logData?.Lunch);
-      const snackCalorie = calculateMealCalories(logData?.Snack);
-      const dinnerCalorie = calculateMealCalories(logData?.Dinner);
-      
-      
-      const totalCalories = breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
+  const calculateMealCalories = (mealData) => {
+    return mealData?.length > 0
+      ? mealData.reduce((total, item) => total + item.calories, 0)
+      : 0;
+  };
+
+  const breakfastCalorie = calculateMealCalories(logData?.Breakfast);
+  const lunchCalorie = calculateMealCalories(logData?.Lunch);
+  const snackCalorie = calculateMealCalories(logData?.Snack);
+  const dinnerCalorie = calculateMealCalories(logData?.Dinner);
+
+  const totalCalories =
+    breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
   //pie chart
   const chartData = {
@@ -238,9 +222,8 @@ const Home = () => {
       {
         data: [breakfastCalorie, lunchCalorie, snackCalorie, dinnerCalorie],
         backgroundColor: [
-          'rgb(255, 99, 132)',
-          'rgb(54, 162, 235)',
-          // 'rgb(255, 205, 86)',
+          "rgb(255, 99, 132)",
+          "rgb(54, 162, 235)",
           "#BCD18A",
           "#D1C28A",
         ],
@@ -249,46 +232,43 @@ const Home = () => {
     ],
   };
 
+  const requiredCarlorie = 2000 - totalCalories;
   //doughnut
 
   const doughnutdata = {
-    // labels: [
-    //   'Red',
-    //   'Blue',
-    //   'Yellow'
-    // ],
+    labels: ["Consumed Calorie", "Required Calorie"],
     datasets: [
       {
-        label: "Total Calories",
-        data: [totalCalories],
-        backgroundColor: ["rgb(255, 99, 132)"],
+        label: ["RequiredCalorie"],
+        data: [totalCalories, requiredCarlorie],
+        backgroundColor: ["rgb(54, 162, 235)", "#afc0d9"],
         hoverOffset: 1,
       },
     ],
   };
-  const config = {
-    type: "doughnut",
-    data: doughnutdata,
-  };
 
-  const handleDeleteLog = async (id) => {
+  useEffect(() => {});
+  const handleDeleteLog = async (meal, id) => {
     console.log("inside delete");
     try {
       const user = auth.currentUser;
       const userId = user.uid;
       const date = new Date().toISOString().split("T")[0];
       const docRef = doc(db, "users", userId, "dailyLogs", date);
-      await deleteDoc(docRef, id);
-      console.log(" data deleted");
+      const getData = (await getDoc(docRef)).data();
+      console.log("before update", getData);
+      const mealdata = getData[meal].filter((mealId) => mealId.id != id);
+      console.log(mealdata);
+      await updateDoc(docRef, { [meal]: mealdata });
+
+      console.log("after update", getData);
+
+      console.log("meal deleted");
     } catch (error) {
       console.log(error);
     }
   };
 
-  //  console.log("breakfast",breakfastCalorie);
-  //   console.log("total calories", totalCalories);
-
-  // console.log("logdata", logData);
   return (
     <>
       <Navbar />
@@ -303,71 +283,77 @@ const Home = () => {
           placeholder="Search here ..."
         />
       </div>
-      <Modal
-        className="modal"
-        isOpen={modal}
-        style={{
-          overlay: { backgroundColor: "rgba(0, 0, 0, 0.5)" },
-          content: {
-            background: "#d8e5f7",
-            padding: "20px",
-            width: "400px",
-            marginLeft: "auto",
-            borderRadius: "10px",
-          },
-        }}
-      >
-        <h2>Your Meal</h2>
+      <Modal className="modal" isOpen={modal}>
         <button
           onClick={() => setModal(false)}
           style={{
             position: "absolute",
-            top: "10px",
-            right: "10px",
+            marginTop: "-16px",
             border: "none",
-            backgroundColor: "blue",
+            marginLeft: "17%",
             fontSize: "20px",
             cursor: "pointer",
           }}
         >
           x
         </button>
+        <h2 style={{ color: "white" }}> Select Meal</h2>
 
-        <b>{selectItem.label}</b>
+        <div id="select-quantity">
+          <p style={{ color: "white" }}>Choose Quantity</p>
 
-        <input
-          type="text"
-          placeholder="1"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          step="1"
-        />
+          <input
+            type="text"
+            // placeholder="1"
+            style={{
+              width: "60%",
+              padding: "7px",
+              borderRadius: "3px",
+              marginTop: "5px",
+              fontSize: "1rem",
+            }}
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            step="1"
+          />
+        </div>
 
-        <br />
+        <div id="select-slice">
+          <p style={{ color: "white", marginTop: "5px" }}>Select Slices</p>
+          <select
+            onChange={(e) => {
+              const selectedMeasure = e.target.value;
 
+              setSelectquantity(selectedMeasure);
+            }}
+            style={{
+              width: "60%",
+              padding: "7px",
+              marginTop: "5px",
+              fontSize: "1rem",
+            }}
+          >
+            {SelectedFoodData.foods.map((food, foodIndex) =>
+              food.alt_measures.map((measure, index) => (
+                <option
+                  key={`${foodIndex}-${index}`}
+                  value={measure.serving_weight}
+                >
+                  {` ${measure.measure} `}
+                </option>
+              ))
+            )}
+          </select>
+        </div>
+
+        <p style={{ color: "white", marginTop: "5px" }}>Choose Meal</p>
         <select
-          onChange={(e) => {
-            const selectedMeasure = e.target.value;
-
-            setSelectquantity(selectedMeasure);
+          style={{
+            width: "60%",
+            padding: "7px",
+            marginTop: "5px",
+            fontSize: ".9rem",
           }}
-        >
-          {SelectedFoodData.foods.map((food, foodIndex) =>
-            food.alt_measures.map((measure, index) => (
-              <option
-                key={`${foodIndex}-${index}`}
-                value={measure.serving_weight}
-              >
-                {` ${measure.measure} `}
-              </option>
-            ))
-          )}
-        </select>
-
-        <p>Calorie:{Math.round(calculateCalories)}</p>
-
-        <br />
-        <select
           name="meal-category"
           id="meal-category"
           onChange={(e) => {
@@ -375,125 +361,140 @@ const Home = () => {
             setSelectCategory(selectmealcategory);
           }}
         >
-          {" "}
-          <option value="" selected disabled hidden>
-            Choose here
-          </option>
+          <option value="choose">Choose here</option>
           <option value="Breakfast">Breakfast</option>
           <option value="Lunch">Lunch</option>
           <option value="Snack">Snack</option>
           <option value="Dinner">Dinner</option>
         </select>
-        <button onClick={handleModalData}> Add Meal</button>
+        <p style={{ color: "white", marginTop: "45px" }}>
+          Calorie Served : {Math.round(calculateCalories)}
+        </p>
+        <button
+          style={{ marginTop: "55px", marginLeft: "120px" }}
+          onClick={handleModalData}
+        >
+          {" "}
+          Add Meal
+        </button>
       </Modal>
-     
 
-      <section className="view-data"> 
-      <div className="meal-log">
-  <table className="meal-table">
-    <thead>
-      <tr>
-        <th>Meal</th>
-        <th>Food Name</th>
-        <th>Calories (kcal)</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {/* Breakfast */}
-      {logData?.Breakfast?.length > 0 ? (
-        logData.Breakfast.map((item, index) => (
-          <tr key={`breakfast-${index}`}>
-            <td>Breakfast</td>
-            <td>{item.name}</td>
-            <td>{item.calories}</td>
-            <td>
-              <button onClick={() => handleDeleteLog("Breakfast", item.id)}>
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))
-      ) : (
-        <tr>
-          <td>Breakfast</td>
-          <td colSpan="3">No breakfast items</td>
-        </tr>
-      )}
+      <section className="view-data">
+        <div className="meal-log">
+          <h2>Your Food Diary</h2>
+          <table className="meal-table">
+            <thead>
+              <tr>
+                <th>Meal</th>
+                <th>Food Name</th>
+                <th>Calories (kcal)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {logData?.Breakfast?.length > 0 ? (
+                logData.Breakfast.map((item, index) => (
+                  <tr key={`breakfast-${index}`}>
+                    <td>Breakfast</td>
+                    <td>{item.name}</td>
+                    <td>{item.calories}</td>
+                    <td>
+                      <button
+                        onClick={() => handleDeleteLog("Breakfast", item.id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td>Breakfast</td>
+                  <td colSpan="3">No breakfast items</td>
+                </tr>
+              )}
 
-      {/* Lunch */}
-      {logData?.Lunch?.length > 0 ? (
-        logData.Lunch.map((item, index) => (
-          <tr key={`lunch-${index}`}>
-            <td>Lunch</td>
-            <td>{item.name}</td>
-            <td>{item.calories}</td>
-            <td>
-              <button onClick={() => handleDeleteLog("Lunch", item.id)}>
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))
-      ) : (
-        <tr>
-          <td>Lunch</td>
-          <td colSpan="3">No lunch items</td>
-        </tr>
-      )}
+              {logData?.Lunch?.length > 0 ? (
+                logData.Lunch.map((item, index) => (
+                  <tr key={`lunch-${index}`}>
+                    <td>Lunch</td>
+                    <td>
+                      <button
+                        style={{ backgroundColor: "#0077b6" }}
+                        // onClick={handleMealDetails}
+                      >
+                        {item.name}
+                      </button>
+                    </td>
+                    <td>{item.calories}</td>
+                    <td>
+                      <button onClick={() => handleDeleteLog("Lunch", item.id)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td>Lunch</td>
+                  <td colSpan="3">No lunch items</td>
+                </tr>
+              )}
 
-      {/* Snacks */}
-      {logData?.Snack?.length > 0 ? (
-        logData.Snack.map((item, index) => (
-          <tr key={`snack-${index}`}>
-            <td>Snack</td>
-            <td>{item.name}</td>
-            <td>{item.calories}</td>
-            <td>
-              <button onClick={() => handleDeleteLog("Snack", item.id)}>
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))
-      ) : (
-        <tr>
-          <td>Snack</td>
-          <td colSpan="3">No snack items</td>
-        </tr>
-      )}
+              {logData?.Snack?.length > 0 ? (
+                logData.Snack.map((item, index) => (
+                  <tr key={`snack-${index}`}>
+                    <td>Snack</td>
+                    <td>{item.name}</td>
+                    <td>{item.calories}</td>
+                    <td>
+                      <button onClick={() => handleDeleteLog("Snack", item.id)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td>Snack</td>
+                  <td colSpan="3">No snack items</td>
+                </tr>
+              )}
 
-      {/* Dinner */}
-      {logData?.Dinner?.length > 0 ? (
-        logData.Dinner.map((item, index) => (
-          <tr key={`dinner-${index}`}>
-            <td>Dinner</td>
-            <td>{item.name}</td>
-            <td>{item.calories}</td>
-            <td>
-              <button onClick={() => handleDeleteLog("Dinner", item.id)}>
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))
-      ) : (
-        <tr>
-          <td>Dinner</td>
-          <td colSpan="3">No dinner items</td>
-        </tr>
-      )}
-    </tbody>
-  </table>
-</div>
+              {logData?.Dinner?.length > 0 ? (
+                logData.Dinner.map((item, index) => (
+                  <tr key={`dinner-${index}`}>
+                    <td>Dinner</td>
+                    <td>{item.name}</td>
+                    <td>{item.calories}</td>
+                    <td>
+                      <button
+                        onClick={() => handleDeleteLog("Dinner", item.id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td>Dinner</td>
+                  <td colSpan="3">No dinner items</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-          <h2> Total Calorie Consumption :{totalCalories}</h2>
-         <div className="doughnut-data">
-
-          <Doughnut data={doughnutdata} /> 
-      </div>
-
-
+        <div className="total-calorie">
+          <h2 style={{ marginRight: "1%" }}>
+            {" "}
+            Today Calorie Consumption :{totalCalories} kcal
+          </h2>
+          <div className="doughnut-data">
+            <Doughnut data={doughnutdata} />
+          </div>
+        </div>
       </section>
       <div className="pie-data">
         <h2>Meals Details</h2>
