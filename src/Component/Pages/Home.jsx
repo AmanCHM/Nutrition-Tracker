@@ -16,10 +16,11 @@ import {
 import { auth, db } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
-import { Doughnut, Pie } from "react-chartjs-2";
+import { Doughnut, Pie,Bar } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
+import NutritionModal from "./NutritionModal";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -28,12 +29,14 @@ const Home = () => {
   const [suggestions, setSuggestions] = useState({ common: [], branded: [] });
   const [selectItem, setSelectItem] = useState({});
   const [modal, setModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [selectquantity, setSelectquantity] = useState(1);
   const [SelectedFoodData, setSelectedFoodData] = useState({ foods: [] });
   const [selectCategory, setSelectCategory] = useState("");
   const [logData, setLogdata] = useState();
   const [loading, setloading] = useState(false);
+  const [calorie, setCalorie] = useState(null);
 
   // API Data on serch bar
 
@@ -72,11 +75,42 @@ const Home = () => {
           },
         }
       );
+      console.log("responsedata",response.data)
       setSelectedFoodData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+
+
+  
+//required calorie
+  const fetchCalorieData = async () => {
+    const currentUser = auth.currentUser;
+    const userId = currentUser?.uid;
+
+    if (userId) {
+      const userDocRef = doc(db, "users", userId);
+      try {
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setCalorie(data.calorie);
+        } else {
+          setCalorie(null);
+        }
+      } catch (error) {
+        console.error("Error fetching calorie data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchCalorieData();
+  }, []);
+
 
   const handleInputChange = (newInputValue) => {
     setInputValue(newInputValue);
@@ -119,14 +153,17 @@ const Home = () => {
   const handleModalData = async () => {
     try {
       console.log("inside modal");
-      const user = auth.currentUser;
+      const currentUser = auth.currentUser;
       const data = {
         id: Date.now(),
         name: selectItem.label,
         calories: Math.round(calculateCalories),
+        proteins:Math.round(protein),
+        carbs:Math.round(carbs),
+        fats:Math.round(fats),
       };
       if (user) {
-        const userId = user.uid;
+        const userId = currentUser?.uid;
         const date = new Date().toISOString().split("T")[0];
         const docRef = doc(db, "users", userId, "dailyLogs", date);
         const categorisedData = { [selectCategory]: arrayUnion(data) };
@@ -146,6 +183,9 @@ const Home = () => {
   // Get meal data
 
   // console.log("auth", auth);
+
+
+
 
   const handleGetData = async (user) => {
     try {
@@ -193,6 +233,9 @@ const Home = () => {
     return () => unsubscribe();
   }, []);
 
+
+   // Meal details in nutrientwise
+
   const calculateCalories =
     SelectedFoodData.foods.length > 0
       ? (SelectedFoodData.foods[0].nf_calories /
@@ -200,6 +243,27 @@ const Home = () => {
         selectquantity *
         quantity
       : "no data";
+
+
+ const  protein =  SelectedFoodData.foods.length > 0
+ ?   calculateCalories/ ( (SelectedFoodData.foods[0].nf_calories  /
+     SelectedFoodData.foods[0].nf_protein) )
+  : "no data";
+
+
+  const carbs = 
+  SelectedFoodData.foods.length > 0
+ ?   calculateCalories/ ( (SelectedFoodData.foods[0].nf_calories  /
+     SelectedFoodData.foods[0].nf_total_carbohydrate) )
+  : "no data";
+
+  const fats = SelectedFoodData.foods.length > 0
+  ?   calculateCalories/ ( (SelectedFoodData.foods[0].nf_calories  /
+      SelectedFoodData.foods[0].nf_total_fat) )
+   : "no data";
+
+ 
+   //Meal Details in Calorie
 
   const calculateMealCalories = (mealData) => {
     return mealData?.length > 0
@@ -215,7 +279,10 @@ const Home = () => {
   const totalCalories =
     breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
+
+
   //pie chart
+
   const chartData = {
     labels: ["BreakFast", "Lunch", "Snack", "Dinner"],
     datasets: [
@@ -233,7 +300,8 @@ const Home = () => {
   };
 
   const requiredCarlorie = 2000 - totalCalories;
-  //doughnut
+
+  //doughnut Data
 
   const doughnutdata = {
     labels: ["Consumed Calorie", "Required Calorie"],
@@ -247,7 +315,18 @@ const Home = () => {
     ],
   };
 
+
+  const getPercentage = (value, total) => {
+    return ((value / total) * 100).toFixed(2);
+  };
+
+
+  const total = doughnutdata.datasets[0].data.reduce((sum, value) => sum + value, 0);
+
   useEffect(() => {});
+
+
+  //Delete button to delete food logs.
   const handleDeleteLog = async (meal, id) => {
     console.log("inside delete");
     try {
@@ -260,15 +339,33 @@ const Home = () => {
       const mealdata = getData[meal].filter((mealId) => mealId.id != id);
       console.log(mealdata);
       await updateDoc(docRef, { [meal]: mealdata });
-
+      
+      const updatedDoc =(await getDoc(docRef)).data();
+      setLogdata(updatedDoc)
+        
       console.log("after update", getData);
-
       console.log("meal deleted");
     } catch (error) {
       console.log(error);
     }
   };
 
+
+ //NutrionalModal
+ const handleOpenModal = async (foodName) => {
+  await foodData(foodName);
+  setIsModalOpen(true);
+};
+
+
+const handleCloseModal = () => {
+  setIsModalOpen(false);
+  // setSelectedFoodData(null);
+};
+
+//  console.log("protein",protein)
+//  console.log("carbs",carbs)
+//  console.log("fats",fats)
   return (
     <>
       <Navbar />
@@ -300,11 +397,10 @@ const Home = () => {
         <h2 style={{ color: "white" }}> Select Meal</h2>
 
         <div id="select-quantity">
-          <p style={{ color: "white" }}>Choose Quantity</p>
+          <label style={{ color: "white" }}>Choose Quantity</label>
 
           <input
-            type="text"
-            // placeholder="1"
+            type="number"
             style={{
               width: "60%",
               padding: "7px",
@@ -319,7 +415,7 @@ const Home = () => {
         </div>
 
         <div id="select-slice">
-          <p style={{ color: "white", marginTop: "5px" }}>Select Slices</p>
+          <label style={{ color: "white", marginTop: "5px" }}>Select Slices</label>
           <select
             onChange={(e) => {
               const selectedMeasure = e.target.value;
@@ -380,122 +476,233 @@ const Home = () => {
       </Modal>
 
       <section className="view-data">
-        <div className="meal-log">
-          <h2>Your Food Diary</h2>
-          <table className="meal-table">
-            <thead>
-              <tr>
-                <th>Meal</th>
-                <th>Food Name</th>
-                <th>Calories (kcal)</th>
-                <th>Action</th>
+  <div className="meal-log">
+    <h2>Your Food Diary</h2>
+
+    {/* Breakfast Table */}
+    <div className="meal-section">
+      <h3>Breakfast</h3>
+      <table className="meal-table">
+        <thead>
+          <tr>
+            <th>Food Name</th>
+            <th>Proteins (g)</th>
+            <th>Carbs (g)</th>
+            <th>Fats (g)</th>
+            <th>Calories (kcal)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {logData?.Breakfast?.length > 0 ? (
+            logData.Breakfast.map((item, index) => (
+              <tr key={`breakfast-${index}`}>
+                <td>
+                  <button
+                    style={{ backgroundColor: "#0077b6" }}
+                    onClick={()=>handleOpenModal(item.name)}
+                  >
+                    {item.name}
+                  </button>
+                </td>
+                <td>{item.proteins}</td>
+                <td>{item.carbs}</td>
+                <td>{item.fats}</td>
+                <td>{item.calories}</td>
+                <td>
+                  <button onClick={() => handleDeleteLog("Breakfast", item.id)}>
+                    Delete
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {logData?.Breakfast?.length > 0 ? (
-                logData.Breakfast.map((item, index) => (
-                  <tr key={`breakfast-${index}`}>
-                    <td>Breakfast</td>
-                    <td>{item.name}</td>
-                    <td>{item.calories}</td>
-                    <td>
-                      <button
-                        onClick={() => handleDeleteLog("Breakfast", item.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td>Breakfast</td>
-                  <td colSpan="3">No breakfast items</td>
-                </tr>
-              )}
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6">No breakfast items</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
 
-              {logData?.Lunch?.length > 0 ? (
-                logData.Lunch.map((item, index) => (
-                  <tr key={`lunch-${index}`}>
-                    <td>Lunch</td>
-                    <td>
-                      <button
-                        style={{ backgroundColor: "#0077b6" }}
-                        // onClick={handleMealDetails}
-                      >
-                        {item.name}
-                      </button>
-                    </td>
-                    <td>{item.calories}</td>
-                    <td>
-                      <button onClick={() => handleDeleteLog("Lunch", item.id)}>
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td>Lunch</td>
-                  <td colSpan="3">No lunch items</td>
-                </tr>
-              )}
+    {/* Lunch Table */}
+    <div className="meal-section">
+      <h3>Lunch</h3>
+      <table className="meal-table">
+        <thead>
+          <tr>
+            <th>Food Name</th>
+            <th>Proteins (g)</th>
+            <th>Carbs (g)</th>
+            <th>Fats (g)</th>
+            <th>Calories (kcal)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {logData?.Lunch?.length > 0 ? (
+            logData.Lunch.map((item, index) => (
+              <tr key={`lunch-${index}`}>
+                <td>
+                  <button
+                    style={{ backgroundColor: "#0077b6" }}
+                    onClick={()=>handleOpenModal(item.name)}
+                  >
+                    {item.name}
+                  </button>
+                </td>
+                <td>{item.proteins}</td>
+                <td>{item.carbs}</td>
+                <td>{item.fats}</td>
+                <td>{item.calories}</td>
+                <td>
+                  <button onClick={() => handleDeleteLog("Lunch", item.id)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6">No lunch items</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
 
-              {logData?.Snack?.length > 0 ? (
-                logData.Snack.map((item, index) => (
-                  <tr key={`snack-${index}`}>
-                    <td>Snack</td>
-                    <td>{item.name}</td>
-                    <td>{item.calories}</td>
-                    <td>
-                      <button onClick={() => handleDeleteLog("Snack", item.id)}>
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td>Snack</td>
-                  <td colSpan="3">No snack items</td>
-                </tr>
-              )}
+    {/* Snack Table */}
+    <div className="meal-section">
+      <h3>Snack</h3>
+      <table className="meal-table">
+        <thead>
+          <tr>
+            <th>Food Name</th>
+            <th>Proteins (g)</th>
+            <th>Carbs (g)</th>
+            <th>Fats (g)</th>
+            <th>Calories (kcal)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {logData?.Snack?.length > 0 ? (
+            logData.Snack.map((item, index) => (
+              <tr key={`snack-${index}`}>
+                <td>
+                  <button
+                    style={{ backgroundColor: "#0077b6" }}
+                     onClick={()=>handleOpenModal(item.name)}
+                  >
+                    {item.name}
+                  </button>
+                </td>
+                <td>{item.proteins}</td>
+                <td>{item.carbs}</td>
+                <td>{item.fats}</td>
+                <td>{item.calories}</td>
+                <td>
+                  <button onClick={() => handleDeleteLog("Snack", item.id)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6">No snack items</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
 
-              {logData?.Dinner?.length > 0 ? (
-                logData.Dinner.map((item, index) => (
-                  <tr key={`dinner-${index}`}>
-                    <td>Dinner</td>
-                    <td>{item.name}</td>
-                    <td>{item.calories}</td>
-                    <td>
-                      <button
-                        onClick={() => handleDeleteLog("Dinner", item.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td>Dinner</td>
-                  <td colSpan="3">No dinner items</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+    {/* Dinner Table */}
+    <div className="meal-section">
+      <h3>Dinner</h3>
+      <table className="meal-table">
+        <thead>
+          <tr>
+            <th>Food Name</th>
+            <th>Proteins (g)</th>
+            <th>Carbs (g)</th>
+            <th>Fats (g)</th>
+            <th>Calories (kcal)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {logData?.Dinner?.length > 0 ? (
+            logData.Dinner.map((item, index) => (
+              <tr key={`dinner-${index}`}>
+                 <td>
+                  <button
+                    style={{ backgroundColor: "#0077b6" }}
+                    onClick={()=>handleOpenModal(item.name)}
+                  >
+                    {item.name}
+                  </button>
+                </td>
+                <td>{item.proteins}</td>
+                <td>{item.carbs}</td>
+                <td>{item.fats}</td>
+                <td>{item.calories}</td>
+                <td>
+                  <button onClick={() => handleDeleteLog("Dinner", item.id)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6">No dinner items</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+    
+  {/* <div className="bar-chart-container">
+      <Bar data={chartData}  />
+    </div> */}
 
         <div className="total-calorie">
           <h2 style={{ marginRight: "1%" }}>
             {" "}
             Today Calorie Consumption :{totalCalories} kcal
           </h2>
+
           <div className="doughnut-data">
             <Doughnut data={doughnutdata} />
           </div>
+          <div className="doughnut-text">
+        {doughnutdata.labels.map((label, index) => {
+          const value = doughnutdata.datasets[0].data[index];
+          const percentage = getPercentage(value, total);
+          return (
+            <div key={index} className="doughnut-text-item">
+              <strong>{label}:</strong> {value}g ({percentage}%)
+            </div>
+          );
+        })}
+      </div>
         </div>
+
+
+
       </section>
+
+
+     <Modal isOpen={isModalOpen}>
+      <NutritionModal
+        
+        onClose={handleCloseModal}
+        foodData={SelectedFoodData}
+      />
+      </Modal>
       <div className="pie-data">
         <h2>Meals Details</h2>
         <Pie

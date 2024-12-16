@@ -1,12 +1,10 @@
 import React from "react";
 import {
- BrowserRouter as Router,
+  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-
-
 
 import { useSelector } from "react-redux";
 
@@ -17,38 +15,53 @@ import Dashboard from "./Component/Pages/Dashboard";
 import Signup from "./Component/Pages/SignUp";
 import Login from "./Component/Pages/Login";
 import Reset from "./Component/Pages/Reset";
-import Home from './Component/Pages/Home';
-
-
+import Home from "./Component/Pages/Home";
+import CalorieCalculator from "./Component/Pages/CalorieCalculator";
 
 const App = () => {
-  const islogged = useSelector ((state)=>state.logged)
-  const PrivateRoute = ()=>{
-    return islogged==true?<Home/>:<Navigate to ="/"/>  
-  }
+  const islogged = useSelector((state) => state.logged);
 
+  const PrivateRoute = ({ children }) => {
+    return islogged ? children : <Navigate to="/" />;
+  };
 
-  return(
-    <>
-
-   <Router>
-    <Routes>
-
-    {/* public routes */}
-    <Route  path="/signup" element={<Signup/>}></Route>   
-    <Route path="/" element={<LandingPage/>}></Route> 
-    <Route  path="/login" element={<Login/>}></Route>
-    <Route  path="/reset" element={<Reset/>}></Route>
-
-   {/* private Routes */}
-    <Route  path="/image-search" element={<ImageSearch/>}></Route>
-    <Route path="/aboutus" element={<AboutUs/>}> </Route> 
-    <Route  path="/home" element={<PrivateRoute><Home/></PrivateRoute>}></Route>
-    <Route  path="/dashboard" element={<Dashboard/>}></Route>
-    </Routes>
-   </Router>
-
-    </>
+  return (
+    <Router>
+      <Routes>
+        //public route
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/reset" element={<Reset />} />
+        <Route path="/aboutus" element={<AboutUs />} />
+        <Route path="/calorie-calculator" element={<CalorieCalculator />} />
+        //private route
+        <Route
+          path="/home"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/image-search"
+          element={
+            <PrivateRoute>
+              <ImageSearch />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </Router>
   );
 };
 
