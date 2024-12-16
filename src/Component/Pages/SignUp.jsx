@@ -45,6 +45,7 @@ const Signup = () => {
   });
 
   return (
+    <>
     <div className="signup-container">
       <h2 className="signup-title">Sign-Up Form</h2>
       <form className="signup-form" onSubmit={formik.handleSubmit}>
@@ -114,6 +115,7 @@ const Signup = () => {
       </form>
       <ToastContainer />
     </div>
+    </>
   );
 };
 

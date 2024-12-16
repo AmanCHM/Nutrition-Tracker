@@ -36,7 +36,7 @@ const Home = () => {
   const [selectCategory, setSelectCategory] = useState("");
   const [logData, setLogdata] = useState();
   const [loading, setloading] = useState(false);
-  const [calorie, setCalorie] = useState(null);
+  const [dailycalorie, setDailyCalorie] = useState(null);
 
   // API Data on serch bar
 
@@ -62,6 +62,7 @@ const Home = () => {
 
   const foodData = async (select) => {
     try {
+      setloading(true)
       const response = await axios.post(
         `https://trackapi.nutritionix.com/v2/natural/nutrients`,
         {
@@ -79,38 +80,13 @@ const Home = () => {
       setSelectedFoodData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
+    }finally{
+      setloading(false)
     }
   };
 
 
   
-//required calorie
-  const fetchCalorieData = async () => {
-    const currentUser = auth.currentUser;
-    const userId = currentUser?.uid;
-
-    if (userId) {
-      const userDocRef = doc(db, "users", userId);
-      try {
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          setCalorie(data.calorie);
-        } else {
-          setCalorie(null);
-        }
-      } catch (error) {
-        console.error("Error fetching calorie data:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchCalorieData();
-  }, []);
-
 
   const handleInputChange = (newInputValue) => {
     setInputValue(newInputValue);
@@ -152,8 +128,9 @@ const Home = () => {
 
   const handleModalData = async () => {
     try {
-      console.log("inside modal");
-      const currentUser = auth.currentUser;
+      setloading(true)
+      // console.log("inside modal");
+      const user = auth.currentUser;
       const data = {
         id: Date.now(),
         name: selectItem.label,
@@ -163,7 +140,7 @@ const Home = () => {
         fats:Math.round(fats),
       };
       if (user) {
-        const userId = currentUser?.uid;
+        const userId = user?.uid;
         const date = new Date().toISOString().split("T")[0];
         const docRef = doc(db, "users", userId, "dailyLogs", date);
         const categorisedData = { [selectCategory]: arrayUnion(data) };
@@ -176,8 +153,10 @@ const Home = () => {
       }
     } catch (error) {
       console.error("Error saving data:", error);
-    }
+    }finally{
     setModal(false);
+    setloading(false)
+    }
   };
 
   // Get meal data
@@ -188,12 +167,13 @@ const Home = () => {
 
 
   const handleGetData = async (user) => {
+
     try {
       // console.log("user", user)
-
+      setloading(true);
       if (!user) {
         console.log("User is not authenticated");
-        setloading(false);
+       
         return;
       }
       const userId = user.uid;
@@ -203,10 +183,10 @@ const Home = () => {
       const docRef = doc(db, "users", userId, "dailyLogs", date);
 
       const docSnap = await getDoc(docRef);
-
+     console.log("getdata",docSnap.data());
       if (docSnap.exists()) {
         const mealData = docSnap.data();
-        // console.log("mealdata", mealData);
+        console.log("mealdata", mealData);
         setLogdata(mealData);
       } else {
         setLogdata({});
@@ -219,7 +199,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    console.log("inside useeffect get data");
+    // console.log("inside useeffect get data");
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       handleGetData(user);
       if (user) {
@@ -280,7 +260,40 @@ const Home = () => {
     breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
 
+    //required calorie
+  const dailyRequiredCalorie = async () => {
 
+    setloading(true)
+    const currentUser = auth.currentUser;
+    const userId = currentUser?.uid;
+
+    if (userId) {
+      const userDocRef = doc(db, "users", userId);
+      try {
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setDailyCalorie(data.calorie);
+        } else {
+          setDailyCalorie(null);
+        }
+      } catch (error) {
+        console.error("Error fetching calorie data:", error);
+      } 
+      finally {
+        setloading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+   dailyRequiredCalorie();
+  }, [dailycalorie]);
+
+  console.log("dailyrequiredcalorie",dailycalorie);
+  // const requiredCarlorie =  dailycalorie - totalCalories;
+
+  const requiredCarlorie =  2000 - totalCalories; 
   //pie chart
 
   const chartData = {
@@ -299,7 +312,7 @@ const Home = () => {
     ],
   };
 
-  const requiredCarlorie = 2000 - totalCalories;
+
 
   //doughnut Data
 
@@ -323,12 +336,49 @@ const Home = () => {
 
   const total = doughnutdata.datasets[0].data.reduce((sum, value) => sum + value, 0);
 
-  useEffect(() => {});
-
+  const bardata={
+    labels: ["Meals Details"],
+    datasets:[{
+      label: 'BreakFast',
+      backgroundColor: "blue",
+        data :[breakfastCalorie]
+      },
+      {
+        label: 'Lunch',
+        backgroundColor: "red",
+        data:  [lunchCalorie]   
+      },
+      {
+        label: 'Snack', 
+         backgroundColor: "balck",
+        data:  [snackCalorie]   
+      },
+      {
+        label: 'Dinner',
+        backgroundColor: "red",
+        data:  [dinnerCalorie]   
+      }
+    ],
+   
+    }
+  const options= {
+        indexAxis: 'y',
+        scales: {
+            x: {
+                stacked: true,
+            },
+            y: {
+                stacked: true
+            }
+        },
+        responsive: true
+    }
+  
 
   //Delete button to delete food logs.
   const handleDeleteLog = async (meal, id) => {
     console.log("inside delete");
+    setloading(true)
     try {
       const user = auth.currentUser;
       const userId = user.uid;
@@ -347,6 +397,8 @@ const Home = () => {
       console.log("meal deleted");
     } catch (error) {
       console.log(error);
+    }finally{
+      setloading(false)
     }
   };
 
@@ -398,7 +450,7 @@ const handleCloseModal = () => {
 
         <div id="select-quantity">
           <label style={{ color: "white" }}>Choose Quantity</label>
-
+          <br/>
           <input
             type="number"
             style={{
@@ -416,6 +468,7 @@ const handleCloseModal = () => {
 
         <div id="select-slice">
           <label style={{ color: "white", marginTop: "5px" }}>Select Slices</label>
+          <br />
           <select
             onChange={(e) => {
               const selectedMeasure = e.target.value;
@@ -442,7 +495,8 @@ const handleCloseModal = () => {
           </select>
         </div>
 
-        <p style={{ color: "white", marginTop: "5px" }}>Choose Meal</p>
+        <label style={{ color: "white", marginTop: "5px" }}>Choose Meal</label>
+        <br />
         <select
           style={{
             width: "60%",
@@ -479,9 +533,8 @@ const handleCloseModal = () => {
   <div className="meal-log">
     <h2>Your Food Diary</h2>
 
-    {/* Breakfast Table */}
     <div className="meal-section">
-      <h3>Breakfast</h3>
+      <h3>Breakfast :{breakfastCalorie} kcal</h3>
       <table className="meal-table">
         <thead>
           <tr>
@@ -525,9 +578,9 @@ const handleCloseModal = () => {
       </table>
     </div>
 
-    {/* Lunch Table */}
+    
     <div className="meal-section">
-      <h3>Lunch</h3>
+      <h3>Lunch :{lunchCalorie} kcal</h3>
       <table className="meal-table">
         <thead>
           <tr>
@@ -571,9 +624,9 @@ const handleCloseModal = () => {
       </table>
     </div>
 
-    {/* Snack Table */}
+  
     <div className="meal-section">
-      <h3>Snack</h3>
+      <h3>Snack :{snackCalorie} kcal</h3>
       <table className="meal-table">
         <thead>
           <tr>
@@ -617,9 +670,9 @@ const handleCloseModal = () => {
       </table>
     </div>
 
-    {/* Dinner Table */}
+   
     <div className="meal-section">
-      <h3>Dinner</h3>
+      <h3>Dinner :{dinnerCalorie} kcal</h3>
       <table className="meal-table">
         <thead>
           <tr>
@@ -675,7 +728,7 @@ const handleCloseModal = () => {
             Today Calorie Consumption :{totalCalories} kcal
           </h2>
 
-          <div className="doughnut-data">
+          <div className="doughnut-data" >
             <Doughnut data={doughnutdata} />
           </div>
           <div className="doughnut-text">
@@ -693,12 +746,12 @@ const handleCloseModal = () => {
 
 
 
+ {/* <Bar data={bardata} options={options}/> */}
       </section>
 
 
      <Modal isOpen={isModalOpen}>
       <NutritionModal
-        
         onClose={handleCloseModal}
         foodData={SelectedFoodData}
       />

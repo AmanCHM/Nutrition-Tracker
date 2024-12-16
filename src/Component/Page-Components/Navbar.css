@@ -1,6 +1,6 @@
 
   .navbar {
-    width: 100%; 
+    width: auto; 
     height:14vh;
     position: sticky;
     position: -webkit-sticky;
@@ -10,12 +10,13 @@
     display: flex;
     justify-content:flex-start ; 
     align-items: center;
-    gap: 50px;
+    gap: 30px;
     padding: 0 20px; 
  
     font-family: open-sans;
  
 }
+
 
 .navbar .logo {
     margin-right: auto;
@@ -53,12 +54,16 @@
 a{
   color: rgb(55, 54, 54);
 }
-#nav-button{
+.nav-button{
     background-color: #dad9d9;
     color: rgb(90, 88, 88);
     font-size: 2.1rem;
-    margin-left:auto;
+    /* margin-left:35%; */
     width: 50px;
     height: 7vh;
     border-radius: 5px;
 }
+/* 
+#login-button{
+    
+} */

@@ -1,4 +1,4 @@
-/* General container styling */
+
 .calorie-container {
     max-width: 600px;
     margin: 50px auto;
@@ -9,17 +9,16 @@
     font-family: 'Arial', sans-serif;
     color: #333;
   }
-  
-  /* Title styling */
+
   .calorie-title {
     text-align: center;
     font-size: 1.8rem;
     font-weight: bold;
     margin-bottom: 20px;
-    color: #5a67d8;
+    color: #2980b9;
   }
   
-  /* Input group styling */
+
   .input-group {
     margin-bottom: 15px;
     display: flex;
@@ -45,11 +44,11 @@
   .input-group input:focus,
   .input-group select:focus {
     outline: none;
-    border-color: #5a67d8;
+    border-color: #2980b9;
     box-shadow: 0 0 5px rgba(90, 103, 216, 0.5);
   }
   
-  /* Button styling */
+
   .calculate-button {
     display: block;
     width: 100%;
@@ -57,7 +56,7 @@
     font-size: 1rem;
     font-weight: bold;
     color: #fff;
-    background-color: #5a67d8;
+    background-color: #2980b9;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -65,23 +64,23 @@
   }
   
   .calculate-button:hover {
-    background-color: #434190;
+    background-color: #2980b9;
   }
   
-  /* Message styling */
+ 
   .message {
     margin-top: 20px;
     text-align: center;
     font-size: 1rem;
     font-weight: 600;
-    color: #38a169; /* Success color */
+    color: #2980b9 
   }
   
   .message.error {
-    color: #e53e3e; /* Error color */
+    color: #e53e3e; 
   }
   
-  /* Media Queries */
+
   @media (max-width: 768px) {
     .calorie-container {
       padding: 15px;

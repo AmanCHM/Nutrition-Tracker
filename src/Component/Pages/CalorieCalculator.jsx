@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+
 import { collection, doc, setDoc } from "firebase/firestore";
 
 import "./CalorieCalculator.css";
@@ -12,8 +12,7 @@ const CalorieCalculator = () => {
   const [weight, setWeight] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("male");
-  const [message, setMessage] = useState(null);
-
+  const [calculatedCalorie,setCalculatdCalorie]=useState(null);
   const currentUser = auth.currentUser; 
   const userId = currentUser?.uid || null; 
 
@@ -35,8 +34,8 @@ const CalorieCalculator = () => {
     }
 
     const totalCalories = Math.round(bmr * 1.55);
-  
-
+    console.log("totalcalorie",totalCalories);
+         setCalculatdCalorie(totalCalories);
     const currentUser = auth.currentUser; 
     const userId = currentUser?.uid; 
     if (userId) {
@@ -44,10 +43,10 @@ const CalorieCalculator = () => {
       try {
         const userDocRef = doc(db, "users", userId);
         await setDoc(userDocRef, { calorie: totalCalories }, { merge: true });
-        setMessage("Calorie data saved");
+      
       } catch (error) {
         console.error("Error saving  data", error);
-        setMessage("Failed to save data.");
+      
       }
     } else {
       setMessage("User not authenticated. Please log in.");
@@ -101,9 +100,10 @@ const CalorieCalculator = () => {
         </select>
       </div>
       <button className="calculate-button" onClick={calculateCalories}>
-        Calculate & Save
+        Calculate 
       </button>
-      {message && <p className="message">{message}</p>}
+    {calculatedCalorie && <p style={{marginTop:"15px",marginLeft:"19%"}}>Your have to require: {calculatedCalorie} daily</p> }
+     
     </div>
 
     <Footer/>

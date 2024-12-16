@@ -48,6 +48,7 @@ const Login = () => {
   });
 
   return (
+    <>
     <div className="login-container">
       <h2 className="login-title">Log-in Form</h2>
       <form className="login-form" onSubmit={formik.handleSubmit}>
@@ -98,6 +99,7 @@ const Login = () => {
       </form>
       <ToastContainer />
     </div>
+    </>
   );
 };
 

@@ -5,29 +5,35 @@ import axios from "axios";
 import "./ImageSearch.css";
 import Navbar from './../Page-Components/Navbar';
 import Footer from './../Page-Components/Footer';
+import MyLoader from "../Page-Components/MyLoader";
+
 
 const ImageSearch = () => {
   const [imageSrc, setImageSrc] = useState(null);
   const [predictedData, setPredictedData] = useState(null);
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
+  const [loading,setLoading] =useState(false)
 
   const handleUpload = async () => {
-    // setPredictedData()
+   
+
     try {
+      setLoading(true)
       const isReady = await mobilenet.load();
       const data = await isReady.classify(imageRef.current);
 
       if (data && data[0]?.className) {
 
         console.log("data",data);
-        // console.log("foodname",data[0].className);
         const foodName = data[0].className;
         await nutrientPredictions(foodName);
       }
     } catch (error) {
       console.log("Error during upload:", error);
-    }
+    }finally{
+      setLoading(false);
+      }
   };
 
   const handleFileChange = (e) => {
@@ -48,6 +54,7 @@ const ImageSearch = () => {
 
   const nutrientPredictions = async (foodName) => {
     try {
+      setLoading(true)
       const response = await axios.post(
         `https://trackapi.nutritionix.com/v2/natural/nutrients`,
         { query: foodName },
@@ -62,7 +69,9 @@ const ImageSearch = () => {
       setPredictedData(response.data.foods);
     } catch (error) {
       console.log("Error fetching nutritional data:", error);
-    }
+    }finally{
+      setLoading(false);
+      }
   };
  console.log("predicted data",predictedData);
  console.log("imageref",imageRef);
@@ -92,10 +101,10 @@ const ImageSearch = () => {
       <button onClick={handleUpload} className="upload-button">
         Get Data
       </button>
-      {predictedData && (
+      {loading? ( <div className="loading"> </div>):(predictedData && (
         <div className="results-section">
           <h2 className="results-title">Nutritional Information</h2>
-          <table className="results-table">
+          <table className="results-table" >
             <thead>
               <tr>
                 <th>Food Name</th>
@@ -118,7 +127,7 @@ const ImageSearch = () => {
             </tbody>
           </table>
         </div>
-      )}
+      ))}
     </div>
       <Footer/>
 

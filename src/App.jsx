@@ -34,7 +34,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/reset" element={<Reset />} />
         <Route path="/aboutus" element={<AboutUs />} />
-        <Route path="/calorie-calculator" element={<CalorieCalculator />} />
+
         //private route
         <Route
           path="/home"
@@ -57,6 +57,14 @@ const App = () => {
           element={
             <PrivateRoute>
               <ImageSearch />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/calorie-calculator"
+          element={
+            <PrivateRoute>
+              <CalorieCalculator />
             </PrivateRoute>
           }
         />
