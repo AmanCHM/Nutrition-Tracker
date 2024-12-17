@@ -5,7 +5,7 @@ import axios from "axios";
 import "./ImageSearch.css";
 import Navbar from './../Page-Components/Navbar';
 import Footer from './../Page-Components/Footer';
-import MyLoader from "../Page-Components/MyLoader";
+
 
 
 const ImageSearch = () => {

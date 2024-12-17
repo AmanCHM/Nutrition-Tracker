@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
-import { loggedin, loggedout } from "../../Redux/counterSlice";
+import { loggedin, loggedout } from "../../Redux/logSlice";
 import { MdLogout } from "react-icons/md";
 import { auth } from "../../firebase";
 import { div } from "@tensorflow/tfjs";

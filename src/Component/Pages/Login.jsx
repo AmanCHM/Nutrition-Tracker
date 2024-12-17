@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { loggedin } from "../../Redux/counterSlice";
+import { loggedin } from "../../Redux/logSlice";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import './Login.css'
 
