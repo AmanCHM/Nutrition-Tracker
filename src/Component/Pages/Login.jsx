@@ -32,7 +32,7 @@ const Login = () => {
         .then((userCredential) => {
           const user = userCredential.user;
           toast.success("Successfully logged in!");
-          console.log(user);
+          // console.log(user);
           dispatch(loggedin());
         })
         .then(() => {

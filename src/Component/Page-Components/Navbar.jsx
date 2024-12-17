@@ -4,12 +4,11 @@ import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import { loggedin, loggedout } from "../../Redux/logSlice";
 import { MdLogout } from "react-icons/md";
-import { auth } from "../../firebase";
-import { div } from "@tensorflow/tfjs";
+
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const islogged = useSelector((state) => state.logged);
+  const islogged = useSelector((state) => state.loggedReducer.logged);
 
   const handleLogout = () => {
     dispatch(loggedout());
@@ -20,11 +19,8 @@ const Navbar = () => {
     navigate("/login");
   };
 
+
   // console.log("login details",islogged)
-
-  // const user = auth.currentUser;
-
-  // const userEmail = user?.email;
 
   return (
     <div>
@@ -55,7 +51,7 @@ const Navbar = () => {
 
         {/* <div style={{marginLeft:"9%"}}>   <p style={{color:"black"}}>{userEmail}</p> </div>  */}
         <div className="nav-button">
-          {islogged == true ? (
+          {islogged ? (
             <button type="submit" onClick={handleLogout} >
               <MdLogout />
             </button>

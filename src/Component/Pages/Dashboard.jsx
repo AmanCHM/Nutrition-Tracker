@@ -1,6 +1,6 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
@@ -12,6 +12,7 @@ import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
 ChartJS.register(ArcElement, Tooltip, Legend);
 import "./Dashboard.css";
+import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -22,11 +23,18 @@ const Dashboard = () => {
    null
   );
 
+
+  const loader = useSelector((state)=> state.loaderReducer.loading)
+  console.log("laoder",loader);
+ 
+  
+
   // Fetch User Data from Firestore
   const handleGetData = async (user) => {
+
     try {
       // console.log("user", user)
-
+    dispatch(showLoader())
       if (!user) {
         console.log("User is not authenticated");
         setLoading(false);
@@ -56,7 +64,7 @@ const Dashboard = () => {
     } catch (error) {
       console.error("error fetching data", error);
     } finally {
-      setLoading(false);
+      dispatch(hideLoader())
     }
   };
 

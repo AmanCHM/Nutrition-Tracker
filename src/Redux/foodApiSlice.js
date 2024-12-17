@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const foodApi=  createApi({
+export  const foodApi=  createApi({
     
     name: "foodApi",
     baseQuery : fetchBaseQuery({
@@ -13,17 +13,18 @@ const foodApi=  createApi({
           },
     }),
     endpoints:(builder)=>({
-        fetchSuggestion:builder.query({
+        fetchSuggestions:builder.query({
             query:(query)=>  `search/instant/?query=${query}`,
         }),
         addMeal :builder.mutation({
-            query:(mealData)=>({
-                url : "natural/nutrients",
+            query:(select)=>({
+                url : `natural/nutrients`,
                 method:"POST",
-                body:mealData
+                
+                body: {"query":select },
             }),
         }),
     }),
 })
 
-export const  {useFetchSuggestionsQuery, useAddMealMutation}= foodApi
+export  const {useFetchSuggestionsQuery, useAddMealMutation}= foodApi

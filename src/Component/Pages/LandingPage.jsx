@@ -46,6 +46,7 @@ const LandingPage = () => {
           <div>
             <img
               id="front-image"
+            
               src={
                 "https://raw.githubusercontent.com/harshu878/nutrimeter/b24e158e4f21902c1fe890e3fcec626ae022ebaf/client/public/Images/mobile.svg"
               }

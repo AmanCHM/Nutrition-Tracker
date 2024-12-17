@@ -11,15 +11,14 @@ import Home from '../Component/Pages/Home';
 import ImageSearch from '../Component/Pages/ImageSearch';
 import Dashboard from '../Component/Pages/Dashboard';
 
-
-
-
 const PrivateRoute = ({ children }) => {
-  const islogged = useSelector((state) => state.logged);
+  const islogged = useSelector((state) => state.loggedReducer.logged);
   return islogged ? children : <Navigate to="/login" />;
 };
 
+
 const RoutesConfig = () => {
+
   const routes = useRoutes([
     {
       path: "/",

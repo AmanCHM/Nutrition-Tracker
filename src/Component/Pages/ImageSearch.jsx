@@ -1,79 +1,66 @@
 import React, { useRef, useState } from "react";
 import * as mobilenet from "@tensorflow-models/mobilenet";
-import * as tf from "@tensorflow/tfjs";
-import axios from "axios";
 import "./ImageSearch.css";
 import Navbar from './../Page-Components/Navbar';
 import Footer from './../Page-Components/Footer';
-
-
+import Loader from './../Page-Components/Loader';
+import { useAddMealMutation } from "../../Redux/foodApiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { hideLoader, showLoader } from "../../Redux/loaderSlice";
+import '@tensorflow/tfjs-backend-webgl';
 
 const ImageSearch = () => {
   const [imageSrc, setImageSrc] = useState(null);
-  const [predictedData, setPredictedData] = useState(null);
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const [loading,setLoading] =useState(false)
 
-  const handleUpload = async () => {
-   
 
-    try {
-      setLoading(true)
-      const isReady = await mobilenet.load();
-      const data = await isReady.classify(imageRef.current);
+ const loader = useSelector((state)=> state.loaderReducer.loading)
+ console.log("laoder",loader);
 
-      if (data && data[0]?.className) {
+ const dispatch = useDispatch()
 
-        console.log("data",data);
-        const foodName = data[0].className;
-        await nutrientPredictions(foodName);
-      }
-    } catch (error) {
-      console.log("Error during upload:", error);
-    }finally{
-      setLoading(false);
-      }
-  };
+ const handleUpload = async () => {
+  try {
+    dispatch(showLoader())
+    const isReady = await mobilenet.load();
+    const data = await isReady.classify(imageRef.current);
+
+    if (data && data[0]?.className) {
+
+      console.log("data",data);
+      const foodName = data[0].className;
+    await  nutrientPredictions(foodName);
+    }
+  } catch (error) {
+    console.log("Error during upload:", error);
+  }finally{
+    dispatch(hideLoader())
+    }
+};
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    // console.log(file);
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        //  console.log(event.target.result);
+      
         setImageSrc(event.target.result);
       };
       reader.readAsDataURL(file);
     }
-    setPredictedData()
   };
 
+  const [addMeal, { data:predict }] = useAddMealMutation();
+ console.log("predictedData",predict);
 
+  const nutrientPredictions = async (foodName)=>{
+    if (foodName) {
+     await  addMeal(foodName);
+    }
+  }
 
-  const nutrientPredictions = async (foodName) => {
-    try {
-      setLoading(true)
-      const response = await axios.post(
-        `https://trackapi.nutritionix.com/v2/natural/nutrients`,
-        { query: foodName },
-        {
-          headers: {
-            "x-app-id": import.meta.env.VITE_NUTRITIONIX_APP_ID,
-            "x-app-key": import.meta.env.VITE_NUTRITIONIX_APP_KEY,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setPredictedData(response.data.foods);
-    } catch (error) {
-      console.log("Error fetching nutritional data:", error);
-    }finally{
-      setLoading(false);
-      }
-  };
- console.log("predicted data",predictedData);
  console.log("imageref",imageRef);
   return (
     <>
@@ -101,7 +88,7 @@ const ImageSearch = () => {
       <button onClick={handleUpload} className="upload-button">
         Get Data
       </button>
-      {loading? ( <div className="loading"> </div>):(predictedData && (
+      {loader? <Loader/>:(predict?.foods && (
         <div className="results-section">
           <h2 className="results-title">Nutritional Information</h2>
           <table className="results-table" >
@@ -115,7 +102,7 @@ const ImageSearch = () => {
               </tr>
             </thead>
             <tbody>
-              {predictedData.map((food, index) => (
+              {predict?.foods.map((food, index) => (
                 <tr key={index}>
                   <td>{food.food_name}</td>
                   <td>{food.nf_calories}</td>

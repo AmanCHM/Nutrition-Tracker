@@ -22,7 +22,7 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  margin-top: -3%;
+  margin-top: -5%;
 }
 
 .hero .content b {
@@ -39,6 +39,7 @@ body {
   background-size: cover;
   background-position: center;
   height: 60vh;
+  margin-top: -5%;
   color: rgb(74, 73, 73);
   display: flex;
   justify-content: flex-start;
@@ -84,14 +85,3 @@ footer {
 h4 {
   line-height: 2;
 }
-
-/* .feature{
- 
-  /* text-align: center; */
-
-
-/* 
-.feature{
-  display: flex;
-  align-items: flex-start;
-} */
