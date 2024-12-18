@@ -28,6 +28,7 @@ import {
 } from "../../Redux/foodApiSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
+import MealModal from "../Modals/MealModal";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -58,25 +59,6 @@ const Home = () => {
     isError,
   } = useFetchSuggestionsQuery(inputValue);
 
-  //add food 
-  const [addMeal, { data: selectedFoodData }] = useAddMealMutation();
-
-  const handleSearch = (query) => {
-    setInputValue(query);
-  };
-
-  const handleSelect = (selectedOption) => {
-    setSelectItem(selectedOption)
-    if (selectedOption) {
-      addMeal(selectedOption?.label);
-    }
-    setModal(true);
-  };
-
-
-
-  // console.log("selectitem", selectItem?.label);
-
   const groupedOptions = [
     {
       label: "Common Foods",
@@ -95,6 +77,24 @@ const Home = () => {
       })),
     },
   ];
+
+
+    //add food 
+    const [addMeal, { data: selectedFoodData }] = useAddMealMutation();
+
+    const handleSearch = (query) => {
+      setInputValue(query);
+    };
+
+
+  const handleSelect = (selectedOption) => {
+    setSelectItem(selectedOption)
+    if (selectedOption) {
+      addMeal(selectedOption?.label);
+    }
+    setModal(true);
+  };
+
 
   // Add Meal data
 
@@ -131,7 +131,7 @@ const Home = () => {
     }
   };
 
-
+//get user mealdata
   const handleGetData = async (user) => {
     try {
       // console.log("user", user)
@@ -178,6 +178,90 @@ const Home = () => {
     return () => unsubscribe();
   }, []);
 
+
+   // delete food logs.
+   const handleDeleteLog = async (meal, id) => {
+    console.log("inside delete");
+    dispatch(showLoader())
+    try {
+      const user = auth.currentUser;
+      const userId = user.uid;
+      const date = new Date().toISOString().split("T")[0];
+      const docRef = doc(db, "users", userId, "dailyLogs", date);
+      const getData = (await getDoc(docRef)).data();
+      console.log("before update", getData);
+      const mealdata = getData[meal].filter((mealId) => mealId.id != id);
+      console.log(mealdata);
+      await updateDoc(docRef, { [meal]: mealdata });
+
+      const updatedDoc = (await getDoc(docRef)).data();
+      setLogdata(updatedDoc);
+
+      console.log("after update", getData);
+      console.log("meal deleted");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      dispatch(hideLoader())
+    }
+  };
+
+
+  const handleEditData= async (meal,id)=>{
+   
+    dispatch(showLoader())
+    try {
+      const user = auth.currentUser;
+      const userId = user.uid;
+      const date = new Date().toISOString().split("T")[0];
+      const docRef = doc(db, "users", userId, "dailyLogs", date);
+      const getData = (await getDoc(docRef)).data();
+      console.log("before update", getData);
+      const mealdata = 
+      console.log(mealdata);
+      await updateDoc(docRef, { [meal]: mealdata });
+
+      const updatedDoc = (await getDoc(docRef)).data();
+      setLogdata(updatedDoc);
+
+      console.log("after update", getData);
+      console.log("meal deleted");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      dispatch(hideLoader())
+    }
+  }
+
+    // required calorie
+    const dailyRequiredCalorie = async () => {
+      dispatch(showLoader())
+      const currentUser = auth.currentUser;
+      const userId = currentUser?.uid;
+  
+      if (userId) {
+        const userDocRef = doc(db, "users", userId);
+        try {
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            setDailyCalorie(data.calorie);
+          } else {
+            setDailyCalorie(null);
+          }
+        } catch (error) {
+          console.error("Error fetching calorie data:", error);
+        } finally {
+          dispatch(hideLoader())
+        }
+      }
+    };
+  
+    useEffect(() => {
+      dailyRequiredCalorie();
+    }, [dailycalorie]);
+  
+    console.log("dailyrequiredcalorie", dailycalorie);
   // Meal details in nutrientwise
 
   const calculateCalories =
@@ -225,35 +309,7 @@ const Home = () => {
   const totalCalories =
     breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
-  //required calorie
-  const dailyRequiredCalorie = async () => {
-    dispatch(showLoader())
-    const currentUser = auth.currentUser;
-    const userId = currentUser?.uid;
 
-    if (userId) {
-      const userDocRef = doc(db, "users", userId);
-      try {
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          setDailyCalorie(data.calorie);
-        } else {
-          setDailyCalorie(null);
-        }
-      } catch (error) {
-        console.error("Error fetching calorie data:", error);
-      } finally {
-        dispatch(hideLoader())
-      }
-    }
-  };
-
-  useEffect(() => {
-    dailyRequiredCalorie();
-  }, [dailycalorie]);
-
-  console.log("dailyrequiredcalorie", dailycalorie);
   // const requiredCarlorie =  dailycalorie - totalCalories;
 
   const requiredCarlorie = 2000 - totalCalories;
@@ -336,32 +392,7 @@ const Home = () => {
     responsive: true,
   };
 
-  //Delete button to delete food logs.
-  const handleDeleteLog = async (meal, id) => {
-    console.log("inside delete");
-    dispatch(showLoader())
-    try {
-      const user = auth.currentUser;
-      const userId = user.uid;
-      const date = new Date().toISOString().split("T")[0];
-      const docRef = doc(db, "users", userId, "dailyLogs", date);
-      const getData = (await getDoc(docRef)).data();
-      console.log("before update", getData);
-      const mealdata = getData[meal].filter((mealId) => mealId.id != id);
-      console.log(mealdata);
-      await updateDoc(docRef, { [meal]: mealdata });
-
-      const updatedDoc = (await getDoc(docRef)).data();
-      setLogdata(updatedDoc);
-
-      console.log("after update", getData);
-      console.log("meal deleted");
-    } catch (error) {
-      console.log(error);
-    } finally {
-      dispatch(hideLoader())
-    }
-  };
+ 
 
   //NutrionalModal
   const handleOpenModal = async (foodName) => {
@@ -391,105 +422,21 @@ const Home = () => {
           placeholder="Search here ..."
         />
       </div>
-      <Modal className="modal" isOpen={modal}  >
-        <button
-          onClick={() => setModal(false)}
-          style={{
-            position: "absolute",
-            marginTop: "-16px",
-            border: "none",
-            marginLeft: "17%",
-            fontSize: "20px",
-            cursor: "pointer",
-          }}
-        >
-          x
-        </button>
-        <h2 style={{ color: "white" }}> Select Meal</h2>
-
-        <div id="select-quantity">
-          <label style={{ color: "white" }}>Choose Quantity</label>
-          <br />
-          <input
-            type="number"
-            style={{
-              width: "60%",
-              padding: "7px",
-              borderRadius: "3px",
-              marginTop: "5px",
-              fontSize: "1rem",
-            }}
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            step="1"
-          />
-        </div>
-
-        <div id="select-slice">
-          <label style={{ color: "white", marginTop: "5px" }}>
-            Select Slices
-          </label>
-          <br />
-          <select
-            onChange={(e) => {
-              const selectedMeasure = e.target.value;
-
-              setSelectquantity(selectedMeasure);
-            }}
-            style={{
-              width: "60%",
-              padding: "7px",
-              marginTop: "5px",
-              fontSize: "1rem",
-            }}
-          >
-            {selectedFoodData?.foods.map((food, foodIndex) =>
-              food.alt_measures.map((measure, index) => (
-                <option
-                  key={`${foodIndex}-${index}`}
-                  value={measure.serving_weight}
-                >
-                  {` ${measure.measure} `}
-                </option>
-              ))
-            )}
-          </select>
-        </div>
-
-        <label style={{ color: "white", marginTop: "5px" }}>Choose Meal</label>
-        <br />
-        <select
-          style={{
-            width: "60%",
-            padding: "7px",
-            marginTop: "5px",
-            fontSize: ".9rem",
-          }}
-          name="meal-category"
-          id="meal-category"
-          onChange={(e) => {
-            const selectmealcategory = e.target.value;
-            setSelectCategory(selectmealcategory);
-          }}
-        >
-          <option value="choose">Choose here</option>
-          <option value="Breakfast">Breakfast</option>
-          <option value="Lunch">Lunch</option>
-          <option value="Snack">Snack</option>
-          <option value="Dinner">Dinner</option>
-        </select>
-        <p style={{ color: "white", marginTop: "45px" }}>
-          Calorie Served : {Math.round(calculateCalories)}
-        </p>
-        <button
-          style={{ marginTop: "55px", marginLeft: "120px" }}
-          onClick={handleModalData}
-        >
-          {" "}
-          Add Meal
-        </button>
-      </Modal>
-
+    
+     < Modal  isOpen={modal}>
+       <MealModal
+        modal={modal}
+        setModal={setModal}
+        quantity={quantity}
+        setQuantity={setQuantity}
+        selectquantity={selectquantity}
+        setSelectquantity={setSelectquantity}
+        selectedFoodData={selectedFoodData}
+        setSelectCategory={setSelectCategory}
+        calculateCalories={calculateCalories}
+        handleModalData={handleModalData}
+      />
+    </Modal>
       <section className="view-data">
         <div className="meal-log">
           <h2>Your Food Diary</h2>

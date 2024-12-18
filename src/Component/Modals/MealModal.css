@@ -1,0 +1,96 @@
+.modal {
+    background: linear-gradient(145deg, #1e293b, #374151);
+    padding: 20px 30px;
+    border-radius: 12px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    z-index: 1000;
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+    background: none;
+    color: #f87171;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  
+  .close-button:hover {
+    color: #ef4444;
+    transform: scale(1.1);
+  }
+  
+  .modal-title {
+    color: #f3f4f6;
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+  
+  
+  
+  .input-container input,
+  .select-container select,
+  .meal-select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #4b5563;
+    background-color: #1f2937;
+    color: #e5e7eb;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+  }
+  
+  .input-container input:focus,
+  .select-container select:focus,
+  .meal-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background-color: #111827;
+  }
+  
+  .calorie-info {
+    color: #93c5fd;
+    font-size: 1rem;
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+  }
+  
+  .add-meal-button {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    background: linear-gradient(145deg, #2563eb, #1d4ed8);
+    color: #f3f4f6;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 30px;
+  }
+  
+  .add-meal-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.5);
+  }
+  
+  .add-meal-button:active {
+    transform: translateY(1px);
+    box-shadow: none;
+  }
+  
