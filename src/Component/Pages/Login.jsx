@@ -10,12 +10,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { loggedin } from "../../Redux/logSlice";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import './Login.css'
+import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const log = useSelector((state) => state.logged);
   const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const loader = useSelector((state)=> state.loaderReducer.loading)
+  console.log("laoder",loader);
+ 
 
   const formik = useFormik({
     initialValues: {
@@ -27,7 +31,9 @@ const Login = () => {
       password: Yup.string().min(8, "Must be 8 characters").required("Required"),
     }),
     onSubmit: (values) => {
+      dispatch(showLoader())
       const { email, password } = values;
+     
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
@@ -43,7 +49,8 @@ const Login = () => {
           const errorMessage = error.message;
           toast.error(errorMessage);
           console.log(errorCode, errorMessage);
-        });
+        })
+        dispatch(hideLoader())
     },
   });
 

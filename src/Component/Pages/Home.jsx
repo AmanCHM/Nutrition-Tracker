@@ -21,7 +21,7 @@ import { Doughnut, Pie, Bar } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
-import NutritionModal from "./NutritionModal";
+
 import {
   useAddMealMutation,
   useFetchSuggestionsQuery,
@@ -29,6 +29,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import MealModal from "../Modals/MealModal";
+import NutritionModal from "../Modals/NutritionModal";
+import EditDataModal from "../Modals/EditDataModal";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -43,14 +45,16 @@ const Home = () => {
   const [logData, setLogdata] = useState();
   const [isloading, setloading] = useState(false);
   const [dailycalorie, setDailyCalorie] = useState(null);
+  const [editModal, setEditModal] = useState(false);
+  const [selectedId, setSelectedId] = useState();
+  const [editMealName, setEditMealName] = useState();
+  const [foodMeasure, setFoodMeasure] = useState();
 
+  const loader = useSelector((state) => state.loaderReducer.loading);
+  // console.log("laoder",loader);
 
-
-  const loader = useSelector((state)=> state.loaderReducer.loading)
-  console.log("laoder",loader);
- 
-  const dispatch = useDispatch()
- 
+  const dispatch = useDispatch();
+  console.log("select quantity", selectquantity);
 
   //food suggestion search bar
   const {
@@ -59,48 +63,46 @@ const Home = () => {
     isError,
   } = useFetchSuggestionsQuery(inputValue);
 
+  const handleSearch = (query) => {
+    setInputValue(query);
+  };
+
   const groupedOptions = [
     {
       label: "Common Foods",
-      options: suggestions?.common.map((element) => ({
-        value: element.tag_id,
+      options: suggestions?.common.map((element, index) => ({
+        value: element.tag_id + index,
         label: `${element.food_name}`,
         category: "common",
       })),
     },
     {
       label: "Branded Foods",
-      options: suggestions?.branded.map((element) => ({
-        value: element.nix_item_id,
+      options: suggestions?.branded.map((element, index) => ({
+        value: element.nix_item_id + index,
         label: `${element.brand_name_item_name} - ${element.nf_calories} kcal`,
         category: "Branded",
       })),
     },
   ];
 
-
-    //add food 
-    const [addMeal, { data: selectedFoodData }] = useAddMealMutation();
-
-    const handleSearch = (query) => {
-      setInputValue(query);
-    };
-
+  console.log("grouped Option", groupedOptions);
+  //add food
+  const [addMeal, { data: selectedFoodData }] = useAddMealMutation();
 
   const handleSelect = (selectedOption) => {
-    setSelectItem(selectedOption)
+    setSelectItem(selectedOption);
     if (selectedOption) {
       addMeal(selectedOption?.label);
     }
     setModal(true);
   };
 
-
   // Add Meal data
 
   const handleModalData = async () => {
     try {
-     dispatch(showLoader())
+      dispatch(showLoader());
       // console.log("inside modal");
       const user = auth.currentUser;
       const data = {
@@ -127,15 +129,15 @@ const Home = () => {
       console.error("Error saving data:", error);
     } finally {
       setModal(false);
-      dispatch(hideLoader())
+      dispatch(hideLoader());
     }
   };
 
-//get user mealdata
+  //get user mealdata
   const handleGetData = async (user) => {
     try {
       // console.log("user", user)
-      dispatch(showLoader())
+      dispatch(showLoader());
       if (!user) {
         console.log("User is not authenticated");
 
@@ -159,7 +161,7 @@ const Home = () => {
     } catch (error) {
       console.error("error fetching data", error);
     } finally {
-      dispatch(hideLoader())
+      dispatch(hideLoader());
     }
   };
 
@@ -178,11 +180,10 @@ const Home = () => {
     return () => unsubscribe();
   }, []);
 
-
-   // delete food logs.
-   const handleDeleteLog = async (meal, id) => {
+  // delete food logs.
+  const handleDeleteLog = async (meal, id) => {
     console.log("inside delete");
-    dispatch(showLoader())
+    dispatch(showLoader());
     try {
       const user = auth.currentUser;
       const userId = user.uid;
@@ -202,95 +203,118 @@ const Home = () => {
     } catch (error) {
       console.log(error);
     } finally {
-      dispatch(hideLoader())
+      dispatch(hideLoader());
     }
   };
+  // console.log("selectedFood", selectedFoodData);
 
 
-  const handleEditData= async (meal,id)=>{
-   
-    dispatch(showLoader())
+  console.log("selected quantity",selectquantity);
+  const handleEditLog = async (meal, name, id) => {
+    setSelectedId(id);
+    setEditMealName(meal);
+    dispatch(showLoader());
+    addMeal(name);
+    setEditModal(true);
+    dispatch(hideLoader());
+    console.log("id", id);
+  };
+
+  console.log("selecteditem", selectItem?.label);
+  const handleEditModalData = async () => {
+    console.log("insdie edit");
     try {
       const user = auth.currentUser;
       const userId = user.uid;
+      const data = {
+        id: selectedId,
+        name: selectedFoodData?.foods[0]?.food_name,
+        calories: Math.round(calculateCalories),
+        proteins: Math.round(protein),
+        carbs: Math.round(carbs),
+        fats: Math.round(fats),
+      };
       const date = new Date().toISOString().split("T")[0];
       const docRef = doc(db, "users", userId, "dailyLogs", date);
       const getData = (await getDoc(docRef)).data();
       console.log("before update", getData);
-      const mealdata = 
-      console.log(mealdata);
-      await updateDoc(docRef, { [meal]: mealdata });
+      const mealdata = getData[editMealName].filter(
+        (meal) => meal.id != selectedId
+      );
+      console.log("mealData", mealdata);
+      await updateDoc(docRef, { [editMealName]: mealdata });
 
+      const newData = { [selectCategory]: arrayUnion(data) };
+      await updateDoc(docRef, newData);
       const updatedDoc = (await getDoc(docRef)).data();
       setLogdata(updatedDoc);
-
-      console.log("after update", getData);
-      console.log("meal deleted");
+      console.log("updated doc", updatedDoc);
     } catch (error) {
       console.log(error);
     } finally {
-      dispatch(hideLoader())
+      setEditModal(false);
+      dispatch(hideLoader());
     }
-  }
+  };
 
-    // required calorie
-    const dailyRequiredCalorie = async () => {
-      dispatch(showLoader())
-      const currentUser = auth.currentUser;
-      const userId = currentUser?.uid;
-  
-      if (userId) {
-        const userDocRef = doc(db, "users", userId);
-        try {
-          const userDoc = await getDoc(userDocRef);
-          if (userDoc.exists()) {
-            const data = userDoc.data();
-            setDailyCalorie(data.calorie);
-          } else {
-            setDailyCalorie(null);
-          }
-        } catch (error) {
-          console.error("Error fetching calorie data:", error);
-        } finally {
-          dispatch(hideLoader())
+  // required calorie
+  const dailyRequiredCalorie = async () => {
+    dispatch(showLoader());
+    const currentUser = auth.currentUser;
+    const userId = currentUser?.uid;
+
+    if (userId) {
+      const userDocRef = doc(db, "users", userId);
+      try {
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setDailyCalorie(data.calorie);
+        } else {
+          setDailyCalorie(null);
         }
+      } catch (error) {
+        console.error("Error fetching calorie data:", error);
+      } finally {
+        dispatch(hideLoader());
       }
-    };
-  
-    useEffect(() => {
-      dailyRequiredCalorie();
-    }, [dailycalorie]);
-  
-    console.log("dailyrequiredcalorie", dailycalorie);
+    }
+  };
+
+  useEffect(() => {
+    dailyRequiredCalorie();
+  }, [dailycalorie]);
+
   // Meal details in nutrientwise
 
   const calculateCalories =
     selectedFoodData?.foods?.length > 0
       ? (selectedFoodData?.foods[0].nf_calories /
-      selectedFoodData?.foods[0].serving_weight_grams) *
+          selectedFoodData?.foods[0].serving_weight_grams) *
         selectquantity *
         quantity
       : "no data";
+  console.log("calculated calorie", calculateCalories);
 
   const protein =
-  selectedFoodData?.foods.length > 0
+    selectedFoodData?.foods.length > 0
       ? calculateCalories /
         (selectedFoodData?.foods[0].nf_calories /
-        selectedFoodData?.foods[0].nf_protein)
+          selectedFoodData?.foods[0].nf_protein)
       : "no data";
 
   const carbs =
-  selectedFoodData?.foods.length > 0
+    selectedFoodData?.foods.length > 0
       ? calculateCalories /
         (selectedFoodData?.foods[0].nf_calories /
-        selectedFoodData?.foods[0].nf_total_carbohydrate)
+          selectedFoodData?.foods[0].nf_total_carbohydrate)
       : "no data";
 
   const fats =
-  selectedFoodData?.foods.length > 0
+    selectedFoodData?.foods.length > 0
       ? calculateCalories /
         (selectedFoodData?.foods[0].nf_calories /
-        selectedFoodData?.foods[0].nf_total_fat)
+          selectedFoodData?.foods[0].nf_total_fat)
       : "no data";
 
   //Meal Details in Calorie
@@ -309,10 +333,8 @@ const Home = () => {
   const totalCalories =
     breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
+  const requiredCarlorie = dailycalorie - totalCalories;
 
-  // const requiredCarlorie =  dailycalorie - totalCalories;
-
-  const requiredCarlorie = 2000 - totalCalories;
   //pie chart
 
   const chartData = {
@@ -392,11 +414,9 @@ const Home = () => {
     responsive: true,
   };
 
- 
 
-  //NutrionalModal
-  const handleOpenModal = async (foodName) => {
-    await foodData(foodName);
+  const handleNutritionModal = (foodDetail) => {
+    addMeal(foodDetail);
     setIsModalOpen(true);
   };
 
@@ -405,9 +425,7 @@ const Home = () => {
     // setSelectedFoodData(null);
   };
 
-  //  console.log("protein",protein)
-  //  console.log("carbs",carbs)
-  //  console.log("fats",fats)
+
   return (
     <>
       <Navbar />
@@ -422,21 +440,22 @@ const Home = () => {
           placeholder="Search here ..."
         />
       </div>
-    
-     < Modal  isOpen={modal}>
-       <MealModal
-        modal={modal}
-        setModal={setModal}
-        quantity={quantity}
-        setQuantity={setQuantity}
-        selectquantity={selectquantity}
-        setSelectquantity={setSelectquantity}
-        selectedFoodData={selectedFoodData}
-        setSelectCategory={setSelectCategory}
-        calculateCalories={calculateCalories}
-        handleModalData={handleModalData}
-      />
-    </Modal>
+
+      <Modal isOpen={modal}>
+        <MealModal
+          modal={modal}
+          setModal={setModal}
+          quantity={quantity}
+          setQuantity={setQuantity}
+          selectquantity={selectquantity}
+          setSelectquantity={setSelectquantity}
+          selectedFoodData={selectedFoodData}
+          setSelectCategory={setSelectCategory}
+          calculateCalories={calculateCalories}
+          handleModalData={handleModalData}
+          setFoodMeasure={setFoodMeasure}
+        />
+      </Modal>
       <section className="view-data">
         <div className="meal-log">
           <h2>Your Food Diary</h2>
@@ -461,7 +480,7 @@ const Home = () => {
                       <td>
                         <button
                           style={{ backgroundColor: "#0077b6" }}
-                          onClick={() => handleOpenModal(item.name)}
+                          onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
                         </button>
@@ -475,6 +494,13 @@ const Home = () => {
                           onClick={() => handleDeleteLog("Breakfast", item.id)}
                         >
                           Delete
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleEditLog("Breakfast", item.name, item.id)
+                          }
+                        >
+                          Edit
                         </button>
                       </td>
                     </tr>
@@ -508,7 +534,7 @@ const Home = () => {
                       <td>
                         <button
                           style={{ backgroundColor: "#0077b6" }}
-                          onClick={() => handleOpenModal(item.name)}
+                          onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
                         </button>
@@ -522,6 +548,13 @@ const Home = () => {
                           onClick={() => handleDeleteLog("Lunch", item.id)}
                         >
                           Delete
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleEditLog("Lunch", item.name, item.id)
+                          }
+                        >
+                          Edit
                         </button>
                       </td>
                     </tr>
@@ -555,7 +588,7 @@ const Home = () => {
                       <td>
                         <button
                           style={{ backgroundColor: "#0077b6" }}
-                          onClick={() => handleOpenModal(item.name)}
+                          onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
                         </button>
@@ -570,6 +603,13 @@ const Home = () => {
                         >
                           Delete
                         </button>
+                        <button
+                          onClick={() =>
+                            handleEditLog("Snack", item.name, item.id)
+                          }
+                        >
+                          Edit
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -583,7 +623,7 @@ const Home = () => {
           </div>
 
           <div className="meal-section">
-            <h3>Dinner :{dinnerCalorie} kcal</h3>
+            <h3 >Dinner :{dinnerCalorie} kcal</h3>
             <table className="meal-table">
               <thead>
                 <tr>
@@ -602,7 +642,7 @@ const Home = () => {
                       <td>
                         <button
                           style={{ backgroundColor: "#0077b6" }}
-                          onClick={() => handleOpenModal(item.name)}
+                          onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
                         </button>
@@ -616,6 +656,13 @@ const Home = () => {
                           onClick={() => handleDeleteLog("Dinner", item.id)}
                         >
                           Delete
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleEditLog("Dinner", item.name, item.id)
+                          }
+                        >
+                          Edit
                         </button>
                       </td>
                     </tr>
@@ -649,7 +696,7 @@ const Home = () => {
               const percentage = getPercentage(value, total);
               return (
                 <div key={index} className="doughnut-text-item">
-                  <strong>{label}:</strong> {value}g ({percentage}%)
+                  <strong>{label}:</strong> {value} kcal ({percentage}%)
                 </div>
               );
             })}
@@ -659,18 +706,48 @@ const Home = () => {
         {/* <Bar data={bardata} options={options}/> */}
       </section>
 
+      <Modal isOpen={editModal}>
+        <EditDataModal
+          setModal={setEditModal}
+          quantity={quantity}
+          setQuantity={setQuantity}
+          selectquantity={selectquantity}
+          setSelectquantity={setSelectquantity}
+          selectedFoodData={selectedFoodData}
+          setSelectCategory={setSelectCategory}
+          calculateCalories={calculateCalories}
+          handleEditModalData={handleEditModalData}
+        />
+      </Modal>
+
       <Modal isOpen={isModalOpen}>
         <NutritionModal
           onClose={handleCloseModal}
           foodData={selectedFoodData}
+          calories={Math.round(calculateCalories)}
+          proteins={Math.round(protein)}
+          carbs={Math.round(carbs)}
+          fats={Math.round(fats)}
         />
       </Modal>
+
       <div className="pie-data">
         <h2>Meals Details</h2>
         <Pie
           data={chartData}
           style={{ marginRight: "20px", marginTop: "50px" }}
-        ></Pie>
+        />
+        <div className="doughnut-text">
+            {chartData.labels.map((label, index) => {
+              const value = chartData.datasets[0].data[index];
+             
+              return (
+                <div key={index} className="doughnut-text-item">
+                  <strong>{label}:</strong> {value} kcal
+                </div>
+              );
+            })}
+          </div>
       </div>
       <Footer className="footer" />
     </>

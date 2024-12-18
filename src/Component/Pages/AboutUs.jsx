@@ -1,56 +1,52 @@
-import React from 'react';
-import './AboutUs.css'; // Import CSS for styling
-import Footer from '../Page-Components/Footer';
-import Navbar from '../Page-Components/Navbar';
+import React from "react";
+import "./AboutUs.css"; // Import CSS for styling
+import Footer from "../Page-Components/Footer";
+import Navbar from "../Page-Components/Navbar";
 
 const AboutUs = () => {
   return (
-
-
-    
     <div className="about-us">
-      <Navbar/>
+      <Navbar />
       <header className="about-header">
         <h1>About Us</h1>
       </header>
 
       <section className="about-section">
-        
-
         <div className="about-content">
           <h2>Who We Are</h2>
           <p>
-            Welcome to [Your Company Name], where we strive to provide exceptional 
-            products and services to our customers. Our mission is to [state mission here].
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem ad
+            mollitia magnam quo fugit, debitis dignissimos voluptatem dolore qui
+            quidem optio. Sint iste obcaecati blanditiis. Illum quos similique
+            ducimus ut!
           </p>
 
           <h2>Our Mission</h2>
           <p>
-            Our mission is to [brief mission statement]. We believe in [mention core values or beliefs].
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt
+            cum officia atque architecto? Error, ex obcaecati blanditiis minus
+            et laudantium!
           </p>
 
           <h2>Our Story</h2>
           <p>
-            [Your Company Name] was founded in [Year] with the goal of [goal/vision].
-            Since then, we have grown into a team of dedicated professionals committed to
-            delivering value to our customers every day.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis
+            odio odit vero sunt esse nam obcaecati beatae harum vitae
+            dignissimos magnam laboriosam id delectus iure quos rem perferendis
+            libero minus, veniam ex nulla aliquid hic. Voluptatibus repudiandae
+            architecto impedit ut quaerat, quod qui assumenda amet libero atque?
+            Molestiae, sed dicta?
           </p>
 
           <h2>Our Values</h2>
-          <ul>
-            <li><strong>Customer Focus:</strong> We prioritize customer satisfaction in every aspect of our business.</li>
-            <li><strong>Innovation:</strong> We strive for creative solutions to meet evolving needs.</li>
-            <li><strong>Integrity:</strong> We operate with honesty, transparency, and accountability.</li>
-          </ul>
         </div>
       </section>
 
       <section className="about-team">
         <h2>Meet Our Team</h2>
-      
       </section>
 
-    <Footer/>
+      <Footer />
     </div>
   );
 };

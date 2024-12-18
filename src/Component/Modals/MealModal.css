@@ -1,5 +1,5 @@
 .modal {
-    background: linear-gradient(145deg, #1e293b, #374151);
+    background: linear-gradient(145deg, #727272, #edeef1);
     padding: 20px 30px;
     border-radius: 12px;
     position: fixed;
@@ -16,18 +16,15 @@
     top: 10px;
     right: 10px;
     border: none;
-    background: none;
-    color: #f87171;
+    background: white;
+    color: #332b2b;
     font-size: 24px;
     font-weight: bold;
     cursor: pointer;
-    transition: transform 0.2s ease, color 0.2s ease;
+ 
   }
   
-  .close-button:hover {
-    color: #ef4444;
-    transform: scale(1.1);
-  }
+
   
   .modal-title {
     color: #f3f4f6;
@@ -56,12 +53,12 @@
   .select-container select:focus,
   .meal-select:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: #588bdb;
     background-color: #111827;
   }
   
   .calorie-info {
-    color: #93c5fd;
+    color: #333333;
     font-size: 1rem;
     text-align: center;
     margin-top: 20px;
@@ -72,7 +69,7 @@
     display: block;
     width: 100%;
     padding: 12px 20px;
-    background: linear-gradient(145deg, #2563eb, #1d4ed8);
+    background: linear-gradient(145deg, #5983d7, #192e68);
     color: #f3f4f6;
     border: none;
     border-radius: 8px;

@@ -15,7 +15,7 @@ const Navbar = () => {
     navigate("/");
   };
   const handleLogin = () => {
-    dispatch(loggedin());
+    // dispatch(loggedin());
     navigate("/login");
   };
 

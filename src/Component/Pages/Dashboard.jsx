@@ -20,15 +20,13 @@ const Dashboard = () => {
   const [logData, setlLogdata] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectDate, setSelectDate] = useState(
-   null
+    new Date().toISOString().split("T")[0]
   );
 
 
   const loader = useSelector((state)=> state.loaderReducer.loading)
   console.log("laoder",loader);
  
-  
-
   // Fetch User Data from Firestore
   const handleGetData = async (user) => {
 
@@ -221,6 +219,17 @@ const Dashboard = () => {
             data={chartData}
             style={{ marginRight: "20px", marginTop: "50px" }}
           ></Doughnut>
+                  <div className="doughnut-text">
+            {chartData.labels.map((label, index) => {
+              const value = chartData.datasets[0].data[index];
+             
+              return (
+                <div key={index} className="doughnut-text-item">
+                  <strong>{label}:</strong> {value} kcal
+                </div>
+              );
+            })}
+          </div>
           </div>
         </div>
       </section>

@@ -229,3 +229,7 @@ body {
 .meal-table button:hover {
   background-color: #29272f;
 }
+
+.meal-section h3{
+ margin-top: 0%;
+}

@@ -8,7 +8,7 @@ import { foodApi } from "./foodApiSlice";
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [ 'logged' ]
+  whitelist: [ 'loggedReducer' ]
 };
 
 const reducers = combineReducers({
