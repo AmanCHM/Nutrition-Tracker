@@ -9,7 +9,7 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { loggedin } from "../../Redux/logSlice";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import './Login.css'
+import "./Login.css";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 
 const Login = () => {
@@ -17,9 +17,8 @@ const Login = () => {
   const dispatch = useDispatch();
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  const loader = useSelector((state)=> state.loaderReducer.loading)
-  console.log("laoder",loader);
- 
+  const loader = useSelector((state) => state.loaderReducer.loading);
+  console.log("laoder", loader);
 
   const formik = useFormik({
     initialValues: {
@@ -28,84 +27,100 @@ const Login = () => {
     },
     validationSchema: Yup.object({
       email: Yup.string().email("Invalid email address").required("Required"),
-      password: Yup.string().min(8, "Must be 8 characters").required("Required"),
+      password: Yup.string()
+        .min(8, "Must be 8 characters")
+        .required("Required"),
     }),
-    onSubmit: (values) => {
-      dispatch(showLoader())
+    onSubmit: async (values) => {
+      dispatch(showLoader());
       const { email, password } = values;
+
+    await  signInWithEmailAndPassword(auth, email, password)
+        
      
-      signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
-          toast.success("Successfully logged in!");
-          // console.log(user);
+
           dispatch(loggedin());
         })
         .then(() => {
           navigate("/");
-        })
+        }) 
+
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          toast.error(errorMessage);
+          toast.error("Login not successful");
           console.log(errorCode, errorMessage);
-        })
-        dispatch(hideLoader())
+        });
+      dispatch(hideLoader());
     },
   });
 
   return (
     <>
-    <div className="login-container">
-      <h2 className="login-title">Log-in Form</h2>
-      <form className="login-form" onSubmit={formik.handleSubmit}>
-        <label className="login-label" htmlFor="email">Email Address</label>
-        <input
-          id="email"
-          className="login-input"
-          name="email"
-          type="email"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.email}
-        />
-        {formik.touched.email && formik.errors.email ? (
-          <div className="error-message">{formik.errors.email}</div>
-        ) : null}
-
-        <label className="login-label" htmlFor="password">Password</label>
-        <div className="password-wrapper">
+      <div className="login-container">
+        <h2 className="login-title">Log-in Form</h2>
+        <form className="login-form" onSubmit={formik.handleSubmit}>
+          <label className="login-label" htmlFor="email">
+            Email Address
+          </label>
           <input
-            id="password"
+            id="email"
             className="login-input"
-            type={passwordVisible ? "text" : "password"}
-            name="password"
+            name="email"
+            type="email"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            value={formik.values.password}
+            value={formik.values.email}
           />
-          <span
-            className="password-toggle"
-            onClick={() => setPasswordVisible(!passwordVisible)}
-          >
-            {passwordVisible ? <FaEyeSlash /> : <FaEye />}
-          </span>
-        </div>
-        {formik.touched.password && formik.errors.password ? (
-          <div className="error-message">{formik.errors.password}</div>
-        ) : null}
+          {formik.touched.email && formik.errors.email ? (
+            <div className="error-message">{formik.errors.email}</div>
+          ) : null}
 
-        <button className="login-button" type="submit">Submit</button>
+          <label className="login-label" htmlFor="password">
+            Password
+          </label>
+          <div className="password-wrapper">
+            <input
+              id="password"
+              className="login-input"
+              type={passwordVisible ? "text" : "password"}
+              name="password"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.password}
+            />
+            <span
+              className="password-toggle"
+              onClick={() => setPasswordVisible(!passwordVisible)}
+            >
+              {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
+          {formik.touched.password && formik.errors.password ? (
+            <div className="error-message">{formik.errors.password}</div>
+          ) : null}
 
-        <p className="login-footer">
-          Forgot password? <NavLink className="login-link" to="/reset">Reset-Password</NavLink>
-        </p>
-        <p className="login-footer">
-          Don't have an account? <NavLink className="login-link" to="/signup">Sign Up</NavLink>
-        </p>
-      </form>
-      <ToastContainer />
-    </div>
+          <button className="login-button" type="submit">
+            Submit
+          </button>
+
+          <p className="login-footer">
+            Forgot password?{" "}
+            <NavLink className="login-link" to="/reset">
+              Reset-Password
+            </NavLink>
+          </p>
+          <p className="login-footer">
+            Don't have an account?{" "}
+            <NavLink className="login-link" to="/signup">
+              Sign Up
+            </NavLink>
+          </p>
+        </form>
+        <ToastContainer />
+      </div>
     </>
   );
 };

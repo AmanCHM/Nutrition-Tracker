@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./LandingPage.css";
 import Footer from "../Page-Components/Footer";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import Navbar from "../Page-Components/Navbar";
 import Feature from "../LandingPage-Components/Feature";
 import Overview from "../LandingPage-Components/Overview";
@@ -36,12 +36,12 @@ const LandingPage = () => {
 
             <button id="button">
               {" "}
-              <NavLink
-                to={"/signup"}
+              <Link
+                to={"/userinfo"}
                 style={{ color: "white", fontSize: "17px" }}
               >
-                SignUp
-              </NavLink>{" "}
+                 Let's Start Track Calorie
+              </Link>{" "}
             </button>
           </div>
           <div>

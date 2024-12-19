@@ -456,6 +456,8 @@ const Home = () => {
           setFoodMeasure={setFoodMeasure}
         />
       </Modal>
+
+    
       <section className="view-data">
         <div className="meal-log">
           <h2>Your Food Diary</h2>

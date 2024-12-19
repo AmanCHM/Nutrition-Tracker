@@ -14,14 +14,14 @@ const MealModal = ({
   calculateCalories,
   handleModalData,
 }) => {
-  // console.log("selected food",selectedFoodData);
+
   return (
     <>
-      <div className="modal">
-        <button className="close-button" onClick={() => setModal(false)}>
-          x
+      <div className="modal" style={{width:"auto", height:"30%"}}>
+        <button className="close-button" style={{marginTop:"-9%", backgroundColor:"white"}} onClick={() => setModal(false)}>
+          X
         </button>
-        <h2 className="modal-title">Select Meal</h2>
+        <h2 className="modal-title" style={{ fontSize: "1.8rem", color:"white",  backgroundColor:"#3498db", borderRadius:"5px"}}>Select Meal</h2>
         <h3 style={{ fontSize: "1.3rem" }}>
           {" "}
           <strong>{selectedFoodData?.foods[0]?.food_name}</strong>
@@ -30,6 +30,7 @@ const MealModal = ({
           <label>Choose Quantity</label>
           <input
             type="number"
+            min='0'
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             step="1"

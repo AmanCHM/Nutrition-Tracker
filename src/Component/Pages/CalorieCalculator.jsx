@@ -73,6 +73,7 @@ const CalorieCalculator = () => {
         <input
           id="weight"
           type="number"
+          min='0'
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
           placeholder="Enter weight in kg"
@@ -82,6 +83,7 @@ const CalorieCalculator = () => {
         <label htmlFor="age">Age (years):</label>
         <input
           id="age"
+          min='0'
           type="number"
           value={age}
           onChange={(e) => setAge(e.target.value)}

@@ -5,7 +5,7 @@ const NutritionModal = ({
   onClose,
   foodData,
   calories,
-  protein,
+  proteins,
   carbs,
   fats,
 }) => {
@@ -26,7 +26,7 @@ const NutritionModal = ({
           <strong>Total Carbohydrate:</strong> {carbs} g
         </p>
         <p style={{color:"black"}}>
-          <strong>Protein:</strong> {protein} g
+          <strong>Protein:</strong> {proteins} g
         </p>
         <button onClick={onClose} className="modalClose-button">
           Close

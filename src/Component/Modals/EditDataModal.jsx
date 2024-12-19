@@ -21,8 +21,8 @@ const EditDataModal = ({
   return (
     <>
 
-    <div className="modal">
-      <button className="close-button" onClick={() => setModal(false)}>
+    <div className="modal"  >
+      <button className="close-button" style={{marginTop:"-9%", backgroundColor:"white"}} onClick={() => setModal(false)}>
         x
       </button>
       <h2 className="modal-title">Update Meal</h2>

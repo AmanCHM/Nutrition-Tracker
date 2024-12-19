@@ -27,22 +27,26 @@ const Signup = () => {
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Required"),
     }),
-    onSubmit: (values) => {
+    onSubmit: async  (values) => {
       const { email, password } = values;
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          toast.success("Successfully Signed Up!");
-          console.log(user.email);
+   await createUserWithEmailAndPassword(auth, email, password)
+      
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user.email);
+        toast.success("Successfully Signed Up!");
         })
+       
         .then(() => navigate("/login"))
         .catch((error) => {
-          const errorMessage = error.message;
-          toast.error(errorMessage);
-          console.log(errorMessage);
+          
+          toast.error("SignUp Not Successful");
+          console.log(error.message);
         });
     },
   });
+
+ 
 
   return (
     <>

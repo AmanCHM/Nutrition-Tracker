@@ -10,6 +10,10 @@ import CalorieCalculator from '../Component/Pages/CalorieCalculator';
 import Home from '../Component/Pages/Home';
 import ImageSearch from '../Component/Pages/ImageSearch';
 import Dashboard from '../Component/Pages/Dashboard';
+import WeightTracker from "../Component/Goal_Pages/WeightTracker";
+import Exercise from "../Component/Goal_Pages/Exercise";
+import UserInfo from "../Component/Goal_Pages/UserInfo";
+import ShowCalorie from "../Component/Goal_Pages/ShowCalorie";
 
 const PrivateRoute = ({ children }) => {
   const islogged = useSelector((state) => state.loggedReducer.logged);
@@ -44,6 +48,25 @@ const RoutesConfig = () => {
       path: "/calorie-calculator",
       element: <CalorieCalculator />,
     },
+
+    {
+      path: "/userinfo",
+      element: <UserInfo />,
+    },
+    {
+      path: "/input-weight",
+      element: <WeightTracker/>,
+    },
+    {
+      path: "/input-workout",
+      element: <Exercise />,
+    },
+    {
+      path: "/calorie-need",
+      element: <ShowCalorie/>,
+    },
+
+
     {
       path: "/home",
       element: (

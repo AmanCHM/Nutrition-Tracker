@@ -8,7 +8,7 @@
     width: auto;
     height: auto;
     text-align: left;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
   }
   
   .modalClose-button {
@@ -22,7 +22,7 @@
   }
   
   .close-button:hover {
-    background-color: #0056b3;
+    background-color: #3e77b4;
   }
   
   p{

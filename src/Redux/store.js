@@ -1,10 +1,12 @@
 
-import storage from 'redux-persist/lib/storage'; // Use localStorage
+import storage from 'redux-persist/lib/storage';
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE, persistReducer, persistStore } from 'redux-persist';
 import loggedReducer from './logSlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import loaderReducer from "./loaderSlice";
 import { foodApi } from "./foodApiSlice";
+import calorieGoalReducer from "./calorieGoalSlice";
+
 const persistConfig = {
   key: 'root',
   storage,
@@ -14,6 +16,7 @@ const persistConfig = {
 const reducers = combineReducers({
   loggedReducer,
   loaderReducer,
+  calorieGoalReducer,
   [foodApi.reducerPath]: foodApi.reducer,
 })
 
