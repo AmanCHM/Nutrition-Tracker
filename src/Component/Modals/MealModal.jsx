@@ -17,7 +17,7 @@ const MealModal = ({
 
   return (
     <>
-      <div className="modal" style={{width:"auto", height:"30%"}}>
+      <div className="" style={{width:"auto", height:"30%"}}>
         <button className="close-button" style={{marginTop:"-9%", backgroundColor:"white"}} onClick={() => setModal(false)}>
           X
         </button>

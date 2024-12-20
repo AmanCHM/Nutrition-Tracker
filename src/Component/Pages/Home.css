@@ -32,9 +32,9 @@ body {
 
   }
 
-  .ReactModal__Overlay {
+   .ReactModal__Overlay {
     background-color: rgba(0, 0, 0, 0.5) !important;
-  }
+  } 
   
   .ReactModal__Content {
     background-color: #8e939b;
@@ -44,7 +44,7 @@ body {
     margin: 50px auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 1;
-  }
+  } 
   
   h2 {
     text-align: center;

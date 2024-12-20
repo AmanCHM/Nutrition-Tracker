@@ -83,14 +83,14 @@ const RoutesConfig = () => {
         </PrivateRoute>
       ),
     },
-    {
-      path: "/image-search",
-      element: (
-        <PrivateRoute>
-          <ImageSearch />
-        </PrivateRoute>
-      ),
-    },
+    // {
+    //   path: "/image-search",
+    //   element: (
+    //     <PrivateRoute>
+    //       <ImageSearch />
+    //     </PrivateRoute>
+    //   ),
+    // },
   ]);
 
   return routes;

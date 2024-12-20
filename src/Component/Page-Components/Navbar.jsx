@@ -40,7 +40,7 @@ const Navbar = () => {
         {islogged ? (
           <div className="navbar">
             <NavLink to={"/home"}>Home</NavLink>
-            <NavLink to={"/image-search"}>ImageSearch</NavLink>
+            {/* <NavLink to={"/image-search"}>ImageSearch</NavLink> */}
             <NavLink to={"/dashboard"}>Dashboard</NavLink>
             <NavLink to={"/calorie-calculator"}>Calculator</NavLink>
             <NavLink to={"/aboutus"}>About</NavLink>

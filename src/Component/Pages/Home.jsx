@@ -31,6 +31,7 @@ import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import MealModal from "../Modals/MealModal";
 import NutritionModal from "../Modals/NutritionModal";
 import EditDataModal from "../Modals/EditDataModal";
+import ImageSearch from "./ImageSearch";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -51,7 +52,7 @@ const Home = () => {
   const [foodMeasure, setFoodMeasure] = useState();
 
   const loader = useSelector((state) => state.loaderReducer.loading);
-  // console.log("laoder",loader);
+ 
 
   const dispatch = useDispatch();
   console.log("select quantity", selectquantity);
@@ -425,6 +426,14 @@ const Home = () => {
     // setSelectedFoodData(null);
   };
 
+ const [imageModal,setImageModal] = useState(false)
+
+
+  const handleImageSearch = ()=>{
+         setImageModal(true)
+
+  }
+
 
   return (
     <>
@@ -439,9 +448,18 @@ const Home = () => {
           onInputChange={handleSearch}
           placeholder="Search here ..."
         />
-      </div>
+      </div> 
+    
+<button  onClick={handleImageSearch}>Search Using Image</button>
 
-      <Modal isOpen={modal}>
+   <Modal  isOpen={imageModal} >
+    <ImageSearch
+    setImageModal={setImageModal}
+    >
+    </ImageSearch>
+   </Modal>
+
+      <Modal isOpen={modal} >
         <MealModal
           modal={modal}
           setModal={setModal}

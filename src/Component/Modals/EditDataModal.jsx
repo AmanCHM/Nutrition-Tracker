@@ -21,11 +21,11 @@ const EditDataModal = ({
   return (
     <>
 
-    <div className="modal"  >
+    <div className=""  >
       <button className="close-button" style={{marginTop:"-9%", backgroundColor:"white"}} onClick={() => setModal(false)}>
         x
       </button>
-      <h2 className="modal-title">Update Meal</h2>
+      <h2 className="modal-title" style={{color:"black"}}>Update Meal</h2>
 
       <label style={{fontSize:"1.3rem"}}> <strong>{selectedFoodData?.foods[0]?.food_name}</strong></label>
 

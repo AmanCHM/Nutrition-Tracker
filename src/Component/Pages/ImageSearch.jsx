@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import '@tensorflow/tfjs-backend-webgl';
 
-const ImageSearch = () => {
+const ImageSearch = ({setImageModal}) => {
   const [imageSrc, setImageSrc] = useState(null);
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
@@ -64,7 +64,10 @@ const ImageSearch = () => {
  console.log("imageref",imageRef);
   return (
     <>
-      <Navbar/>
+      {/* <Navbar/> */}
+      <button className="close-button" style={{marginTop:"-9%", backgroundColor:"white"}} onClick={() => setImageModal(false)}>
+          X
+        </button>
     <div className="image-search-container">
       <h1 className="title">Image-Based Food Search</h1>
       <div className="upload-section">
@@ -116,7 +119,7 @@ const ImageSearch = () => {
         </div>
       ))}
     </div>
-      <Footer/>
+      {/* <Footer/> */}
 
     </>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer, toast } from "react-toastify";
@@ -40,8 +40,9 @@ const Login = () => {
      
         .then((userCredential) => {
           const user = userCredential.user;
-
           dispatch(loggedin());
+          toast.success("Login successful!");
+          alert("successfully logged in")
         })
         .then(() => {
           navigate("/");
@@ -108,15 +109,15 @@ const Login = () => {
 
           <p className="login-footer">
             Forgot password?{" "}
-            <NavLink className="login-link" to="/reset">
+            <Link className="login-link" to="/reset">
               Reset-Password
-            </NavLink>
+            </Link>
           </p>
           <p className="login-footer">
             Don't have an account?{" "}
-            <NavLink className="login-link" to="/signup">
+            <Link className="login-link" to="/signup">
               Sign Up
-            </NavLink>
+            </Link>
           </p>
         </form>
         <ToastContainer />

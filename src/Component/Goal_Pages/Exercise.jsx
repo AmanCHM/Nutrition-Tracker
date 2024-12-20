@@ -4,61 +4,80 @@ import {
   setRequiredCalorie,
 } from "../../Redux/calorieGoalSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Exercise = () => {
-  const [activity, setActivity] = useState();
+  const [activity, setActivity] = useState("1.2");
   const dispatch = useDispatch();
-  const [calculatedCalorie,setCalculatdCalorie]=useState(null);
+  const navigate = useNavigate();
 
-  
-  const handleSubmit = () => {
-    calculateCalories()
-    dispatch(setActivityLevel(activity));
-    dispatch(setRequiredCalorie(calculatedCalorie));
-    
-  };
+  const [calories, setCalories] = useState();
 
   const height = useSelector((state) => state.calorieGoalReducer.height);
+  const weight = useSelector((state) => state.calorieGoalReducer.currentWeight);
+  const age = useSelector((state) => state.calorieGoalReducer.age);
+  const gender = useSelector((state) => state.calorieGoalReducer.gender);
+  const goal = useSelector((state) => state.calorieGoalReducer.goal);
 
-  const weight = useSelector((state)=>state.calorieGoalReducer.currentWeight)
-  const age = useSelector((state)=>state.calorieGoalReducer.age)
-  const gender = useSelector((state)=>state.calorieGoalReducer.gender)
- const selectActivity = useSelector ((state)=>state.calorieGoalReducer.activity)
+  // console.log(goal);
+  // console.log(weight);
+  // console.log(height);
+   
 
- console.log("height",height);
- console.log("age",age);
- console.log(weight);
- console.log(gender);
- console.log(selectActivity);
-
-  const calculateCalories = async () => {
-    let bmr = 0;
-    if (gender === "male") {
-      bmr = 10 * weight + 6.25 * height - 5 * age + 5;
-    } else {
-      bmr = 10 * weight + 6.25 * height - 5 * age - 161;
-    }
-
-    const totalCalories = Math.round(bmr * selectActivity);
-
-    console.log("totalcalorie", totalCalories);
-
-    setCalculatdCalorie(totalCalories);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+  
+    dispatch(setActivityLevel(activity));
+  
+    // Directly calculate and dispatch the calories
+    const { recommendedCalories } = calculateCalories();
+    dispatch(setRequiredCalorie(recommendedCalories));
+  
+    navigate("/calorie-need");
   };
+  
+  const calculateCalories = () => {
+    let bmrCurrent = 0;
+  
+    // Calculate BMR based on gender
+    if (gender === "male") {
+      bmrCurrent = 10 * weight + 6.25 * height - 5 * age + 5;
+    } else {
+      bmrCurrent = 10 * weight + 6.25 * height - 5 * age - 161;
+    }
+  
+    
+    const maintenance = Math.round(bmrCurrent * parseFloat(activity));
+  
 
+    let recommendedCalories = maintenance;
+    if (goal === "loose") {
+      recommendedCalories = maintenance - 500; 
+    } else if (goal === "gain") {
+      recommendedCalories = maintenance + 500; 
+    }else{
+      recommendedCalories =maintenance;
+    }
+  
+    return { recommendedCalories }; // Return calculated values
+  };
+  
+    console.log(height)
+    console.log(goal)
+    console.log(activity)
+    console.log(calories)
   return (
     <>
       <div className="calorie-container">
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <label htmlFor="gender">Select Activity</label>
+            <label htmlFor="activity">Select Activity</label>
             <select
-              id="gender"
+              id="activity"
               value={activity}
               onChange={(e) => setActivity(e.target.value)}
             >
-              <option value="1.2">Sedentary (little to no exercise) </option>
+              <option value="1.2">Sedentary (little to no exercise)</option>
               <option value="1.375">
                 Lightly active (light exercise 1–3 days/week)
               </option>
@@ -73,14 +92,10 @@ const Exercise = () => {
               </option>
             </select>
           </div>
-          <button type='submit'>
-              <Link
-                to={"/calorie-need"}
-                style={{ color: "white", fontSize: "17px" }}
-              >
-               Next
-              </Link>{" "}
-            </button>
+
+          <button type="submit" style={{ color: "white", fontSize: "17px" }}>
+            Next
+          </button>
         </form>
       </div>
     </>
