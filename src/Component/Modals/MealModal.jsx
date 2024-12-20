@@ -24,7 +24,7 @@ const MealModal = ({
         <h2 className="modal-title" style={{ fontSize: "1.8rem", color:"white",  backgroundColor:"#3498db", borderRadius:"5px"}}>Select Meal</h2>
         <h3 style={{ fontSize: "1.3rem" }}>
           {" "}
-          <strong>{selectedFoodData?.foods[0]?.food_name}</strong>
+          <strong>{selectedFoodData?.foods[0]?.food_name.charAt(0).toUpperCase()}</strong>
         </h3>
         <div className="input-container">
           <label>Choose Quantity</label>

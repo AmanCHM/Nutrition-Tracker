@@ -27,10 +27,11 @@ function WeightTracker() {
   };
 
   return (
+    <>
     <div className="calorie-container">
-      <h1>User Details</h1>
+      {/* <h1>User Details</h1> */}
       <form onSubmit={handleSubmit}>
-        <div className="input-group">
+        <div className="input-group" >
           <label htmlFor="goal">Select Goal:</label>
           <select
             id="goal"
@@ -44,11 +45,11 @@ function WeightTracker() {
           </select>
         </div>
 
-        <div>
-          <label htmlFor="presentWeight">Present Weight (kg)</label>
+        <div className="input-group">
+          <label htmlFor="CurrentWeight">Current Weight (kg)</label>
           <input
             type="number"
-            id="presentWeight"
+            id="CurrentWeight"
             min="0"
             value={presentWeight}
             onChange={(e) => setPresentWeight(e.target.value)}
@@ -57,7 +58,7 @@ function WeightTracker() {
           />
         </div>
 
-        <div>
+        <div className="input-group">
           <label htmlFor="targetWeight">Target Weight (kg)</label>
           <input
             type="number"
@@ -75,6 +76,7 @@ function WeightTracker() {
         </button>
       </form>
     </div>
+    </>
   );
 }
 

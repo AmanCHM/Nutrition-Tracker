@@ -32,6 +32,7 @@ import MealModal from "../Modals/MealModal";
 import NutritionModal from "../Modals/NutritionModal";
 import EditDataModal from "../Modals/EditDataModal";
 import ImageSearch from "./ImageSearch";
+import WaterIntake from "../HomePage-Components/WaterIntake";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -475,7 +476,7 @@ const Home = () => {
         />
       </Modal>
 
-    
+     
       <section className="view-data">
         <div className="meal-log">
           <h2>Your Food Diary</h2>
@@ -769,9 +770,13 @@ const Home = () => {
             })}
           </div>
       </div>
+
+      <WaterIntake/>
       <Footer className="footer" />
     </>
   );
 };
 
 export default Home;
+
+

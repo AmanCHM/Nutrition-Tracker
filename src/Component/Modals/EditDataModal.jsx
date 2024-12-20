@@ -27,7 +27,7 @@ const EditDataModal = ({
       </button>
       <h2 className="modal-title" style={{color:"black"}}>Update Meal</h2>
 
-      <label style={{fontSize:"1.3rem"}}> <strong>{selectedFoodData?.foods[0]?.food_name}</strong></label>
+      <label style={{fontSize:"1.3rem"}}> <strong>{selectedFoodData?.foods[0]?.food_name.charAt(0).toUpperCase()}</strong></label>
 
       <div className="input-container">
         <label>Choose Quantity</label>

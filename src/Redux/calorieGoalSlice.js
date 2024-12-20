@@ -1,4 +1,3 @@
-
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -7,17 +6,17 @@ const initialState = {
   targetWeight: "",
   height: "",
   gender: "",
-  age:"",
+  age: "",
   activity: "",
   requiredCalorie: "",
-  goal:""
+  goal: "",
+  waterIntake: "",
 };
 
 const calorieGoalSlice = createSlice({
   name: "calorieGoal",
   initialState,
   reducers: {
-    
     setUserInfo: (state, action) => {
       const { userName, height, gender, age } = action.payload;
       state.userName = userName || state.userName;
@@ -27,26 +26,31 @@ const calorieGoalSlice = createSlice({
     },
 
     updateGoal: (state, action) => {
-      const { currentWeight, targetWeight,goal } = action.payload;
+      const { currentWeight, targetWeight, goal } = action.payload;
       state.currentWeight = currentWeight || state.currentWeight;
       state.targetWeight = targetWeight || state.targetWeight;
-      state.goal= goal ||action.payload;
+      state.goal = goal || action.payload;
     },
 
     setActivityLevel: (state, action) => {
       state.activity = action.payload;
     },
-  
+
     setRequiredCalorie: (state, action) => {
       state.requiredCalorie = action.payload;
     },
-  
- 
-    resetGoal: () => initialState
-  }
+
+    resetGoal: () => initialState,
+  },
 });
 
-export const { setUserInfo, updateGoal, setActivityLevel, setRequiredCalorie, resetGoal } = calorieGoalSlice.actions;
+export const {
+  setUserInfo,
+  updateGoal,
+  setActivityLevel,
+  setRequiredCalorie,
+  resetGoal,
+} = calorieGoalSlice.actions;
 export default calorieGoalSlice.reducer;
 
 // setRequiredCalorie: (state, action) => {

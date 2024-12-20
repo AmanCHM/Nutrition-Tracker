@@ -4,12 +4,15 @@ import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import { loggedin, loggedout } from "../../Redux/logSlice";
 import { MdLogout } from "react-icons/md";
+import { auth } from "../../firebase";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const islogged = useSelector((state) => state.loggedReducer.logged);
 
+
+  const [email,setEmail]= useState();
   const handleLogout = () => {
     dispatch(loggedout());
     navigate("/");
@@ -19,7 +22,12 @@ const Navbar = () => {
     navigate("/login");
   };
 
-
+//  const user = auth.currentUser;
+//  if(user){
+//    setEmail(user.email)
+//  }{
+//   setEmail()
+//  } 
   // console.log("login details",islogged)
 
   return (
@@ -40,7 +48,7 @@ const Navbar = () => {
         {islogged ? (
           <div className="navbar">
             <NavLink to={"/home"}>Home</NavLink>
-            {/* <NavLink to={"/image-search"}>ImageSearch</NavLink> */}
+            <NavLink to={"/image-search"}>ImageSearch</NavLink>
             <NavLink to={"/dashboard"}>Dashboard</NavLink>
             <NavLink to={"/calorie-calculator"}>Calculator</NavLink>
             <NavLink to={"/aboutus"}>About</NavLink>

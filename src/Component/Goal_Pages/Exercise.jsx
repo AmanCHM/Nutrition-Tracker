@@ -18,7 +18,9 @@ const Exercise = () => {
   const age = useSelector((state) => state.calorieGoalReducer.age);
   const gender = useSelector((state) => state.calorieGoalReducer.gender);
   const goal = useSelector((state) => state.calorieGoalReducer.goal);
+ 
 
+     
   // console.log(goal);
   // console.log(weight);
   // console.log(height);
@@ -46,17 +48,17 @@ const Exercise = () => {
       bmrCurrent = 10 * weight + 6.25 * height - 5 * age - 161;
     }
   
-    
+   
     const maintenance = Math.round(bmrCurrent * parseFloat(activity));
   
 
     let recommendedCalories = maintenance;
     if (goal === "loose") {
-      recommendedCalories = maintenance - 500; 
+      recommendedCalories = maintenance - 1100; 
     } else if (goal === "gain") {
-      recommendedCalories = maintenance + 500; 
+      recommendedCalories = maintenance + 1100; 
     }else{
-      recommendedCalories =maintenance;
+      recommendedCalories = maintenance;
     }
   
     return { recommendedCalories }; // Return calculated values

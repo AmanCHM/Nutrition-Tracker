@@ -20,7 +20,6 @@ export  const foodApi=  createApi({
             query:(select)=>({
                 url : `natural/nutrients`,
                 method:"POST",
-                
                 body: {"query":select },
             }),
         }),

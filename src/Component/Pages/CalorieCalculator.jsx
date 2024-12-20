@@ -33,7 +33,7 @@ const CalorieCalculator = () => {
       bmr = 10 * w + 6.25 * h - 5 * a - 161;
     }
 
-    const totalCalories = Math.round(bmr * 1.55);
+    const totalCalories = Math.round(bmr * 1);
     console.log("totalcalorie",totalCalories);
          setCalculatdCalorie(totalCalories);
     const currentUser = auth.currentUser; 

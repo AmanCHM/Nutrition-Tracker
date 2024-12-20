@@ -24,8 +24,9 @@ const UserInfo = () => {
 
   return (
     <>
+    <div className="calorie-container">
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className="input-group">
           <label>Enter Your Name</label>
           <input
             type="text"
@@ -36,7 +37,7 @@ const UserInfo = () => {
           />
         </div>
 
-        <div>
+        <div className="input-group"     >
           <label htmlFor="height">Height (cm)</label>
           <input
             type="number"
@@ -82,6 +83,7 @@ const UserInfo = () => {
           Next
         </button>
       </form>
+      </div>
     </>
   );
 };
