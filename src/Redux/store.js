@@ -4,6 +4,7 @@ import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE, persistReducer, pers
 import loggedReducer from './logSlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import loaderReducer from "./loaderSlice";
+import waterReducer from './waterSlice'
 import { foodApi } from "./foodApiSlice";
 import calorieGoalReducer from "./calorieGoalSlice";
 
@@ -17,6 +18,7 @@ const reducers = combineReducers({
   loggedReducer,
   loaderReducer,
   calorieGoalReducer,
+  waterReducer,
   [foodApi.reducerPath]: foodApi.reducer,
 })
 

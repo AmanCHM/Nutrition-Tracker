@@ -21,13 +21,13 @@ const EditDataModal = ({
   return (
     <>
 
-    <div className=""  >
-      <button className="close-button" style={{marginTop:"-9%", backgroundColor:"white"}} onClick={() => setModal(false)}>
+    <div >
+      <button className="close-button"  onClick={() => setModal(false)}>
         x
       </button>
       <h2 className="modal-title" style={{color:"black"}}>Update Meal</h2>
 
-      <label style={{fontSize:"1.3rem"}}> <strong>{selectedFoodData?.foods[0]?.food_name.charAt(0).toUpperCase()}</strong></label>
+      <label > <strong>{selectedFoodData?.foods[0]?.food_name}</strong></label>
 
       <div className="input-container">
         <label>Choose Quantity</label>

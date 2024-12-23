@@ -34,6 +34,7 @@ import EditDataModal from "../Modals/EditDataModal";
 import ImageSearch from "./ImageSearch";
 
 import DrinkModal from "../Modals/DrinkModal";
+import { setWater } from "../../Redux/waterSlice";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -53,6 +54,11 @@ const Home = () => {
   const [editMealName, setEditMealName] = useState();
   const [foodMeasure, setFoodMeasure] = useState();
   const [showDrinkModal, setShowDrinkModal] = useState(false);
+  const [imageData, setImageData] = useState();
+  const [drinkqunatity,setDrinkQuantity] =useState();
+
+  const [drinkDetails,setDrinkDetails] = useState();
+
   const loader = useSelector((state) => state.loaderReducer.loading);
 
   const dispatch = useDispatch();
@@ -88,7 +94,7 @@ const Home = () => {
     },
   ];
 
-  console.log("grouped Option", groupedOptions);
+  // console.log("grouped Option", groupedOptions);
   //add food
   const [addMeal, { data: selectedFoodData }] = useAddMealMutation();
 
@@ -152,10 +158,10 @@ const Home = () => {
       const docRef = doc(db, "users", userId, "dailyLogs", date);
 
       const docSnap = await getDoc(docRef);
-      console.log("getdata", docSnap.data());
+      // console.log("getdata", docSnap.data());
       if (docSnap.exists()) {
         const mealData = docSnap.data();
-        console.log("mealdata", mealData);
+        // console.log("mealdata", mealData);
         setLogdata(mealData);
       } else {
         setLogdata({});
@@ -211,6 +217,7 @@ const Home = () => {
   // console.log("selectedFood", selectedFoodData);
 
   console.log("selected quantity", selectquantity);
+
   const handleEditLog = async (meal, name, id) => {
     setSelectedId(id);
     setEditMealName(meal);
@@ -222,6 +229,7 @@ const Home = () => {
   };
 
   console.log("selecteditem", selectItem?.label);
+
   const handleEditModalData = async () => {
     console.log("insdie edit");
     try {
@@ -388,44 +396,6 @@ const Home = () => {
     0
   );
 
-  const bardata = {
-    labels: ["Meals Details"],
-    datasets: [
-      {
-        label: "BreakFast",
-        backgroundColor: "blue",
-        data: [breakfastCalorie],
-      },
-      {
-        label: "Lunch",
-        backgroundColor: "red",
-        data: [lunchCalorie],
-      },
-      {
-        label: "Snack",
-        backgroundColor: "balck",
-        data: [snackCalorie],
-      },
-      {
-        label: "Dinner",
-        backgroundColor: "red",
-        data: [dinnerCalorie],
-      },
-    ],
-  };
-  const options = {
-    indexAxis: "y",
-    scales: {
-      x: {
-        stacked: true,
-      },
-      y: {
-        stacked: true,
-      },
-    },
-    responsive: true,
-  };
-
   const handleNutritionModal = (foodDetail) => {
     addMeal(foodDetail);
     setIsModalOpen(true);
@@ -442,11 +412,48 @@ const Home = () => {
     setImageModal(true);
   };
 
+  const handelImageSearchModal = async () => {
+
+    console.log("inside handleimage");
+    try {
+      dispatch(showLoader());
+      const user = auth.currentUser;
+      const data = imageData;
+      if (user) {
+        const userId = user?.uid;
+        const date = new Date().toISOString().split("T")[0];
+        const docRef = doc(db, "users", userId, "dailyLogs", date);
+        const categorisedData = { [selectCategory]: arrayUnion(data) };
+
+        await setDoc(docRef, categorisedData, { merge: true });
+        await handleGetData(user);
+        console.log("Data saved successfully!");
+      } else {
+        console.log("User not authenticated.");
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+    } finally {
+      setImageModal(false)
+      dispatch(hideLoader());
+    }
+  };
+
+const handleDrinkModal = ()=>{
+
+  if(drinkDetails[water]){
+    setWater(drinkDetails?.servingSize*quantity)
+  }
+
+}
+  console.log("imageData",imageData);
+
+  console.log("drinkingDetails",drinkDetails);  
   return (
     <>
       <Navbar />
       <div className="search">
-        <h1 id="header-text">Select  food items</h1>
+        <h1 id="header-text">Select food items</h1>
 
         <Select
           id="search-box"
@@ -454,19 +461,27 @@ const Home = () => {
           onChange={handleSelect}
           onInputChange={handleSearch}
           placeholder="Search here ..."
-          
         />
       </div>
 
-      <button className="ai-search-button" onClick={handleImageSearch}>
-      <span className="ai-search-button-icon">
-        <FaSearch size={16} />
-      </span>
-      AI Search
-    </button>
-      <Modal isOpen={imageModal}>
-        <ImageSearch setImageModal={setImageModal}></ImageSearch>
-      </Modal>
+      <div>
+        <button className="ai-search-button" onClick={handleImageSearch}>
+          <span className="ai-search-button-icon">
+            <FaSearch size={16} />
+          </span>
+          AI Search
+        </button>
+        <Modal isOpen={imageModal}>
+          <ImageSearch
+            setImageModal={setImageModal}
+            setImageData={setImageData}
+            setSelectCategory={setSelectCategory}
+            handelImageSearchModal={handelImageSearchModal}
+          ></ImageSearch>
+        </Modal>
+      </div>
+
+
 
       <Modal isOpen={modal}>
         <MealModal
@@ -486,10 +501,10 @@ const Home = () => {
 
       <section className="view-data">
         <div className="meal-log">
-          <h2>Your Food Diary</h2>
+          <h2>Your Food Diary</h2>  
 
           <div className="meal-section">
-            <h3>Breakfast :{breakfastCalorie} kcal</h3>
+            <label className="table-label">Breakfast :{breakfastCalorie} kcal</label>
             <table className="meal-table">
               <thead>
                 <tr>
@@ -507,7 +522,7 @@ const Home = () => {
                     <tr key={`breakfast-${index}`}>
                       <td>
                         <button
-                          // style={{ backgroundColor: "#ff784b" }}
+                          // style={{ backgroundColor: "none" }}
                           onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
@@ -543,9 +558,8 @@ const Home = () => {
               </tbody>
             </table>
           </div>
-
           <div className="meal-section">
-            <h3>Lunch :{lunchCalorie} kcal</h3>
+            <label className="table-label">Lunch :{lunchCalorie} kcal</label>
             <table className="meal-table">
               <thead>
                 <tr>
@@ -574,14 +588,14 @@ const Home = () => {
                       <td>{item.fats}</td>
                       <td>{item.calories}</td>
                       <button
-                        onClick={() => handleDeleteLog("Breakfast", item.id)}
+                        onClick={() => handleDeleteLog("Lunch", item.id)}
                         className="icon-button delete"
                       >
                         <FaTrashAlt />
                       </button>
                       <button
                         onClick={() =>
-                          handleEditLog("Breakfast", item.name, item.id)
+                          handleEditLog("Lunch", item.name, item.id)
                         }
                         className="icon-button edit"
                       >
@@ -599,7 +613,7 @@ const Home = () => {
           </div>
 
           <div className="meal-section">
-            <h3>Snack :{snackCalorie} kcal</h3>
+            <label className="table-label">Snack :{snackCalorie} kcal</label>
             <table className="meal-table">
               <thead>
                 <tr>
@@ -628,14 +642,14 @@ const Home = () => {
                       <td>{item.fats}</td>
                       <td>{item.calories}</td>
                       <button
-                        onClick={() => handleDeleteLog("Breakfast", item.id)}
+                        onClick={() => handleDeleteLog("Snack", item.id)}
                         className="icon-button delete"
                       >
                         <FaTrashAlt />
                       </button>
                       <button
                         onClick={() =>
-                          handleEditLog("Breakfast", item.name, item.id)
+                          handleEditLog("Snack", item.name, item.id)
                         }
                         className="icon-button edit"
                       >
@@ -653,7 +667,7 @@ const Home = () => {
           </div>
 
           <div className="meal-section">
-            <h3>Dinner :{dinnerCalorie} kcal</h3>
+            <label className="table-label">Dinner :{dinnerCalorie} kcal</label>
             <table className="meal-table">
               <thead>
                 <tr>
@@ -682,14 +696,14 @@ const Home = () => {
                       <td>{item.fats}</td>
                       <td>{item.calories}</td>
                       <button
-                        onClick={() => handleDeleteLog("Breakfast", item.id)}
+                        onClick={() => handleDeleteLog("Dinner", item.id)}
                         className="icon-button delete"
                       >
                         <FaTrashAlt />
                       </button>
                       <button
                         onClick={() =>
-                          handleEditLog("Breakfast", item.name, item.id)
+                          handleEditLog("Dinner", item.name, item.id)
                         }
                         className="icon-button edit"
                       >
@@ -761,13 +775,11 @@ const Home = () => {
         className="stacked-progress-bar-container"
         style={{ marginTop: "50px" }}
       >
-        {/* Stacked Progress Bar */}
         <div className="stacked-progress-bar">
-          {/* Render each progress segment */}
           {chartData.labels.map((label, index) => {
-            const value = chartData.datasets[0].data[index]; // Calorie data for each meal
-            const percentage = (value / totalCaloriesFromDataset) * 100; // Percentage of each meal
-            const color = chartData.datasets[0].backgroundColor[index]; // Color for each meal
+            const value = chartData.datasets[0].data[index];
+            const percentage = (value / totalCaloriesFromDataset) * 100;
+            const color = chartData.datasets[0].backgroundColor[index];
 
             return (
               <div
@@ -781,20 +793,19 @@ const Home = () => {
               ></div>
             );
           })}
-          {/* Render the remaining calories as a segment */}
+
           {remainingCalories > 0 && (
             <div
               className="progress-segment"
               style={{
                 width: `${(remainingCalories / requiredCarlorie) * 100}%`,
-                backgroundColor: "#ccc", // Gray color for remaining calories
+                backgroundColor: "#ccc",
               }}
               title={`Remaining Calories: ${remainingCalories} kcal`}
             ></div>
           )}
         </div>
 
-        {/* Labels for the meals */}
         <div className="stacked-progress-labels">
           {chartData.labels.map((label, index) => (
             <div key={index} className="label-item">
@@ -820,17 +831,24 @@ const Home = () => {
       </div>
 
       <div>
-      <button className="ai-search-button" onClick={() => setShowDrinkModal(true)}>Add Drink
-      <span className="ai-search-button-icon">
-        <FaSearch size={16} />
-      </span>
-      
-    </button>
-        {/* <button onClick={() => setShowDrinkModal(true)}>Add Drink</button> */}
+        <button
+          className="ai-search-button"
+          onClick={() => setShowDrinkModal(true)}
+        >
+          Add Drink
+          <span className="ai-search-button-icon">
+            <FaSearch size={16} />
+          </span>
+        </button>
+  
+        <Modal isOpen={showDrinkModal}>
         <DrinkModal
-          showModal={showDrinkModal}
-          setShowModal={setShowDrinkModal}
-        />
+          setDrinkQuantity = {setDrinkQuantity}
+          setShowDrinkModal={setShowDrinkModal}
+          setDrinkDetails={setDrinkDetails}
+          handleDrinkModal={handleDrinkModal} 
+                 />
+        </Modal>
       </div>
       <Footer className="footer" />
     </>

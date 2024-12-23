@@ -17,14 +17,14 @@ const MealModal = ({
 
   return (
     <>
-      <div className="" style={{width:"auto", height:"30%"}}>
-        <button className="close-button" style={{marginTop:"-9%", backgroundColor:"white"}} onClick={() => setModal(false)}>
+      <div className="" >
+        <button className="close-button" onClick={() => setModal(false)}>
           X
         </button>
-        <h2 className="modal-title" style={{ fontSize: "1.8rem", color:"white",  backgroundColor:"#3498db", borderRadius:"5px"}}>Select Meal</h2>
+        <h2  >Select Meal</h2>
         <h3 style={{ fontSize: "1.3rem" }}>
           {" "}
-          <strong>{selectedFoodData?.foods[0]?.food_name.charAt(0).toUpperCase()}</strong>
+          <strong>{selectedFoodData?.foods[0]?.food_name}</strong>
         </h3>
         <div className="input-container">
           <label>Choose Quantity</label>

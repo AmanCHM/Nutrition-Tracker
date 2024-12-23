@@ -60,9 +60,9 @@ const Navbar = () => {
         {/* <div style={{marginLeft:"9%"}}>   <p style={{color:"black"}}>{userEmail}</p> </div>  */}
         <div className="nav-button">
           {islogged ? (
-            <button type="submit" onClick={handleLogout} >
-             <RiAccountCircleFill/>
-            </button>
+            // <button type="submit" onClick={handleLogout} >
+             <RiAccountCircleFill size={40} onClick={handleLogout}/>
+            // </button>
           ) : (
             <button  id="login-button"  onClick={handleLogin} >Login</button>
           )}

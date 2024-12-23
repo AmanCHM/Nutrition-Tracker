@@ -13,7 +13,7 @@ const NutritionModal = ({
 
   return (
     <>
-      <div className="ReactModal__Content" style={{color:"black"}}>
+      <div>
         <h2>Nutritional Facts</h2>
         <h3 style={{color:"#2980b9"}}>{foodData?.foods[0]?.food_name}</h3>
         <p style={{color:"black"}}>
