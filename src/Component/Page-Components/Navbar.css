@@ -1,69 +1,66 @@
-
-  .navbar {
-    width: auto; 
-    height:10vh;
-    position: sticky;
-    position: -webkit-sticky;
-    top: 0;
-    background: #dad9d9;
-    color: #0077b6;
+/* Navbar.css */
+.navbar {
     display: flex;
-    justify-content:flex-start ; 
+    justify-content: space-between;
     align-items: center;
-    gap: 30px;
-    padding: 0 20px; 
- 
-    font-family: open-sans;
- 
-}
-
-
-.navbar .logo {
-    margin-right: auto;
-    font-size: larger;
+    padding: 0 2rem;
+    background-color: rgb(253, 250, 250);
+    height: 4rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  #company-name {
+    color: #3e3d3d;
+    font-size: 1.2rem;
     font-weight: bold;
-}
-
-.navbar .nav-links {
-    list-style: none;
     display: flex;
-    gap: 20px;
-}
-
-.navbar .nav-links li a {
+    align-items: center;
+  }
+  
+  .navbar a {
+    color: #3e3d3d;
     text-decoration: none;
-    color: white;
-    padding: 5px 10px;
-    transition: background-color 0.3s ease;
-}
-
-.navbar .nav-links li a:hover {
-    background-color: #f1f1f1;
-    border-radius: 5px;
-}
-
-#company-name{
-   font-size: 2rem;
-   color: rgb(72, 70, 70);
-   background: #dad9d9;
-   font-family: manrope;
-   margin-left: 25%;
-   
-}
-
-a{
-  color: rgb(55, 54, 54);
-}
-.nav-button{
-    background-color: #dad9d9;
-    color: rgb(90, 88, 88);
-    font-size: 2.1rem;
-    /* margin-left:35%; */
-    width: 50px;
-    height: 7vh;
-    border-radius: 5px;
-}
-/* 
-#login-button{
-    
-} */
+    margin: 0 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  .navbar a:hover {
+    color: #000000;
+  }
+  
+  .nav-button {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .nav-button button {
+    background-color: #e6e6e6;
+    border: none;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .nav-button button:hover {
+    background-color: #cfcfcf;
+  }
+  
+  .nav-button img {
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .navbar .navbar a {
+    display: inline-block;
+    margin: 0 1.5rem;
+  }
+  
+  

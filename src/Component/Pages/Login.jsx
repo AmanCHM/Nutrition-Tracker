@@ -18,7 +18,7 @@ const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const loader = useSelector((state) => state.loaderReducer.loading);
-  console.log("laoder", loader);
+  // console.log("laoder", loader);
 
   const formik = useFormik({
     initialValues: {

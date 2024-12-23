@@ -77,10 +77,11 @@ const ImageSearch = ({ setImageModal }) => {
     }
   };
 
-  console.log("calories",nutritionInfo?.nutritional_info?.calories);
-  console.log("nutrittioninfo",nutritionInfo?.nutritional_info?.totalNutrients);
+  // console.log("calories",nutritionInfo?.nutritional_info?.calories);
+  // console.log("nutrittioninfo",nutritionInfo?.nutritional_info?.totalNutrients);
   console.log("response", response?.imageId);
-  console.log("nutrition info", nutritionInfo);
+  console.log(response)
+  // console.log("nutrition info", nutritionInfo);
   return (
     <>
       <Navbar />

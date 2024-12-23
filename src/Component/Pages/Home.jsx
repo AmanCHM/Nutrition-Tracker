@@ -21,7 +21,7 @@ import { Doughnut, Pie, Bar } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
-
+import { FaTrashAlt, FaEdit, FaSearch } from "react-icons/fa";
 import {
   useAddMealMutation,
   useFetchSuggestionsQuery,
@@ -32,7 +32,8 @@ import MealModal from "../Modals/MealModal";
 import NutritionModal from "../Modals/NutritionModal";
 import EditDataModal from "../Modals/EditDataModal";
 import ImageSearch from "./ImageSearch";
-import WaterIntake from "../HomePage-Components/WaterIntake";
+
+import DrinkModal from "../Modals/DrinkModal";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -51,9 +52,8 @@ const Home = () => {
   const [selectedId, setSelectedId] = useState();
   const [editMealName, setEditMealName] = useState();
   const [foodMeasure, setFoodMeasure] = useState();
-
+  const [showDrinkModal, setShowDrinkModal] = useState(false);
   const loader = useSelector((state) => state.loaderReducer.loading);
- 
 
   const dispatch = useDispatch();
   console.log("select quantity", selectquantity);
@@ -210,8 +210,7 @@ const Home = () => {
   };
   // console.log("selectedFood", selectedFoodData);
 
-
-  console.log("selected quantity",selectquantity);
+  console.log("selected quantity", selectquantity);
   const handleEditLog = async (meal, name, id) => {
     setSelectedId(id);
     setEditMealName(meal);
@@ -340,20 +339,31 @@ const Home = () => {
   //pie chart
 
   const chartData = {
-    labels: ["BreakFast", "Lunch", "Snack", "Dinner"],
+    labels: ["Breakfast", "Lunch", "Snack", "Dinner"],
     datasets: [
       {
         data: [breakfastCalorie, lunchCalorie, snackCalorie, dinnerCalorie],
         backgroundColor: [
-          "rgb(255, 99, 132)",
-          "rgb(54, 162, 235)",
-          "#BCD18A",
-          "#D1C28A",
+          "rgb(255, 99, 132)", // Breakfast
+          "rgb(54, 162, 235)", // Lunch
+          "#BCD18A", // Snack
+          "#D1C28A", // Dinner
         ],
-        borderWidth: 1,
       },
     ],
   };
+
+  const totalConsumedCalories = totalCalories;
+  const remainingCalories = Math.max(
+    requiredCarlorie - totalConsumedCalories,
+    0
+  ); // Remaining calories
+
+  // Calculate the total calories consumed from the dataset
+  const totalCaloriesFromDataset = chartData.datasets[0].data.reduce(
+    (a, b) => a + b,
+    0
+  );
 
   //doughnut Data
 
@@ -416,7 +426,6 @@ const Home = () => {
     responsive: true,
   };
 
-
   const handleNutritionModal = (foodDetail) => {
     addMeal(foodDetail);
     setIsModalOpen(true);
@@ -427,20 +436,17 @@ const Home = () => {
     // setSelectedFoodData(null);
   };
 
- const [imageModal,setImageModal] = useState(false)
+  const [imageModal, setImageModal] = useState(false);
 
-
-  const handleImageSearch = ()=>{
-         setImageModal(true)
-
-  }
-
+  const handleImageSearch = () => {
+    setImageModal(true);
+  };
 
   return (
     <>
       <Navbar />
       <div className="search">
-        <h1 id="header-text">Select a food item</h1>
+        <h1 id="header-text">Select  food items</h1>
 
         <Select
           id="search-box"
@@ -448,19 +454,21 @@ const Home = () => {
           onChange={handleSelect}
           onInputChange={handleSearch}
           placeholder="Search here ..."
+          
         />
-      </div> 
-    
-<button  onClick={handleImageSearch}>Search Using Image</button>
+      </div>
 
-   <Modal  isOpen={imageModal} >
-    <ImageSearch
-    setImageModal={setImageModal}
-    >
-    </ImageSearch>
-   </Modal>
+      <button className="ai-search-button" onClick={handleImageSearch}>
+      <span className="ai-search-button-icon">
+        <FaSearch size={16} />
+      </span>
+      AI Search
+    </button>
+      <Modal isOpen={imageModal}>
+        <ImageSearch setImageModal={setImageModal}></ImageSearch>
+      </Modal>
 
-      <Modal isOpen={modal} >
+      <Modal isOpen={modal}>
         <MealModal
           modal={modal}
           setModal={setModal}
@@ -476,7 +484,6 @@ const Home = () => {
         />
       </Modal>
 
-     
       <section className="view-data">
         <div className="meal-log">
           <h2>Your Food Diary</h2>
@@ -500,7 +507,7 @@ const Home = () => {
                     <tr key={`breakfast-${index}`}>
                       <td>
                         <button
-                          style={{ backgroundColor: "#0077b6" }}
+                          // style={{ backgroundColor: "#ff784b" }}
                           onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
@@ -513,15 +520,17 @@ const Home = () => {
                       <td>
                         <button
                           onClick={() => handleDeleteLog("Breakfast", item.id)}
+                          className="icon-button delete"
                         >
-                          Delete
+                          <FaTrashAlt />
                         </button>
                         <button
                           onClick={() =>
                             handleEditLog("Breakfast", item.name, item.id)
                           }
+                          className="icon-button edit"
                         >
-                          Edit
+                          <FaEdit />
                         </button>
                       </td>
                     </tr>
@@ -554,7 +563,7 @@ const Home = () => {
                     <tr key={`lunch-${index}`}>
                       <td>
                         <button
-                          style={{ backgroundColor: "#0077b6" }}
+                          // style={{ backgroundColor: "#0077b6" }}
                           onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
@@ -564,20 +573,20 @@ const Home = () => {
                       <td>{item.carbs}</td>
                       <td>{item.fats}</td>
                       <td>{item.calories}</td>
-                      <td>
-                        <button
-                          onClick={() => handleDeleteLog("Lunch", item.id)}
-                        >
-                          Delete
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleEditLog("Lunch", item.name, item.id)
-                          }
-                        >
-                          Edit
-                        </button>
-                      </td>
+                      <button
+                        onClick={() => handleDeleteLog("Breakfast", item.id)}
+                        className="icon-button delete"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleEditLog("Breakfast", item.name, item.id)
+                        }
+                        className="icon-button edit"
+                      >
+                        <FaEdit />
+                      </button>
                     </tr>
                   ))
                 ) : (
@@ -608,7 +617,7 @@ const Home = () => {
                     <tr key={`snack-${index}`}>
                       <td>
                         <button
-                          style={{ backgroundColor: "#0077b6" }}
+                          // style={{ backgroundColor: "#0077b6" }}
                           onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
@@ -618,20 +627,20 @@ const Home = () => {
                       <td>{item.carbs}</td>
                       <td>{item.fats}</td>
                       <td>{item.calories}</td>
-                      <td>
-                        <button
-                          onClick={() => handleDeleteLog("Snack", item.id)}
-                        >
-                          Delete
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleEditLog("Snack", item.name, item.id)
-                          }
-                        >
-                          Edit
-                        </button>
-                      </td>
+                      <button
+                        onClick={() => handleDeleteLog("Breakfast", item.id)}
+                        className="icon-button delete"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleEditLog("Breakfast", item.name, item.id)
+                        }
+                        className="icon-button edit"
+                      >
+                        <FaEdit />
+                      </button>
                     </tr>
                   ))
                 ) : (
@@ -644,7 +653,7 @@ const Home = () => {
           </div>
 
           <div className="meal-section">
-            <h3 >Dinner :{dinnerCalorie} kcal</h3>
+            <h3>Dinner :{dinnerCalorie} kcal</h3>
             <table className="meal-table">
               <thead>
                 <tr>
@@ -662,7 +671,7 @@ const Home = () => {
                     <tr key={`dinner-${index}`}>
                       <td>
                         <button
-                          style={{ backgroundColor: "#0077b6" }}
+                          // style={{ backgroundColor: "#0077b6" }}/
                           onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
@@ -672,20 +681,20 @@ const Home = () => {
                       <td>{item.carbs}</td>
                       <td>{item.fats}</td>
                       <td>{item.calories}</td>
-                      <td>
-                        <button
-                          onClick={() => handleDeleteLog("Dinner", item.id)}
-                        >
-                          Delete
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleEditLog("Dinner", item.name, item.id)
-                          }
-                        >
-                          Edit
-                        </button>
-                      </td>
+                      <button
+                        onClick={() => handleDeleteLog("Breakfast", item.id)}
+                        className="icon-button delete"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleEditLog("Breakfast", item.name, item.id)
+                        }
+                        className="icon-button edit"
+                      >
+                        <FaEdit />
+                      </button>
                     </tr>
                   ))
                 ) : (
@@ -697,11 +706,6 @@ const Home = () => {
             </table>
           </div>
         </div>
-
-        {/* <div className="bar-chart-container">
-      <Bar data={chartData}  />
-    </div> */}
-
         <div className="total-calorie">
           <h2 style={{ marginRight: "1%" }}>
             {" "}
@@ -752,31 +756,85 @@ const Home = () => {
         />
       </Modal>
 
-      <div className="pie-data">
-        <h2>Meals Details</h2>
-        <Pie
-          data={chartData}
-          style={{ marginRight: "20px", marginTop: "50px" }}
-        />
-        <div className="doughnut-text">
-            {chartData.labels.map((label, index) => {
-              const value = chartData.datasets[0].data[index];
-             
-              return (
-                <div key={index} className="doughnut-text-item">
-                  <strong>{label}:</strong> {value} kcal
-                </div>
-              );
-            })}
-          </div>
+      <h2>Meals Details</h2>
+      <div
+        className="stacked-progress-bar-container"
+        style={{ marginTop: "50px" }}
+      >
+        {/* Stacked Progress Bar */}
+        <div className="stacked-progress-bar">
+          {/* Render each progress segment */}
+          {chartData.labels.map((label, index) => {
+            const value = chartData.datasets[0].data[index]; // Calorie data for each meal
+            const percentage = (value / totalCaloriesFromDataset) * 100; // Percentage of each meal
+            const color = chartData.datasets[0].backgroundColor[index]; // Color for each meal
+
+            return (
+              <div
+                key={index}
+                className="progress-segment"
+                style={{
+                  width: `${percentage}%`,
+                  backgroundColor: color,
+                }}
+                title={`${label}: ${value} kcal (${Math.round(percentage)}%)`}
+              ></div>
+            );
+          })}
+          {/* Render the remaining calories as a segment */}
+          {remainingCalories > 0 && (
+            <div
+              className="progress-segment"
+              style={{
+                width: `${(remainingCalories / requiredCarlorie) * 100}%`,
+                backgroundColor: "#ccc", // Gray color for remaining calories
+              }}
+              title={`Remaining Calories: ${remainingCalories} kcal`}
+            ></div>
+          )}
+        </div>
+
+        {/* Labels for the meals */}
+        <div className="stacked-progress-labels">
+          {chartData.labels.map((label, index) => (
+            <div key={index} className="label-item">
+              <span
+                className="label-color"
+                style={{
+                  backgroundColor: chartData.datasets[0].backgroundColor[index],
+                }}
+              ></span>
+              {label}
+            </div>
+          ))}
+        </div>
       </div>
 
-      <WaterIntake/>
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
+        <p>
+          <strong>Total Consumed Calories:</strong> {totalConsumedCalories} kcal
+        </p>
+        <p>
+          <strong>Required Calories:</strong> {requiredCarlorie} kcal
+        </p>
+      </div>
+
+      <div>
+      <button className="ai-search-button" onClick={() => setShowDrinkModal(true)}>Add Drink
+      <span className="ai-search-button-icon">
+        <FaSearch size={16} />
+      </span>
+      
+    </button>
+        {/* <button onClick={() => setShowDrinkModal(true)}>Add Drink</button> */}
+        <DrinkModal
+          showModal={showDrinkModal}
+          setShowModal={setShowDrinkModal}
+        />
+      </div>
       <Footer className="footer" />
     </>
   );
 };
 
 export default Home;
-
-

@@ -5,7 +5,7 @@ import "./Navbar.css";
 import { loggedin, loggedout } from "../../Redux/logSlice";
 import { MdLogout } from "react-icons/md";
 import { auth } from "../../firebase";
-
+import { RiAccountCircleFill } from "react-icons/ri";
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ const Navbar = () => {
         <div className="nav-button">
           {islogged ? (
             <button type="submit" onClick={handleLogout} >
-              <MdLogout />
+             <RiAccountCircleFill/>
             </button>
           ) : (
             <button  id="login-button"  onClick={handleLogin} >Login</button>

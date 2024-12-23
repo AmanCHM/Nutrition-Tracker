@@ -11,7 +11,7 @@ body {
 
   
   button {
-    background-color: #3498db;
+    background-color: #ff784b;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -21,7 +21,7 @@ body {
   }
   
   button:hover {
-    background-color: #2980b9;
+    background-color: #ff784b;
   }
   
 
@@ -82,7 +82,7 @@ body {
  
 
   ul li button {
-    background-color: #758fd3;
+    background-color: #ff784b;
     color: white;
     border: none;
     padding: 5px 10px;
@@ -92,7 +92,7 @@ body {
   }
   
   ul li button:hover {
-    background-color: #7589a7;
+    background-color: #ff784b;
   }
 
 
@@ -104,12 +104,17 @@ body {
     justify-content: center;
   }
 
-  .search{
-     width: 100%;
-     height: 20vh;
-     background-color: #0077b6;
-     color: rgb(94, 93, 93);
+  .search {
+    width: 100%;
+    height: 70vh; /* Keep height as specified */
+    background-color: #0077b6;
+    background-image: url('D:/Training Project/Nutrition-Tracker/src/assets/images/search.svg');
+    background-size: 100vw; /* Makes the background image span 100% of the viewport width */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent repeating */
+    color: rgb(94, 93, 93);
   }
+  
   #header-text{
     color: rgb(219, 215, 215);
     text-align: center;
@@ -147,7 +152,7 @@ body {
  }
 
  .view-data{
-  margin-top: 5vh;
+  margin-top: auto;
   width: 100%;
   height: auto;
   display: flex;
@@ -157,7 +162,7 @@ body {
 
 .meal-log{
   height: auto;
-  width: 60vw ;
+  width: 40vw ;
 }
 
 .total-calorie{
@@ -189,47 +194,198 @@ body {
   margin-left: 37%;
  }    
 
- .meal-table {
+ 
+
+
+
+.stacked-progress-bar-container {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.meal-table th,
-.meal-table td {
+.stacked-progress-bar {
+  display: flex;
+  height: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f3f3f3;
   border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
+}
+
+.progress.view-data {
+  max-width: 90vw;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.meal-log h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.meal-section {
+  margin-bottom: 30px;
+}
+
+
+.css-13cymwt-control{
+  height: 20%;
+}
+
+/* Wrapper for the table to handle responsiveness */
+/* Wrapper for the table to handle responsiveness */
+.meal-table-container {
+  width: 100%;
+  max-width: 40vw; /* Adjust table width to 40% of the viewport */
+  overflow-x: auto; /* Enable horizontal scroll for small screens */
+  margin: 0 auto;
+}
+
+/* Table Styles */
+.meal-table {
+  width: 100%;
+  border-collapse: collapse; /* Remove space between cells */
+  font-size: 12px; /* Compact font size */
 }
 
 .meal-table th {
-  background-color: rgb(36, 136, 203);
-  font-weight: bold;
-  color: rgb(230, 226, 226);
+  padding: 5px 8px;
+  text-align: left;
+  border: 1px solid #ddd;
 }
 
-.meal-table tr:nth-child(even) {
+.meal-table td{
+ height: 20px;
+}
+.meal-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.meal-table tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-.meal-table tr:hover {
+.meal-table tbody tr:hover {
   background-color: #f1f1f1;
 }
 
-.meal-table button {
-  background-color: #d1b7a4;
-  color: rgb(255, 255, 255);
+
+.ai-search-button {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  background: linear-gradient(90deg, #ff784b, #ecac97);
   border: none;
-  padding: 5px 10px;
+  border-radius: 25px;
   cursor: pointer;
-  border-radius: 3px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  height: 10%;
+  width: 20%;
+  margin-left: 40%;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
 }
 
-.meal-table button:hover {
-  background-color: #29272f;
+.ai-search-button:hover {
+  background: linear-gradient(90deg, #ff784b, #fab8a2);
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
-.meal-section h3{
- margin-top: 0%;
+.ai-search-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
+
+.ai-search-button-icon {
+  margin-right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .ai-search-button {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+  }
+}
+
+/* Action buttons (icons) styling */
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ff784b;
+  font-size: 16px;
+  margin: 0 3px;
+}
+
+.icon-button.delete {
+  color: #615f5f; /* Red for delete */
+}
+
+.icon-button.edit {
+  color: #373837; /* Green for edit */
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+  .meal-table-container {
+    max-width: 90vw; /* Full width for smaller screens */
+  }
+  .meal-table th,
+  .meal-table td {
+    font-size: 10px; /* Smaller font size for compactness */
+    padding: 4px; /* Less padding on small screens */
+  }
+}
+
+
+
+
+
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 18px;
+  color: #0077b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+
+
+.icon-button:focus {
+  outline: none;
+}
+
+.stacked-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.label-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.label-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+

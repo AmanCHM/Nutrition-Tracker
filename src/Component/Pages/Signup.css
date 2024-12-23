@@ -59,7 +59,7 @@
 
 .signup-button {
   padding: 10px 20px;
-  background-color: #3688c6;
+  background-color: #ff784b;
   color: white;
   font-size: 16px;
   border: none;
@@ -69,7 +69,7 @@
 }
 
 .signup-button:hover {
-  background-color: #3688c6;
+  background-color: #ff784b;
 }
 
 .signup-footer {
