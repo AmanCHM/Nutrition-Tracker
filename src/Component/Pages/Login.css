@@ -6,11 +6,13 @@
     align-items: center;
     justify-content: center;
     height: auto;
-    width: 25vw;
+    width: 20vw;
     background-color: #f9f9f9;
     padding: 20px;
     margin-top: 20vh ;
-    margin-left: 35vw;
+      margin-left: 38vw;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 5;
   }
   
   .login-title {
@@ -45,13 +47,14 @@
     position: relative;
   }
   
-  .password-toggle {
+  .login-password-toggle {
+    
     position: absolute;
-    top: 50%;
+    top: 30%;
     right: 10px;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #777;
+    color: #555;
 
   }
   
@@ -93,3 +96,11 @@
   .path{
     margin-top: auto;
   }
+
+  /* .login-page{
+    background-image: url("https://cdn1.cronometer.com/wf-2024-12-18/images/image-overlay-home.svg");
+    background-size:cover; 
+  
+    background-position: center; 
+    background-repeat: no-repeat; 
+  } */

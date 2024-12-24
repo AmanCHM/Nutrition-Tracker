@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { setUserInfo } from "../../Redux/calorieGoalSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../Page-Components/Navbar";
+import Footer from "../Page-Components/Footer";
 
 const UserInfo = () => {
   const [userName, setUserName] = useState("");
@@ -24,6 +26,9 @@ const UserInfo = () => {
 
   return (
     <>
+      <Navbar/>
+    <h3  style={{fontSize:"2.3rem", color:"#737373",textAlign:"center", marginTop:"3%"}} > Welcome to  Nutrition Tracker </h3>
+    <h3 style={{textAlign:"center",color:"#627373"}}>We’re happy you’re here. <br />Let’s get to know a little about you.</h3>
     <div className="calorie-container">
       <form onSubmit={handleSubmit}>
         <div className="input-group">
@@ -84,6 +89,7 @@ const UserInfo = () => {
         </button>
       </form>
       </div>
+      <Footer/>
     </>
   );
 };

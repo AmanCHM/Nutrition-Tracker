@@ -34,7 +34,9 @@ import EditDataModal from "../Modals/EditDataModal";
 import ImageSearch from "./ImageSearch";
 
 import DrinkModal from "../Modals/DrinkModal";
-import { setWater } from "../../Redux/waterSlice";
+import { FaGlassWater } from "react-icons/fa6";
+import { FaWineGlassAlt } from "react-icons/fa";
+import { FiCoffee } from "react-icons/fi";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -55,14 +57,16 @@ const Home = () => {
   const [foodMeasure, setFoodMeasure] = useState();
   const [showDrinkModal, setShowDrinkModal] = useState(false);
   const [imageData, setImageData] = useState();
-  const [drinkqunatity,setDrinkQuantity] =useState();
-
-  const [drinkDetails,setDrinkDetails] = useState();
+  const [drinkqunatity, setDrinkQuantity] = useState();
 
   const loader = useSelector((state) => state.loaderReducer.loading);
+  const{caffeine,alcohol, water}= useSelector((state) => state.waterReducer);
+  
+
+
 
   const dispatch = useDispatch();
-  console.log("select quantity", selectquantity);
+  // console.log("select quantity", selectquantity);
 
   //food suggestion search bar
   const {
@@ -381,7 +385,7 @@ const Home = () => {
       {
         label: ["RequiredCalorie"],
         data: [totalCalories, requiredCarlorie],
-        backgroundColor: ["rgb(54, 162, 235)", "#afc0d9"],
+        backgroundColor: ["#e2997b", "#afc0d9"],
         hoverOffset: 1,
       },
     ],
@@ -412,8 +416,9 @@ const Home = () => {
     setImageModal(true);
   };
 
-  const handelImageSearchModal = async () => {
 
+  // AI image search 
+  const handelImageSearchModal = async () => {
     console.log("inside handleimage");
     try {
       dispatch(showLoader());
@@ -434,21 +439,17 @@ const Home = () => {
     } catch (error) {
       console.error("Error saving data:", error);
     } finally {
-      setImageModal(false)
+      setImageModal(false);
       dispatch(hideLoader());
     }
   };
 
-const handleDrinkModal = ()=>{
 
-  if(drinkDetails[water]){
-    setWater(drinkDetails?.servingSize*quantity)
-  }
 
-}
-  console.log("imageData",imageData);
-
-  console.log("drinkingDetails",drinkDetails);  
+  // console.log("water",water);
+  // console.log("caffine",caffeine);
+  // // console.log("water",caffine);
+ console.log(imageData);
   return (
     <>
       <Navbar />
@@ -481,8 +482,6 @@ const handleDrinkModal = ()=>{
         </Modal>
       </div>
 
-
-
       <Modal isOpen={modal}>
         <MealModal
           modal={modal}
@@ -501,10 +500,12 @@ const handleDrinkModal = ()=>{
 
       <section className="view-data">
         <div className="meal-log">
-          <h2>Your Food Diary</h2>  
+          <h2>Your Food Diary</h2>
 
           <div className="meal-section">
-            <label className="table-label">Breakfast :{breakfastCalorie} kcal</label>
+            <label className="table-label" >
+              Breakfast : {breakfastCalorie} kcal
+            </label>
             <table className="meal-table">
               <thead>
                 <tr>
@@ -521,12 +522,12 @@ const handleDrinkModal = ()=>{
                   logData.Breakfast.map((item, index) => (
                     <tr key={`breakfast-${index}`}>
                       <td>
-                        <button
-                          // style={{ backgroundColor: "none" }}
+                        <span
+                         
                           onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
-                        </button>
+                        </span>
                       </td>
                       <td>{item.proteins}</td>
                       <td>{item.carbs}</td>
@@ -539,7 +540,7 @@ const handleDrinkModal = ()=>{
                         >
                           <FaTrashAlt />
                         </button>
-                        <button
+                        <button  
                           onClick={() =>
                             handleEditLog("Breakfast", item.name, item.id)
                           }
@@ -576,12 +577,12 @@ const handleDrinkModal = ()=>{
                   logData.Lunch.map((item, index) => (
                     <tr key={`lunch-${index}`}>
                       <td>
-                        <button
+                        <span
                           // style={{ backgroundColor: "#0077b6" }}
                           onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
-                        </button>
+                        </span>
                       </td>
                       <td>{item.proteins}</td>
                       <td>{item.carbs}</td>
@@ -616,7 +617,7 @@ const handleDrinkModal = ()=>{
             <label className="table-label">Snack :{snackCalorie} kcal</label>
             <table className="meal-table">
               <thead>
-                <tr>
+                <tr id="header-color">
                   <th>Food Name</th>
                   <th>Proteins (g)</th>
                   <th>Carbs (g)</th>
@@ -630,12 +631,12 @@ const handleDrinkModal = ()=>{
                   logData.Snack.map((item, index) => (
                     <tr key={`snack-${index}`}>
                       <td>
-                        <button
+                        <span
                           // style={{ backgroundColor: "#0077b6" }}
                           onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
-                        </button>
+                        </span>
                       </td>
                       <td>{item.proteins}</td>
                       <td>{item.carbs}</td>
@@ -684,12 +685,12 @@ const handleDrinkModal = ()=>{
                   logData.Dinner.map((item, index) => (
                     <tr key={`dinner-${index}`}>
                       <td>
-                        <button
+                        <span
                           // style={{ backgroundColor: "#0077b6" }}/
                           onClick={() => handleNutritionModal(item.name)}
                         >
                           {item.name}
-                        </button>
+                        </span>
                       </td>
                       <td>{item.proteins}</td>
                       <td>{item.carbs}</td>
@@ -720,25 +721,31 @@ const handleDrinkModal = ()=>{
             </table>
           </div>
         </div>
-        <div className="total-calorie">
-          <h2 style={{ marginRight: "1%" }}>
-            {" "}
-            Today Calorie Consumption :{totalCalories} kcal
-          </h2>
-
+        <div className="total-calorie" >
+        <h2 style={{ marginRight: "1%" }}>
+              {" "}
+              Today Calorie Consumption :{totalCalories} kcal
+            </h2>
           <div className="doughnut-data">
             <Doughnut data={doughnutdata} />
           </div>
-          <div className="doughnut-text">
-            {doughnutdata.labels.map((label, index) => {
-              const value = doughnutdata.datasets[0].data[index];
-              const percentage = getPercentage(value, total);
-              return (
-                <div key={index} className="doughnut-text-item">
-                  <strong>{label}:</strong> {value} kcal ({percentage}%)
-                </div>
-              );
-            })}
+
+          <div>
+            {/* <h2 style={{ marginRight: "1%" }}>
+              {" "}
+              Today Calorie Consumption :{totalCalories} kcal
+            </h2> */}
+            <div className="doughnut-text">
+              {doughnutdata.labels.map((label, index) => {
+                const value = doughnutdata.datasets[0].data[index];
+                const percentage = getPercentage(value, total);
+                return (
+                  <div key={index} className="doughnut-text-item">
+                    <strong>{label}:</strong> {value} kcal ({percentage}%)
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -770,11 +777,11 @@ const handleDrinkModal = ()=>{
         />
       </Modal>
 
-      <h2>Meals Details</h2>
       <div
         className="stacked-progress-bar-container"
         style={{ marginTop: "50px" }}
-      >
+        >
+        <h2>Meals Details</h2>
         <div className="stacked-progress-bar">
           {chartData.labels.map((label, index) => {
             const value = chartData.datasets[0].data[index];
@@ -830,7 +837,9 @@ const handleDrinkModal = ()=>{
         </p>
       </div>
 
-      <div>
+      <div className="drink-section">
+
+        <h1>Drink Details</h1>
         <button
           className="ai-search-button"
           onClick={() => setShowDrinkModal(true)}
@@ -840,15 +849,21 @@ const handleDrinkModal = ()=>{
             <FaSearch size={16} />
           </span>
         </button>
-  
+
         <Modal isOpen={showDrinkModal}>
-        <DrinkModal
-          setDrinkQuantity = {setDrinkQuantity}
-          setShowDrinkModal={setShowDrinkModal}
-          setDrinkDetails={setDrinkDetails}
-          handleDrinkModal={handleDrinkModal} 
-                 />
+          <DrinkModal
+            setShowDrinkModal={setShowDrinkModal}
+          />
         </Modal>
+
+          <div className="drink-details">
+            <label htmlFor=""> <FaGlassWater  size={50}/> {water}ml
+</label>
+
+<label htmlFor="">  <FaWineGlassAlt  size={50}  /> {alcohol}ml</label>
+<label htmlFor=""> <FiCoffee size={50}/>    {caffeine}ml</label>
+          </div>
+        
       </div>
       <Footer className="footer" />
     </>

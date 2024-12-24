@@ -1,14 +1,14 @@
 #feature-header {
-    font-family: inter;
+    
     text-align: center;
-  
+    padding: 3%;
     
     /* margin-left: 7%; */
   }
   
   .feature{
       width: 100%;
-      height: 1000px;
+      height: 1000p;
       background-color:#2d3748;
      
   }

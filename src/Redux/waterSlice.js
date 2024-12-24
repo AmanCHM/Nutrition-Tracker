@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  water: "",
-  alcohol: "",
-  caffeine: "", 
+  water: 0,
+  alcohol: 0,
+  caffeine: 0 , 
 };
 
 const waterSlice = createSlice({
@@ -11,7 +11,7 @@ const waterSlice = createSlice({
   initialState,
   reducers: {
     setWater(state, action) {
-      state.water = action.payload;
+      state.water +=  action.payload;
     },
     setAlcohol(state, action) {
       state.alcohol = action.payload;

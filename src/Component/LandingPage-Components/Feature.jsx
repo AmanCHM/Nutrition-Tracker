@@ -5,10 +5,10 @@ const Feature = () => {
   return (
     <div> 
        <div className="feature">
-     <div id="feature-header">
-        <h2 style={{ fontSize: "32px", color: "white"}}>
+        <div className="feature-header" >
+        <label style={{ fontSize: "32px", color: "white"}}> 
           Improve your nutrition with confidence.
-        </h2>
+          </label>
         <p style={{ fontSize: "18px", color: "#a3a3a3" }}>
           {" "}
           Nutrition tracker encourages you to not just count your calories but

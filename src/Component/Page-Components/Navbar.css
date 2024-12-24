@@ -18,15 +18,16 @@
   }
   
   .navbar a {
-    color: #3e3d3d;
+    color: #1c1b1b;
     text-decoration: none;
     margin: 0 1rem;
     font-size: 0.9rem;
     font-weight: 500;
+    border-radius: 30%;
   }
   
   .navbar a:hover {
-    color: #000000;
+   color: #888787;
   }
   
   .nav-button {

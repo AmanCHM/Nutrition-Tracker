@@ -11,6 +11,7 @@ import { loggedin } from "../../Redux/logSlice";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Login.css";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
+import Navbar from "../Page-Components/Navbar";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const Login = () => {
           alert("successfully logged in")
         })
         .then(() => {
-          navigate("/");
+          navigate("/home");
         }) 
 
         .catch((error) => {
@@ -60,6 +61,10 @@ const Login = () => {
 
   return (
     <>
+      <Navbar/> 
+
+
+      <div  className="login-page">
       <div className="login-container">
         <h2 className="login-title">Log-in Form</h2>
         <form className="login-form" onSubmit={formik.handleSubmit}>
@@ -93,10 +98,10 @@ const Login = () => {
               value={formik.values.password}
             />
             <span
-              className="password-toggle"
+              className="login-password-toggle"
               onClick={() => setPasswordVisible(!passwordVisible)}
             >
-              {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+              {passwordVisible ? <FaEyeSlash/> : <FaEye />}
             </span>
           </div>
           {formik.touched.password && formik.errors.password ? (
@@ -121,6 +126,7 @@ const Login = () => {
           </p>
         </form>
         <ToastContainer />
+      </div>
       </div>
     </>
   );

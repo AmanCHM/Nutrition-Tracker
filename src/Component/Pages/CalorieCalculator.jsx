@@ -57,7 +57,7 @@ const CalorieCalculator = () => {
     <>
         <Navbar/>
     <div className="calorie-container">
-      <h1 className="calorie-title">Calorie Requirement Calculator</h1>
+      <h1 className="calorie-title">Calorie  Calculator</h1>
       <div className="input-group">
         <label htmlFor="height">Height (cm):</label>
         <input

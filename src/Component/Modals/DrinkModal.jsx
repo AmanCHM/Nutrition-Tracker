@@ -1,53 +1,46 @@
 import React, { useState } from "react";
 import "./DrinkModal.css";
-import { CiGlass } from "react-icons/ci";
+import { useDispatch, useSelector } from "react-redux";
+import { setAlcohol, setCaffeine, setWater } from "../../Redux/waterSlice";
 
-import { FaTint, FaWineGlassAlt, FaCoffee } from "react-icons/fa"; 
-const DrinkModal = ({ setShowDrinkModal, setDrinkDetails }) => {
+const DrinkModal = ({ setShowDrinkModal }) => {
   const [drinkType, setDrinkType] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [container, setContainer] = useState("");
-  // const handleSubmit = () => {
-  //   if (!drinkType || !quantity || !container) {
-  //     alert("Please fill out all fields.");
-  //     return;
-  //   }
-  //   if (container === "sGlass") {
-  //     setDrinkDetails({
-  //       [drinkType]: { ServingSize: 100, quantity: quantity },
-  //     });
-  //   } else if (container === "mGlass") {
-  //     setDrinkDetails({
-  //       [drinkType]: { ServingSize: 175, quantity: quantity },
-  //     });
-  //   } else {
-  //     setDrinkDetails({
-  //      [drinkType]: { ServingSize: 250, quantity: quantity },
-  //     });
-  //   }
+   const dispatch = useDispatch();
 
-  //   setShowDrinkModal(false);
-  // };
+   const { water, alcohol, caffeine } = useSelector((state) => state.waterReducer);
+
   const handleSubmit = () => {
-
     if (!drinkType || !quantity || !container) {
       alert("Please fill out all fields.");
       return;
     }
     const servingSize =
       container === "sGlass" ? 100 : container === "mGlass" ? 175 : 250;
+    const totalAmount = servingSize * quantity;
+      console.log("total amount",totalAmount);
+    if (drinkType === "Water") {
+      dispatch(setWater(totalAmount));
+   
+    } else if (drinkType === "Alcohol") {
+      dispatch(setAlcohol(totalAmount));
+    } else if (drinkType === "Caffeine") {
+      dispatch(setCaffeine(totalAmount));
+    }
   
-    setDrinkDetails(() => ({
-      [drinkType]: {
-        ServingSize: servingSize,
-        quantity: quantity,
-      },
-    }));
-  
-    setShowDrinkModal(false);
+    // setDrinkType("");
+    // setQuantity("");
+    // setContainer("");
+    setShowDrinkModal(false)
   };
-  
 
+  // const handleReset = () => {
+
+  //   dispatch(resetIntake());
+  // };
+//  console.log("modalwater ",water);
+  
   return (
     <>
       <div>
@@ -72,7 +65,7 @@ const DrinkModal = ({ setShowDrinkModal, setDrinkDetails }) => {
                 onChange={(e) => setDrinkType(e.target.value)}
               >
                 <option value="">Select</option>
-                <option value="Water">Water      <FaWineGlassAlt size={24} color="#00BFFF" /></option>
+                <option value="Water">Water      </option>
                 <option value="Alcohol">Alcohol</option>
                 <option value="Caffeine">Caffeine</option>
               </select>
@@ -108,3 +101,4 @@ const DrinkModal = ({ setShowDrinkModal, setDrinkDetails }) => {
 };
 
 export default DrinkModal;
+

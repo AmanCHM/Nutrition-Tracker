@@ -35,12 +35,12 @@ const LandingPage = () => {
             </h4>
 
             <button id="button">
-              {" "}
+           
               <Link
                 to={"/userinfo"}
-                style={{ color: "white", fontSize: "17px" }}
+                style={{ color: "white", fontSize: "17px"  }}
               >
-                 Let's Start Track Calorie
+                 Let's Start 
               </Link>{" "}
             </button>
           </div>

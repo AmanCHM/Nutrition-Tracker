@@ -6,8 +6,8 @@ const OverviewCards = (props) => {
    <>
        <div className='cards-decription' style={{width:"500px", height:"250px"}}>
             {/* <img src={image}  style={{width:"70px", height:"80px"}}alt="" /> */}
-        <h3 style={{color:"grey", fontSize:"25px",textAlign:"center"}}>  {header} </h3>
-        <p style={{color:"black",fontSize:"20px"}}> {description}</p>
+        <h3 style={{color:"grey", fontSize:"23px",textAlign:"center"}}>  {header} </h3>
+        <p style={{color:"#a3a3a3",fontSize:"17px"}}> {description}</p>
         </div>
 
    </>

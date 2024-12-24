@@ -5,6 +5,7 @@
   box-sizing: border-box;
 }
 
+
 body {
   background-image: url("");
   font-family: Inter, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
@@ -16,7 +17,7 @@ body {
 .hero {
   background-size: cover;
   background-position: center;
-  height: 45vh;
+  height: 50vh;
   color: white;
   display: flex;
   justify-content: center;
@@ -38,7 +39,7 @@ body {
 .signup {
   background-size: cover;
   background-position: center;
-  height: 60vh;
+  height: 65vh;
   margin-top: -5%;
   color: rgb(74, 73, 73);
   display: flex;

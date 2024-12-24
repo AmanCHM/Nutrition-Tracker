@@ -10,6 +10,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Signup.css";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import { useDispatch } from "react-redux";
+import Navbar from "../Page-Components/Navbar";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ const Signup = () => {
 
   return (
     <>
+    <Navbar/>
       <div className="signup-container">
         <h2 className="signup-title">Sign-Up Form</h2>
         <form className="signup-form" onSubmit={formik.handleSubmit}>
