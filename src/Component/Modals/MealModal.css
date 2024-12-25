@@ -13,9 +13,9 @@
     margin-left: 90%;
     border: none;
     /* background: #3498db; */
-    color: rgb(107, 106, 106);
-    font-size: 24px;
-    font-weight: bold;
+    color: rgb(255, 255, 255);
+    font-size: 20px;
+    /* font-weight: bold; */
     cursor: pointer;
  
   }

@@ -3,6 +3,7 @@ import "./ImageSearch.css";
 import { useDispatch, useSelector } from "react-redux";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import axios from "axios";
+import GlobalSelect from "../Page-Components/Globalselect";
 
 const ImageSearch = ({
   setImageModal,
@@ -14,16 +15,22 @@ const ImageSearch = ({
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const [loading, setLoading] = useState(false);
-
+  
   // const loader = useSelector((state) => state.loaderReducer.loading);
-
+  
   const dispatch = useDispatch();
-
+  const [name, setName] = useState("");
+  const [calories, setCalories] = useState(0);
+  const [carbohydrates, setCarbohydrates] = useState(0);
+  const [fat, setFat] = useState(0);
+  const [protein, setProtein] = useState(0);
   const [selectedFile, setSelectedFile] = useState(null);
   const [response, setResponse] = useState(null);
   const [imageId, setImageId] = useState(null);
   const [nutritionInfo, setNutritionInfo] = useState();
   const [mealQuantity, setMealQuantity] = useState();
+
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -36,22 +43,27 @@ const ImageSearch = ({
     setSelectedFile(file);
   };
 
-  const handleSaveData = () => {
-    dispatch(showLoader())
-    setImageData({
+
+
+  const handleSaveData = async () => {
+    dispatch(showLoader());
+    const newData = {
       id: Date.now(),
       name: name,
       calories: calories,
       proteins: protein,
       carbs: carbohydrates,
       fats: fat,
-    });
-    handelImageSearchModal();
-    dispatch(hideLoader())
+    };
+    setImageData(newData); 
+   handelImageSearchModal(newData);
+    dispatch(hideLoader());
   };
+
 
   // ImageID API
   const handleUpload = async () => {
+    setImageData()
     dispatch(showLoader());
     const formData = new FormData();
     formData.append("image", selectedFile);
@@ -68,7 +80,7 @@ const ImageSearch = ({
       );
 
       setImageId(result.data?.imageId);
-      console.log("imageId", imageId);
+      // console.log("imageId", imageId);
     } catch (error) {
       console.log(error);
     } finally {
@@ -77,7 +89,7 @@ const ImageSearch = ({
   };
 
 
-
+ 
   useEffect(() => {
     if (imageId) {
       fetchNutritionInfo(imageId);
@@ -87,7 +99,7 @@ const ImageSearch = ({
 
   // Nutritioninfo api
   const fetchNutritionInfo = async (imageId) => {
-    setLoading(true);
+
     const data = { imageId: imageId };
     try {
       const result = await axios.post(
@@ -108,21 +120,38 @@ const ImageSearch = ({
 
 
 
-  const name = nutritionInfo?.foodName[0];
-  const calories = Math.floor(nutritionInfo?.nutritional_info?.calories);
-  const carbohydrates = Math.floor(
-    nutritionInfo?.nutritional_info?.totalNutrients?.CHOCDF?.quantity
-  );
-  const fat = Math.floor(
-    nutritionInfo?.nutritional_info?.totalNutrients?.FAT?.quantity
-  );
-  const protein = Math.floor(
-    nutritionInfo?.nutritional_info?.totalNutrients?.PROCNT?.quantity
-  );
+
+  
+  useEffect(() => {
+    if (nutritionInfo) {
+      setName(nutritionInfo?.foodName[0] || "");
+      setCalories(Math.floor(nutritionInfo?.nutritional_info?.calories) || 0);
+      setCarbohydrates(
+        Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.CHOCDF?.quantity) || 0
+      );
+      setFat(
+        Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.FAT?.quantity) || 0
+      );
+      setProtein(
+        Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.PROCNT?.quantity) || 0
+      );
+    }
+  }, [nutritionInfo]); 
+  
+
+  console.log("name",name);
+  console.log("calories",calories);
 
 
-  console.log(name);
-  console.log(calories);
+  const options = [
+  {value:"choose" , label:"Choose here",},
+     {value:"Breakfast" ,label:"Breakfast"},
+    { value:"Lunch" ,label:"Lunch"},
+   { value:"Snack", label:"Snack"},
+    {value:"Dinner" ,label:"Dinner"}
+  ]
+
+
   return (
     <>
  
@@ -134,7 +163,8 @@ const ImageSearch = ({
     </button>
   
     <div className="image-search-container">
-      <h1 className="title">Image-Based Food Search</h1>
+      <h2 className="title">Upload Your Image
+</h2>
 
       <div className="upload-section">
         <input
@@ -158,14 +188,14 @@ const ImageSearch = ({
   
 
       <button onClick={handleUpload} className="upload-button">
-        Get Data
+        Upload
       </button>
   
  
       {nutritionInfo && (
         <div>
           <h2>Nutrition Information</h2>
-          <h3>{nutritionInfo.name}</h3>
+          <h3>{name}</h3>
           <table
             border="1"
             style={{ width: "100%", borderCollapse: "collapse" }}
@@ -179,44 +209,43 @@ const ImageSearch = ({
             <tbody>
               <tr>
                 <td>Calories</td>
-                <td>{nutritionInfo.calories} kcal</td>
+                <td>{calories} kcal</td>
               </tr>
               <tr>
                 <td>Carbohydrates</td>
-                <td>{nutritionInfo.carbohydrates} g</td>
+                <td>{carbohydrates} g</td>
               </tr>
               <tr>
                 <td>Fat</td>
-                <td>{nutritionInfo.fat} g</td>
+                <td>{fat} g</td>
               </tr>
               <tr>
                 <td>Protein</td>
-                <td>{nutritionInfo.protein} g</td>
+                <td>{protein} g</td>
               </tr>
             </tbody>
           </table>
-        </div>
-      )}
-
-      <div>
+          <div>
         <label className="meal-label">Choose Meal</label>
+
+        <GlobalSelect>
+         option = {  options }      
+         
+        onChange={(e) => setSelectCategory(e.target.value)}
+        </GlobalSelect>
         <select
           className="meal-select"
           name="meal-category"
           id="meal-category"
           onChange={(e) => setSelectCategory(e.target.value)}
         >
-          <option value="choose">Choose here</option>
-          <option value="Breakfast">Breakfast</option>
-          <option value="Lunch">Lunch</option>
-          <option value="Snack">Snack</option>
-          <option value="Dinner">Dinner</option>
+        
         </select>
       </div>
   
 
       <div>
-        <p className="calorie-info">Calorie Served: {nutritionInfo?.calories || "N/A"}</p>
+        <p className="calorie-info">Calorie Served: {calories || "N/A"}</p>
         <button
           className="add-meal-button"
           onClick={handleSaveData}
@@ -224,6 +253,11 @@ const ImageSearch = ({
           Add Meal
         </button>
       </div>
+        </div>
+      )}
+     
+
+      
     </div>
   </>
   

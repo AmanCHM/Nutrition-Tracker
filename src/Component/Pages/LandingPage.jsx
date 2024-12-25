@@ -6,9 +6,12 @@ import Navbar from "../Page-Components/Navbar";
 import Feature from "../LandingPage-Components/Feature";
 import Overview from "../LandingPage-Components/Overview";
 import AIFeature from "../LandingPage-Components/AIFeature";
+import { useSelector } from "react-redux";
 
 
 const LandingPage = () => {
+  const islogged = useSelector((state) => state.loggedReducer.logged);
+
   return (
     <>
       <Navbar/> 
@@ -34,15 +37,17 @@ const LandingPage = () => {
               biometrics and health data.
             </h4>
 
-            <button id="button">
-           
-              <Link
-                to={"/userinfo"}
-                style={{ color: "white", fontSize: "17px"  }}
-              >
-                 Let's Start 
-              </Link>{" "}
-            </button>
+
+           {islogged? '' : <button id="button">
+          
+          <Link
+            to={"/userinfo"}
+            style={{ color: "white", fontSize: "17px"  }}
+          >
+             Let's Start 
+          </Link>{" "}
+        </button>}
+            
           </div>
           <div>
             <img

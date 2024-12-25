@@ -104,7 +104,7 @@ const CalorieCalculator = () => {
       <button className="calculate-button" onClick={calculateCalories}>
         Calculate 
       </button>
-    {calculatedCalorie && <p style={{marginTop:"15px",marginLeft:"19%"}}>Your have to require: {calculatedCalorie} daily</p> }
+    {calculatedCalorie && <p style={{marginTop:"15px",marginLeft:"19%"}}>Your have to require: {calculatedCalorie}Kcal daily</p> }
      
     </div>
 

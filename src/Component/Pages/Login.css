@@ -1,5 +1,4 @@
 
-  
   .login-container {
     display: flex;
     flex-direction: column;
@@ -96,6 +95,8 @@
   .path{
     margin-top: auto;
   }
+
+
 
   /* .login-page{
     background-image: url("https://cdn1.cronometer.com/wf-2024-12-18/images/image-overlay-home.svg");

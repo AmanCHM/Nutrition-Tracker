@@ -32,11 +32,9 @@ import MealModal from "../Modals/MealModal";
 import NutritionModal from "../Modals/NutritionModal";
 import EditDataModal from "../Modals/EditDataModal";
 import ImageSearch from "./ImageSearch";
-
 import DrinkModal from "../Modals/DrinkModal";
-import { FaGlassWater } from "react-icons/fa6";
-import { FaWineGlassAlt } from "react-icons/fa";
-import { FiCoffee } from "react-icons/fi";
+import { setWater } from "../../Redux/waterSlice";
+
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -57,17 +55,18 @@ const Home = () => {
   const [foodMeasure, setFoodMeasure] = useState();
   const [showDrinkModal, setShowDrinkModal] = useState(false);
   const [imageData, setImageData] = useState();
-  const [drinkqunatity, setDrinkQuantity] = useState();
+  const [drinkData,setDrinkData]= useState();
+  const [totalWater,setTotalWater] = useState();
+ const [totalAlcohol,setTotalAlcohol] = useState();
+ const [totalCaffeine, setTotalCaffeine] =useState();
 
   const loader = useSelector((state) => state.loaderReducer.loading);
-  const{caffeine,alcohol, water}= useSelector((state) => state.waterReducer);
-  
-
-
+  const { caffeine, alcohol, water } = useSelector(
+    (state) => state.waterReducer
+  );
 
   const dispatch = useDispatch();
-  // console.log("select quantity", selectquantity);
-
+  
   //food suggestion search bar
   const {
     data: suggestions,
@@ -220,7 +219,7 @@ const Home = () => {
   };
   // console.log("selectedFood", selectedFoodData);
 
-  console.log("selected quantity", selectquantity);
+  // console.log("selected quantity", selectquantity);
 
   const handleEditLog = async (meal, name, id) => {
     setSelectedId(id);
@@ -307,7 +306,7 @@ const Home = () => {
         selectquantity *
         quantity
       : "no data";
-  console.log("calculated calorie", calculateCalories);
+  // console.log("calculated calorie", calculateCalories);
 
   const protein =
     selectedFoodData?.foods.length > 0
@@ -351,16 +350,13 @@ const Home = () => {
   //pie chart
 
   const chartData = {
-    labels: ["Breakfast", "Lunch", "Snack", "Dinner"],
+    labels: ["Consumed Calorie", "Required Calorie"],
     datasets: [
       {
-        data: [breakfastCalorie, lunchCalorie, snackCalorie, dinnerCalorie],
-        backgroundColor: [
-          "rgb(255, 99, 132)", // Breakfast
-          "rgb(54, 162, 235)", // Lunch
-          "#BCD18A", // Snack
-          "#D1C28A", // Dinner
-        ],
+        label: ["RequiredCalorie"],
+        data: [totalCalories, requiredCarlorie],
+        backgroundColor: ["#e77f67"],
+        hoverOffset: 1,
       },
     ],
   };
@@ -380,13 +376,16 @@ const Home = () => {
   //doughnut Data
 
   const doughnutdata = {
-    labels: ["Consumed Calorie", "Required Calorie"],
+    labels: ["Breakfast", "Lunch", "Snack", "Dinner"],
     datasets: [
       {
-        label: ["RequiredCalorie"],
-        data: [totalCalories, requiredCarlorie],
-        backgroundColor: ["#e2997b", "#afc0d9"],
-        hoverOffset: 1,
+        data: [breakfastCalorie, lunchCalorie, snackCalorie, dinnerCalorie],
+        backgroundColor: [
+          "rgb(255, 99, 132)",
+          "rgb(54, 162, 235)",
+          "rgb(255, 205, 86)",
+          "#e66767", // Dinner
+        ],
       },
     ],
   };
@@ -412,18 +411,12 @@ const Home = () => {
 
   const [imageModal, setImageModal] = useState(false);
 
-  const handleImageSearch = () => {
-    setImageModal(true);
-  };
+  const handelImageSearchModal = async (data) => {
+    console.log("inside handleimage", data);
 
-
-  // AI image search 
-  const handelImageSearchModal = async () => {
-    console.log("inside handleimage");
     try {
       dispatch(showLoader());
       const user = auth.currentUser;
-      const data = imageData;
       if (user) {
         const userId = user?.uid;
         const date = new Date().toISOString().split("T")[0];
@@ -444,17 +437,67 @@ const Home = () => {
     }
   };
 
+ 
+  const getDrinkData = async (user) => {
+    try {
+      dispatch(showLoader());
+      if (!user) {
+        console.log("User is not authenticated");
+        return;
+      }
+      const userId = user.uid;
+      const date = new Date().toISOString().split("T")[0];
+      const docRef = doc(db, "users", userId, "dailyLogs", date);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const drinkData = docSnap.data();
+        setDrinkData(drinkData);
+      } else {
+        setDrinkData({});
+      }
+    } catch (error) {
+      console.error("error fetching data", error);
+    } finally {
+      dispatch(hideLoader());
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      getDrinkData(user);
+      if (user) {
+    //  dispatch(showLoader())
+      } else {
+        console.log("No user authenticated");
+        setloading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+ 
+
+ const Water  =drinkData?.water?.map((item)=>{
+    setWater(totalWater+=item.totalAmount)
+  });
+
+  const Alcohol = drinkData?.alcohol?.map((item)=>{
+    setWater(totalAlcohol+=item.totalAmount)
+  });
 
 
-  // console.log("water",water);
-  // console.log("caffine",caffeine);
-  // // console.log("water",caffine);
- console.log(imageData);
+  const Caffeine = drinkData?.caffeine?.map((item)=>{
+    setWater(totalCaffeine+=item.totalAmount)
+  });
+
+
+ console.log("drinkData",drinkData?.Water[0]?.totalAmount);
   return (
     <>
       <Navbar />
       <div className="search">
-        <h1 id="header-text">Select food items</h1>
+        <h1 id="header-text">Enter Your Meals Below</h1>
 
         <Select
           id="search-box"
@@ -465,12 +508,17 @@ const Home = () => {
         />
       </div>
 
-      <div>
-        <button className="ai-search-button" onClick={handleImageSearch}>
+      <div className="ai-search">
+        <button
+          className="ai-search-button"
+          onClick={() => {
+            setImageModal(true);
+          }}
+        >
           <span className="ai-search-button-icon">
-            <FaSearch size={16} />
+            <FaSearch size={16} color="white" />
           </span>
-          AI Search
+          AI Food Search
         </button>
         <Modal isOpen={imageModal}>
           <ImageSearch
@@ -500,64 +548,75 @@ const Home = () => {
 
       <section className="view-data">
         <div className="meal-log">
-          <h2>Your Food Diary</h2>
+          <h2
+            style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.5rem" }}
+          >
+            {" "}
+            Your Food Diary
+          </h2>
 
           <div className="meal-section">
-            <label className="table-label" >
-              Breakfast : {breakfastCalorie} kcal
-            </label>
-            <table className="meal-table">
-              <thead>
-                <tr>
-                  <th>Food Name</th>
-                  <th>Proteins (g)</th>
-                  <th>Carbs (g)</th>
-                  <th>Fats (g)</th>
-                  <th>Calories (kcal)</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logData?.Breakfast?.length > 0 ? (
-                  logData.Breakfast.map((item, index) => (
-                    <tr key={`breakfast-${index}`}>
-                      <td>
-                        <span
-                         
-                          onClick={() => handleNutritionModal(item.name)}
-                        >
-                          {item.name}
-                        </span>
-                      </td>
-                      <td>{item.proteins}</td>
-                      <td>{item.carbs}</td>
-                      <td>{item.fats}</td>
-                      <td>{item.calories}</td>
-                      <td>
-                        <button
-                          onClick={() => handleDeleteLog("Breakfast", item.id)}
-                          className="icon-button delete"
-                        >
-                          <FaTrashAlt />
-                        </button>
-                        <button  
-                          onClick={() =>
-                            handleEditLog("Breakfast", item.name, item.id)
-                          }
-                          className="icon-button edit"
-                        >
-                          <FaEdit />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
+            <div>
+              <label className="table-label">
+                Breakfast : {breakfastCalorie} kcal
+              </label>
+            </div>
+
+            <div>
+              <table className="meal-table">
+                <thead>
                   <tr>
-                    <td colSpan="6">No breakfast items</td>
+                    <th>Food Name</th>
+                    <th>Proteins (g)</th>
+                    <th>Carbs (g)</th>
+                    <th>Fats (g)</th>
+                    <th>Calories (kcal)</th>
+                    <th>Action</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {logData?.Breakfast?.length > 0 ? (
+                    logData.Breakfast.map((item, index) => (
+                      <tr key={`breakfast-${index}`}>
+                        <td>
+                          <span onClick={() => handleNutritionModal(item.name)}>
+                            {item.name}
+                          </span>
+                        </td>
+                        <td>{item.proteins}</td>
+                        <td>{item.carbs}</td>
+                        <td>{item.fats}</td>
+                        <td>{item.calories}</td>
+                        <td>
+                          <div style={{ display: "flex" }}>
+                            <span
+                              onClick={() =>
+                                handleDeleteLog("Breakfast", item.id)
+                              }
+                              className="icon-button delete"
+                            >
+                              <FaTrashAlt style={{ color: "#e15f41" }} />
+                            </span>
+                            <span
+                              onClick={() =>
+                                handleEditLog("Breakfast", item.name, item.id)
+                              }
+                              className="icon-button edit"
+                            >
+                              <FaEdit />
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6">No breakfast items</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
           <div className="meal-section">
             <label className="table-label">Lunch :{lunchCalorie} kcal</label>
@@ -588,20 +647,23 @@ const Home = () => {
                       <td>{item.carbs}</td>
                       <td>{item.fats}</td>
                       <td>{item.calories}</td>
-                      <button
-                        onClick={() => handleDeleteLog("Lunch", item.id)}
-                        className="icon-button delete"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleEditLog("Lunch", item.name, item.id)
-                        }
-                        className="icon-button edit"
-                      >
-                        <FaEdit />
-                      </button>
+
+                      <div style={{ display: "flex" }}>
+                        <span
+                          onClick={() => handleDeleteLog("Lunch", item.id)}
+                          className="icon-button delete"
+                        >
+                          <FaTrashAlt style={{ color: "#e15f41" }} />
+                        </span>
+                        <span
+                          onClick={() =>
+                            handleEditLog("Lunch", item.name, item.id)
+                          }
+                          className="icon-button edit"
+                        >
+                          <FaEdit />
+                        </span>
+                      </div>
                     </tr>
                   ))
                 ) : (
@@ -642,20 +704,22 @@ const Home = () => {
                       <td>{item.carbs}</td>
                       <td>{item.fats}</td>
                       <td>{item.calories}</td>
-                      <button
-                        onClick={() => handleDeleteLog("Snack", item.id)}
-                        className="icon-button delete"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleEditLog("Snack", item.name, item.id)
-                        }
-                        className="icon-button edit"
-                      >
-                        <FaEdit />
-                      </button>
+                      <div style={{ display: "flex" }}>
+                        <span
+                          onClick={() => handleDeleteLog("Snack", item.id)}
+                          className="icon-button delete"
+                        >
+                          <FaTrashAlt style={{ color: "#e15f41" }} />
+                        </span>
+                        <span
+                          onClick={() =>
+                            handleEditLog("Snack", item.name, item.id)
+                          }
+                          className="icon-button edit"
+                        >
+                          <FaEdit />
+                        </span>
+                      </div>
                     </tr>
                   ))
                 ) : (
@@ -696,20 +760,22 @@ const Home = () => {
                       <td>{item.carbs}</td>
                       <td>{item.fats}</td>
                       <td>{item.calories}</td>
-                      <button
-                        onClick={() => handleDeleteLog("Dinner", item.id)}
-                        className="icon-button delete"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleEditLog("Dinner", item.name, item.id)
-                        }
-                        className="icon-button edit"
-                      >
-                        <FaEdit />
-                      </button>
+                      <div style={{ display: "flex" }}>
+                        <span
+                          onClick={() => handleDeleteLog("Dinner", item.id)}
+                          className="icon-button delete"
+                        >
+                          <FaTrashAlt style={{ color: "#e15f41" }} />
+                        </span>
+                        <span
+                          onClick={() =>
+                            handleEditLog("Dinner", item.name, item.id)
+                          }
+                          className="icon-button edit"
+                        >
+                          <FaEdit />
+                        </span>
+                      </div>
                     </tr>
                   ))
                 ) : (
@@ -721,20 +787,80 @@ const Home = () => {
             </table>
           </div>
         </div>
-        <div className="total-calorie" >
-        <h2 style={{ marginRight: "1%" }}>
-              {" "}
-              Today Calorie Consumption :{totalCalories} kcal
-            </h2>
-          <div className="doughnut-data">
-            <Doughnut data={doughnutdata} />
+
+        <div className="stacked-progress-bar-container">
+          <h2
+            style={{ marginTop: "7%", color: "darkgrey", fontSize: "2.5rem" }}
+          >
+            Progress Towards Daily Goal
+          </h2>
+          <div className="stacked-progress-bar">
+            {doughnutdata.labels.map((label, index) => {
+              const value = chartData.datasets[0].data[index];
+              const percentage = (value / totalCaloriesFromDataset) * 100;
+              const color = chartData.datasets[0].backgroundColor[index];
+
+              return (
+                <div
+                  key={index}
+                  className="progress-segment"
+                  style={{
+                    width: `${percentage}%`,
+                    backgroundColor: color,
+                  }}
+                  title={`${label}: ${value} kcal (${Math.round(percentage)}%)`}
+                ></div>
+              );
+            })}
+
+            {remainingCalories > 0 && (
+              <div
+                className="progress-segment"
+                style={{
+                  width: `${(remainingCalories / requiredCarlorie) * 100}%`,
+                  backgroundColor: "#ccc",
+                }}
+                title={`Remaining Calories: ${remainingCalories} kcal`}
+              ></div>
+            )}
+
+            <div style={{ marginTop: "20px", textAlign: "center" }}>
+              <p>
+                <strong>Total Consumed Calories:</strong>{" "}
+                {totalConsumedCalories} kcal
+              </p>
+              <p>
+                <strong>Required Calories:</strong> {requiredCarlorie} kcal
+              </p>
+            </div>
           </div>
 
-          <div>
-            {/* <h2 style={{ marginRight: "1%" }}>
-              {" "}
-              Today Calorie Consumption :{totalCalories} kcal
-            </h2> */}
+          <div className="stacked-progress-labels">
+            {chartData.labels.map((label, index) => (
+              <div key={index} className="label-item">
+                <span
+                  className="label-color"
+                  style={{
+                    backgroundColor:
+                      chartData.datasets[0].backgroundColor[index],
+                  }}
+                ></span>
+                {label}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="total-calorie">
+          <h2
+            style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.5rem" }}
+          >
+            {" "}
+            Your Calorie Journey Today
+          </h2>
+          <div className="doughnut-data">
+            <div className="doughnut-graph">
+              <Doughnut data={doughnutdata} />
+            </div>
             <div className="doughnut-text">
               {doughnutdata.labels.map((label, index) => {
                 const value = doughnutdata.datasets[0].data[index];
@@ -777,93 +903,57 @@ const Home = () => {
         />
       </Modal>
 
-      <div
-        className="stacked-progress-bar-container"
-        style={{ marginTop: "50px" }}
-        >
-        <h2>Meals Details</h2>
-        <div className="stacked-progress-bar">
-          {chartData.labels.map((label, index) => {
-            const value = chartData.datasets[0].data[index];
-            const percentage = (value / totalCaloriesFromDataset) * 100;
-            const color = chartData.datasets[0].backgroundColor[index];
-
-            return (
-              <div
-                key={index}
-                className="progress-segment"
-                style={{
-                  width: `${percentage}%`,
-                  backgroundColor: color,
-                }}
-                title={`${label}: ${value} kcal (${Math.round(percentage)}%)`}
-              ></div>
-            );
-          })}
-
-          {remainingCalories > 0 && (
-            <div
-              className="progress-segment"
-              style={{
-                width: `${(remainingCalories / requiredCarlorie) * 100}%`,
-                backgroundColor: "#ccc",
-              }}
-              title={`Remaining Calories: ${remainingCalories} kcal`}
-            ></div>
-          )}
-        </div>
-
-        <div className="stacked-progress-labels">
-          {chartData.labels.map((label, index) => (
-            <div key={index} className="label-item">
-              <span
-                className="label-color"
-                style={{
-                  backgroundColor: chartData.datasets[0].backgroundColor[index],
-                }}
-              ></span>
-              {label}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ marginTop: "20px", textAlign: "center" }}>
-        <p>
-          <strong>Total Consumed Calories:</strong> {totalConsumedCalories} kcal
-        </p>
-        <p>
-          <strong>Required Calories:</strong> {requiredCarlorie} kcal
-        </p>
-      </div>
-
       <div className="drink-section">
-
-        <h1>Drink Details</h1>
+        <h2 style={{ color: "darkgrey", fontSize: "2.5rem" }}>
+          Water and Beverages Intake
+        </h2>
         <button
           className="ai-search-button"
           onClick={() => setShowDrinkModal(true)}
         >
           Add Drink
           <span className="ai-search-button-icon">
-            <FaSearch size={16} />
+            <FaSearch size={16} color="white" />
           </span>
         </button>
 
         <Modal isOpen={showDrinkModal}>
           <DrinkModal
             setShowDrinkModal={setShowDrinkModal}
+  
           />
         </Modal>
 
-          <div className="drink-details">
-            <label htmlFor=""> <FaGlassWater  size={50}/> {water}ml
-</label>
+        <div className="drink-details">
+          <label htmlFor="">
+            {" "}
+            <img
+              src="./src/assets/images/glass-of-water.png"
+              alt=""
+              style={{ height: "60px" }}
+            />
+            {Water}ml
+          </label>
 
-<label htmlFor="">  <FaWineGlassAlt  size={50}  /> {alcohol}ml</label>
-<label htmlFor=""> <FiCoffee size={50}/>    {caffeine}ml</label>
-          </div>
-        
+          <label htmlFor="">
+            {" "}
+            <img
+              src="./src/assets/images/beer.png"
+              alt=""
+              style={{ height: "60px" }}
+            />{" "}
+            {totalAlcohol}ml
+          </label>
+          <label htmlFor="">
+            {" "}
+            <img
+              src="./src/assets/images/coffee.png"
+              alt=""
+              style={{ height: "60px" }}
+            />{" "}
+            {totalCaffeine}ml
+          </label>
+        </div>
       </div>
       <Footer className="footer" />
     </>

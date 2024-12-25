@@ -212,19 +212,21 @@ const Dashboard = () => {
           </table>
         </div>
 
-        <div className="total-calorie">
-          <h2 style={{marginRight:"1%"}}> Today Calorie Consumed :{totalCalories} kcal</h2>
-          <div className="piechart-data">
-          <Doughnut
+        <div className="reports-data">
+          
+          <h2 style={{marginRight:"1%",marginTop:'5vh'}}> Today Calorie Consumed :{totalCalories} kcal</h2>
+          <div className="reports-chart">
+          <Doughnut className="doughnut-chart"
             data={chartData}
-            style={{ marginRight: "20px", marginTop: "50px" }}
+            style={{ marginRight: "20px", marginTop: "30px",   height: "auto",
+            width: "50%" }}
           ></Doughnut>
-                  <div className="doughnut-text">
+                  <div className="reports-chart-text">
             {chartData.labels.map((label, index) => {
               const value = chartData.datasets[0].data[index];
              
               return (
-                <div key={index} className="doughnut-text-item">
+                <div key={index} className="report-text-item">
                   <strong>{label}:</strong> {value} kcal
                 </div>
               );

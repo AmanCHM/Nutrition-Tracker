@@ -114,7 +114,7 @@ body {
     width: 100%;
     height: 40vh; 
     background-color: #0077b6;
-    background-image: url('src/assets/images/search.svg');
+    background-image: url('src/assets/images/Vector.png');
     background-size: 100vw; 
     background-position: center; 
     background-repeat: no-repeat; 
@@ -144,8 +144,9 @@ body {
  .list-item{
   margin-top: 15vh;
   margin-left: 15%;
-  width: 40vw;
+  width: 60vw;
   height: auto;
+  
  }
 
  #typeinp{
@@ -160,11 +161,12 @@ body {
 
  .view-data{
   margin-top: auto;
+
   width: 100%;
   height: auto;
   display: flex;
   flex-direction: column;
- 
+   /* background: #7c5858;   */
 }
 
 .meal-log{
@@ -173,26 +175,29 @@ body {
 }
 
 .total-calorie{
-  margin-top: 3vh; 
-  width: 30%;
-  width: 50%;
-  height: auto;
-
+  margin-top: 2vh; 
+  width: 100vw;
+  height: 70vh;
+  background: #ebdddb;
 }
 
 
 .doughnut-data{
-   width: 50%;
+   width: auto;
+   margin-top: 3%;
+   display: flex;
    margin-left: 30%;
 }
+.canvas{
+  height: auto;
+}
 .doughnut-text {
-  margin-top: 20px;
+  margin-top: 15vh;
   text-align: center;
+  margin-left: 10%;
 }
 
-.doughnut-text-item {
-  margin: 5px 0;
-}
+
 
 .pie-data{
   margin-top: 10vh;
@@ -206,12 +211,13 @@ body {
 
 
 .stacked-progress-bar-container {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
+  width: auto;
+  /* max-width: 800px; */
+  margin: 0 auto  ;
 }
 
 .stacked-progress-bar {
+  margin: 50px;
   display: flex;
   height: 20px;
   border-radius: 8px;
@@ -296,7 +302,7 @@ body {
   font-weight: bold;
   text-transform: uppercase;
   color: white;
-  background: linear-gradient(90deg, #ff784b, #ecac97);
+  background: linear-gradient(90deg, #aa6f5e, #c18473);
   border: none;
   border-radius: 25px;
   cursor: pointer;
@@ -310,7 +316,7 @@ body {
 }
 
 .ai-search-button:hover {
-  background: linear-gradient(90deg, #ff784b, #fab8a2);
+  background: linear-gradient(90deg, rgb(203, 102, 68), #fab8a2);
   transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
@@ -414,6 +420,7 @@ body {
 .drink-details{
   display: flex;
   flex-direction: column;
-margin-left: 45%;
-gap: 40px;
+  margin-left: 45%;
+  gap: 40px;
+  padding-bottom: 50px;
 }

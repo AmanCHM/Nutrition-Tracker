@@ -50,7 +50,7 @@ const Navbar = () => {
 
         {islogged === false ? (
           <div className="navbar">
-            <NavLink to={"/"}>Feature</NavLink>
+            <NavLink to={"/"}>Home</NavLink>
 
             <NavLink to={"/aboutus"}>About</NavLink>
           </div>
@@ -60,9 +60,10 @@ const Navbar = () => {
 
         {islogged ? (
           <div className="navbar">
-            <NavLink to={"/home"}>Home</NavLink>
+              <NavLink to={"/"}>Home</NavLink>
+            <NavLink to={"/home"}>Dashboard</NavLink>
             {/* <NavLink to={"/image-search"}>ImageSearch</NavLink> */}
-            <NavLink to={"/dashboard"}>Dashboard</NavLink>
+            <NavLink to={"/dashboard"}>Reports</NavLink>
             <NavLink to={"/calorie-calculator"}>Calculator</NavLink>
             <NavLink to={"/aboutus"}>About</NavLink>
           </div>

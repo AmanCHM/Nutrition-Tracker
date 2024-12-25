@@ -14,10 +14,10 @@ const waterSlice = createSlice({
       state.water +=  action.payload;
     },
     setAlcohol(state, action) {
-      state.alcohol = action.payload;
+      state.alcohol += action.payload;
     },
     setCaffeine(state, action) {
-      state.caffeine = action.payload;
+      state.caffeine += action.payload;
     },
     resetIntake(state) {
       state.water = "";
