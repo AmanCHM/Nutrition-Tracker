@@ -11,7 +11,7 @@ import calorieGoalReducer from "./calorieGoalSlice";
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [ 'loggedReducer' ,'waterReducer']
+  whitelist: [ 'loggedReducer']
 };
 
 const reducers = combineReducers({

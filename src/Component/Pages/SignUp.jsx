@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link,  useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
-import { ToastContainer, toast } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -11,6 +11,8 @@ import "./Signup.css";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import { useDispatch } from "react-redux";
 import Navbar from "../Page-Components/Navbar";
+import { toast } from "react-toastify";
+import { loggedin } from "../../Redux/logSlice";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -37,11 +39,11 @@ const Signup = () => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         console.log(user.email);
-        toast.success("Successfully Signed Up!");
-        navigate("/login");
-        alert("successfully signed Up")
+        toast.success("SignUp Successful");
+        dispatch(loggedin());
+        navigate("/");
       } catch (error) {
-        toast.error("SignUp Not Successful");
+        toast.error("SignUp not successful");
         console.log(error.message);
       } finally{
           dispatch(hideLoader());
@@ -120,7 +122,7 @@ const Signup = () => {
             Already have an account? <Link className="signup-link" to="/login">Log In</Link>
           </p>
         </form>
-        <ToastContainer />
+   
       </div>
     </>
   );

@@ -7,10 +7,12 @@ import Feature from "../LandingPage-Components/Feature";
 import Overview from "../LandingPage-Components/Overview";
 import AIFeature from "../LandingPage-Components/AIFeature";
 import { useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 
 
 const LandingPage = () => {
   const islogged = useSelector((state) => state.loggedReducer.logged);
+  console.log(islogged);
 
   return (
     <>
@@ -54,7 +56,7 @@ const LandingPage = () => {
               id="front-image"
             
               src={
-                "https://raw.githubusercontent.com/harshu878/nutrimeter/b24e158e4f21902c1fe890e3fcec626ae022ebaf/client/public/Images/mobile.svg"
+                "src/assets/images/mobile.svg"
               }
               alt=""
             />

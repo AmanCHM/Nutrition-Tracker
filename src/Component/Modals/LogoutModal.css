@@ -1,3 +1,9 @@
-.modal-content{
-    margin-top: 40%;
+.logout-modal-content{
+   
+    background-color: #efeeec;
+       padding: 20px;
+       border-radius: 8px;
+       width: auto;
+       height: auto;
+       text-align: left;
 }

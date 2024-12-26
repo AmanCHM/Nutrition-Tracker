@@ -8,7 +8,7 @@ import { merge } from "lodash";
 import { auth, db } from "../../firebase";
 // Import your reusable component
 
-const DrinkModal = ({ setShowDrinkModal }) => {
+const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
   const [drinkType, setDrinkType] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [container, setContainer] = useState("");
@@ -21,8 +21,6 @@ const DrinkModal = ({ setShowDrinkModal }) => {
   const totalAmount = servingSize * quantity;
 
   const handleDrinkData = async () => {
-
-    console.log("inside handle drink submit");
     try {
       dispatch(showLoader())
       const user = auth.currentUser;
@@ -35,6 +33,11 @@ const DrinkModal = ({ setShowDrinkModal }) => {
       };
         const newData = { [drinkType]: arrayUnion(data) };
           await setDoc(docRef,newData , { merge: true })
+
+
+          if (onDataUpdated) {
+            onDataUpdated(); 
+          }
         // console.log(newData);
     } catch (error) {
       console.log(error);
@@ -65,6 +68,8 @@ const DrinkModal = ({ setShowDrinkModal }) => {
 
   return (
     <div>
+
+
       <button className="close-button" onClick={() => setShowDrinkModal(false)}>
         X
       </button>
@@ -96,8 +101,14 @@ const DrinkModal = ({ setShowDrinkModal }) => {
       </div>
 
       <div className="input-group">
-        <label htmlFor="quantity">Quantity: {quantity}</label>
-        <button onClick={() => setQuantity(quantity + 1)}>Add More</button>
+        <label htmlFor="quantity">Quantity</label>
+        <input
+            type="number"
+            min='0'
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            step="1"
+          />
       </div>
 
       <button className="submit-button" onClick={handleDrinkData}>

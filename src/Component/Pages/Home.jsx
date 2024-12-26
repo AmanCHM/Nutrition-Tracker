@@ -33,8 +33,8 @@ import NutritionModal from "../Modals/NutritionModal";
 import EditDataModal from "../Modals/EditDataModal";
 import ImageSearch from "./ImageSearch";
 import DrinkModal from "../Modals/DrinkModal";
-
-
+import Progress from 'rsuite/Progress';
+import 'rsuite/Progress/styles/index.css';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -59,11 +59,8 @@ const Home = () => {
   const [totalWater,setTotalWater] = useState();
  const [totalAlcohol,setTotalAlcohol] = useState();
  const [totalCaffeine, setTotalCaffeine] =useState();
+ const [dataUpdated,setDataUpdated]= useState(false)
 
-  const loader = useSelector((state) => state.loaderReducer.loading);
-  const { caffeine, alcohol, water } = useSelector(
-    (state) => state.waterReducer
-  );
 
   // console.log(totalWater)
   const dispatch = useDispatch();
@@ -79,6 +76,14 @@ const Home = () => {
     setInputValue(query);
   };
 
+  
+
+  const style = {
+    width: 120,
+    display: 'inline-block',
+    marginRight: 10
+  };
+  
   const groupedOptions = [
     {
       label: "Common Foods",
@@ -347,34 +352,12 @@ const Home = () => {
     breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
   const requiredCarlorie = dailycalorie - totalCalories;
+ 
 
-  //pie chart
+  const progressPercent = Math.floor((totalCalories / dailycalorie) * 100);
 
-  const chartData = {
-    labels: ["Consumed Calorie", "Required Calorie"],
-    datasets: [
-      {
-        label: ["RequiredCalorie"],
-        data: [totalCalories, requiredCarlorie],
-        backgroundColor: ["#e77f67"],
-        hoverOffset: 1,
-      },
-    ],
-  };
 
-  const totalConsumedCalories = totalCalories;
-  const remainingCalories = Math.max(
-    requiredCarlorie - totalConsumedCalories,
-    0
-  ); 
-
-  // Calculate the total calories consumed from the dataset
-  const totalCaloriesFromDataset = chartData.datasets[0].data.reduce(
-    (a, b) => a + b,
-    0
-  );
-
-  //doughnut Data
+  //doughnut Data 
 
   const doughnutdata = {
     labels: ["Breakfast", "Lunch", "Snack", "Dinner"],
@@ -383,9 +366,10 @@ const Home = () => {
         data: [breakfastCalorie, lunchCalorie, snackCalorie, dinnerCalorie],
         backgroundColor: [
           "rgb(255, 99, 132)",
+         
           "rgb(54, 162, 235)",
-          "rgb(255, 205, 86)",
-          "#e66767", // Dinner
+          "#afc0d9",
+          "#D1C28A",
         ],
       },
     ],
@@ -438,8 +422,9 @@ const Home = () => {
     }
   };
 
- 
+  // drinkdata modal
   const getDrinkData = async (user) => {
+    console.log("inside drinkData");
     try {
       dispatch(showLoader());
       if (!user) {
@@ -451,8 +436,8 @@ const Home = () => {
       const docRef = doc(db, "users", userId, "dailyLogs", date);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        const drinkData = docSnap.data();
-        setDrinkData(drinkData);
+        const getData = docSnap.data();
+        setDrinkData(getData);
       } else {
         setDrinkData({});
       }
@@ -464,33 +449,32 @@ const Home = () => {
   };
 
   useEffect(() => {
-    console.log("inside the getDrink data")
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       getDrinkData(user);
       if (user) {
-    //  dispatch(showLoader())
       } else {
         console.log("No user authenticated");
-        setloading(false);
       }
     });
-
     return () => unsubscribe();
-  }, []);
+  }, [dataUpdated]);
 
-  const calculateTotals = () => {
-    const waterTotal = drinkData?.water?.reduce((acc, item) => acc + item.totalAmount, 0) || 0;
-    const alcoholTotal = drinkData?.alcohol?.reduce((acc, item) => acc + item.totalAmount, 0) || 0;
-    const caffeineTotal = drinkData?.caffeine?.reduce((acc, item) => acc + item.totalAmount, 0) || 0;
-   
-
-    console.log("water",waterTotal)
-    // Update state after calculations
-    setTotalWater(waterTotal);
-    setTotalAlcohol(alcoholTotal);
-    setTotalCaffeine(caffeineTotal);
+  const handleDataUpdated = () => {
+    setDataUpdated((prev) => !prev); 
   };
 
+  const calculateTotals = () => {
+  const calculateDrinkTotals = (drinkData) => {
+    return drinkData?.length > 0
+      ? drinkData.reduce((total, item) => total + item.totalAmount, 0)
+      : 0;
+  };
+  setTotalWater(calculateDrinkTotals(drinkData?.Water));
+  setTotalAlcohol(calculateDrinkTotals(drinkData?.Alcohol));
+  setTotalCaffeine(calculateDrinkTotals(drinkData?.Caffeine));
+
+}
+  
   // Calculate totals when drinkData changes
   useEffect(() => {
     if (drinkData) {
@@ -503,7 +487,7 @@ const Home = () => {
     <>
       <Navbar />
       <div className="search">
-        <h1 id="header-text">Enter Your Meals Below</h1>
+        <h1 id="header-text">Search  Your Meals Below</h1>
 
         <Select
           id="search-box"
@@ -511,6 +495,7 @@ const Home = () => {
           onChange={handleSelect}
           onInputChange={handleSearch}
           placeholder="Search here ..."
+          className="search-bar"
         />
       </div>
 
@@ -526,7 +511,7 @@ const Home = () => {
           </span>
           AI Food Search
         </button>
-        <Modal isOpen={imageModal}>
+        <Modal isOpen={imageModal}   >
           <ImageSearch
             setImageModal={setImageModal}
             setImageData={setImageData}
@@ -564,7 +549,7 @@ const Home = () => {
           <div className="meal-section">
             <div>
               <label className="table-label">
-                Breakfast : {breakfastCalorie} kcal
+              <strong>BreakFast :</strong> {breakfastCalorie} kcal
               </label>
             </div>
 
@@ -625,7 +610,7 @@ const Home = () => {
             </div>
           </div>
           <div className="meal-section">
-            <label className="table-label">Lunch :{lunchCalorie} kcal</label>
+            <label className="table-label"><strong>Lunch :</strong>{lunchCalorie} kcal</label>
             <table className="meal-table">
               <thead>
                 <tr>
@@ -682,7 +667,7 @@ const Home = () => {
           </div>
 
           <div className="meal-section">
-            <label className="table-label">Snack :{snackCalorie} kcal</label>
+            <label className="table-label"><strong>Snack :</strong>{snackCalorie} kcal</label>
             <table className="meal-table">
               <thead>
                 <tr id="header-color">
@@ -738,7 +723,7 @@ const Home = () => {
           </div>
 
           <div className="meal-section">
-            <label className="table-label">Dinner :{dinnerCalorie} kcal</label>
+            <label className="table-label"> <strong>Dinner :</strong>{dinnerCalorie} kcal</label>
             <table className="meal-table">
               <thead>
                 <tr>
@@ -794,68 +779,21 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="stacked-progress-bar-container">
-          <h2
-            style={{ marginTop: "7%", color: "darkgrey", fontSize: "2.5rem" }}
+
+
+   
+        <div className="progress-line" style={{height:'20vh', width:"50vw", }}>
+        <h2
+            style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.0rem" }}
           >
-            Progress Towards Daily Goal
+            {" "}
+            Today Progress Report
           </h2>
-          <div className="stacked-progress-bar">
-            {doughnutdata.labels.map((label, index) => {
-              const value = chartData.datasets[0].data[index];
-              const percentage = (value / totalCaloriesFromDataset) * 100;
-              const color = chartData.datasets[0].backgroundColor[index];
 
-              return (
-                <div
-                  key={index}
-                  className="progress-segment"
-                  style={{
-                    width: `${percentage}%`,
-                    backgroundColor: color,
-                  }}
-                  title={`${label}: ${value} kcal (${Math.round(percentage)}%)`}
-                ></div>
-              );
-            })}
+      <Progress.Line percent={progressPercent}  status="active"  strokeColor="#e15f41"  />
 
-            {remainingCalories > 0 && (
-              <div
-                className="progress-segment"
-                style={{
-                  width: `${(remainingCalories / requiredCarlorie) * 100}%`,
-                  backgroundColor: "#ccc",
-                }}
-                title={`Remaining Calories: ${remainingCalories} kcal`}
-              ></div>
-            )}
 
-            <div style={{ marginTop: "20px", textAlign: "center" }}>
-              <p>
-                <strong>Total Consumed Calories:</strong>{" "}
-                {totalConsumedCalories} kcal
-              </p>
-              <p>
-                <strong>Required Calories:</strong> {requiredCarlorie} kcal
-              </p>
-            </div>
-          </div>
-
-          <div className="stacked-progress-labels">
-            {chartData.labels.map((label, index) => (
-              <div key={index} className="label-item">
-                <span
-                  className="label-color"
-                  style={{
-                    backgroundColor:
-                      chartData.datasets[0].backgroundColor[index],
-                  }}
-                ></span>
-                {label}
-              </div>
-            ))}
-          </div>
-        </div>
+   </div>
         <div className="total-calorie">
           <h2
             style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.5rem" }}
@@ -880,6 +818,9 @@ const Home = () => {
             </div>
           </div>
         </div>
+
+      
+      
 
         {/* <Bar data={bardata} options={options}/> */}
       </section>
@@ -926,41 +867,76 @@ const Home = () => {
         <Modal isOpen={showDrinkModal}>
           <DrinkModal
             setShowDrinkModal={setShowDrinkModal}
-  
+              onDataUpdated= {handleDataUpdated}
           />
         </Modal>
 
-        <div className="drink-details">
-          <label htmlFor="">
-            {" "}
-            <img
-              src="./src/assets/images/glass-of-water.png"
-              alt=""
-              style={{ height: "60px" }}
-            />
-            {totalWater}ml
-          </label>
+        <div style={{ width: "100%", margin: "20px auto" }}>
+  {/* <h2 style={{ textAlign: "center", color: "#2980b9" }}>Drink Details</h2> */}
+  <table
+    style={{
+      width: "40%",
+      borderCollapse: "collapse",
+      textAlign: "center",
+      fontSize: "1rem",
+      color: "#2c3e50",
+      marginTop: "10px",
+      marginLeft:"30%",
+      borderRadius:"2px"
+    }}
+  >
+    <thead>
+      <tr style={{ backgroundColor: "#f4f6f7" }}>
+        <th style={{ padding: "7px", border: "1px solid #ddd",color:"white" ,backgroundColor:"#aa6f5e" ,borderRadius:'2px'}}>Drink</th>
+        <th style={{ padding: "7px", border: "1px solid #ddd",color:"white" ,backgroundColor:"#aa6f5e" ,borderRadius:'2px' }}>Total Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style={{ padding: "12px", border: "1px solid #ddd" }}>
+          <img
+            src="./src/assets/images/glass-of-water.png"
+            alt="Water"
+            style={{ height: "60px" }}
+          />
+          <p style={{ margin: "2px 0", fontWeight: "bold" }}>Water</p>
+        </td>
+        <td style={{ padding: "12x", border: "1px solid #ddd" }}>{totalWater} ml</td>
+      </tr>
+      <tr style={{ backgroundColor: "#f9f9f9" }}>
+        <td style={{ padding: "12px", border: "1px solid #ddd" }}>
+          <img
+            src="./src/assets/images/beer.png"
+            alt="Alcohol"
+            style={{ height: "60px" }}
+          />
+          <p style={{ margin: "2px 0", fontWeight: "bold" }}>Alcohol</p>
+        </td>
+        <td style={{ padding: "12px", border: "1px solid #ddd" }}>{totalAlcohol} ml</td>
+      </tr>
+      <tr>
+        <td style={{ padding: "12px", border: "1px solid #ddd" }}>
+          <img
+            src="./src/assets/images/coffee.png"
+            alt="Caffeine"
+            style={{ height: "60px" }}
+          />
+          <p style={{ margin: "2px 0", fontWeight: "bold" }}>Caffeine</p>
+        </td>
+        <td style={{ padding: "12px", border: "1px solid #ddd" }}>{totalCaffeine} ml</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-          <label htmlFor="">
-            {" "}
-            <img
-              src="./src/assets/images/beer.png"
-              alt=""
-              style={{ height: "60px" }}
-            />{" "}
-            {totalAlcohol}ml
-          </label>
-          <label htmlFor="">
-            {" "}
-            <img
-              src="./src/assets/images/coffee.png"
-              alt=""
-              style={{ height: "60px" }}
-            />{" "}
-            {totalCaffeine}ml
-          </label>
-        </div>
       </div>
+
+{/* 
+      <div className="progress-line" style={{height:'20vh', width:"70vw", marginLeft:"15%"}}>
+<Progress.Line percent={(requiredCarlorie/totalCalories)*100}   />
+
+
+   </div> */}
       <Footer className="footer" />
     </>
   );

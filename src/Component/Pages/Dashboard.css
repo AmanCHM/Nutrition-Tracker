@@ -17,10 +17,10 @@ body {
 
   .select-date{
      
-      width: 100%;
+      /* width: 100%;  */
       /* margin-left: 45vw; */
       margin-top: 0%;
-      height: 30vh;
+      height: 35vh;
       background-image: url('https://pro-saas-system-multitenant-assets.s3.amazonaws.com/azumio-inc/2017/06/23/CM-top-banner-d0932c4096f40667.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA54NROH55VDD7YDVV%2F20241224%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241224T080512Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=17ac846a07676b12cacab422f35210d9a5cc11dbc7a30d3f05b51944c4e2d329');
       background-size: 100vw; 
       background-position: center; 
@@ -30,7 +30,7 @@ body {
     display: block;
     width: 25%;
     height: 5%;
-    margin-top: 1%;
+    margin-top: 5px;
     margin-left: 38vw;
     padding: 30px;
     border: 1px solid #ccc;
@@ -59,10 +59,11 @@ body {
     width: 50%;
    margin-left: 25%;
   }
-  #selectDate-header{
+  .selectDate-header{
   text-align: center;
   color: rgb(240, 239, 239);
-  font-size: 2.5rem
+  font-size: 2.5rem;
+  padding: 20px
   }
 
   .reports.dada{

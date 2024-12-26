@@ -18,15 +18,16 @@ const EditDataModal = ({
     <>
       <div>
         <button className="close-button" onClick={() => setModal(false)}>
-          x
+          X
         </button>
         <h2 className="modal-title" style={{ color: "black" }}>
           Update Meal
         </h2>
 
-        <label>
-          <strong>{selectedFoodData?.foods[0]?.food_name}</strong>
-        </label>
+        <h3 style={{ color: "#063970", textAlign:'center', paddingTop:'10px'}}>{selectedFoodData?.foods[0]?.food_name?.charAt(0).toUpperCase() + 
+selectedFoodData?.foods[0]?.food_name?.slice(1)
+}</h3>
+       
 
         <div className="input-container">
           <label>Choose Quantity</label>
@@ -59,6 +60,7 @@ const EditDataModal = ({
                   }
                 : null
             }
+            
             onChange={(selectedOption) => setSelectquantity(selectedOption.value)}
           />
         </div>

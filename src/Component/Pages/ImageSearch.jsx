@@ -144,26 +144,27 @@ const ImageSearch = ({
 
 
   const options = [
-  {value:"choose" , label:"Choose here",},
-     {value:"Breakfast" ,label:"Breakfast"},
-    { value:"Lunch" ,label:"Lunch"},
-   { value:"Snack", label:"Snack"},
-    {value:"Dinner" ,label:"Dinner"}
+    { value: "choose", label: "Choose here" },
+    { value: "Breakfast", label: "Breakfast" },
+    { value: "Lunch", label: "Lunch" },
+    { value: "Snack", label: "Snack" },
+    { value: "Dinner", label: "Dinner" },
   ]
 
 
   return (
     <>
  
-    <button
+    <span
       className="close-button"
       onClick={() => setImageModal(false)}
+      style={{color:'black', backgroundColor:'white', padding:'5px',cursor:'pointer'}} 
     >
       X
-    </button>
+    </span>
   
     <div className="image-search-container">
-      <h2 className="title">Upload Your Image
+      <h2 className="title"> Recognize Food Facts
 </h2>
 
       <div className="upload-section">
@@ -197,50 +198,50 @@ const ImageSearch = ({
           <h2>Nutrition Information</h2>
           <h3>{name}</h3>
           <table
-            border="1"
-            style={{ width: "100%", borderCollapse: "collapse" }}
-          >
-            <thead>
-              <tr>
-                <th>Nutrient</th>
-                <th>Quantity</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Calories</td>
-                <td>{calories} kcal</td>
-              </tr>
-              <tr>
-                <td>Carbohydrates</td>
-                <td>{carbohydrates} g</td>
-              </tr>
-              <tr>
-                <td>Fat</td>
-                <td>{fat} g</td>
-              </tr>
-              <tr>
-                <td>Protein</td>
-                <td>{protein} g</td>
-              </tr>
-            </tbody>
-          </table>
-          <div>
-        <label className="meal-label">Choose Meal</label>
+    style={{
+      width: "100%",
+      borderCollapse: "collapse",
+      marginTop: "20px",
+      fontSize: "1rem",
+      color: "#2c3e50",
+      textAlign: "left",
+    }}
+  >
+    <thead>
+      <tr style={{ backgroundColor: "#f4f6f7" }}>
+        <th style={{ padding: "10px", borderBottom: "2px solid #ddd" }}>Nutrient</th>
+        <th style={{ padding: "10px", borderBottom: "2px solid #ddd" }}>Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Calories</td>
+        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>{calories} kcal</td>
+      </tr>
+      <tr style={{ backgroundColor: "#f9f9f9" }}>
+        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Carbohydrates</td>
+        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>{carbohydrates} g</td>
+      </tr>
+      <tr>
+        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Fat</td>
+        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>{fat} g</td>
+      </tr>
+      <tr style={{ backgroundColor: "#f9f9f9" }}>
+        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Protein</td>
+        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>{protein} g</td>
+      </tr>
+    </tbody>
+  </table>
+          <div style={{marginTop:'30px'}}>
+        {/* <label className="meal-label" >Choose Meal</label> */}
 
-        <GlobalSelect>
-         option = {  options }      
-         
-        onChange={(e) => setSelectCategory(e.target.value)}
-        </GlobalSelect>
-        <select
-          className="meal-select"
-          name="meal-category"
-          id="meal-category"
-          onChange={(e) => setSelectCategory(e.target.value)}
-        >
-        
-        </select>
+        <GlobalSelect
+          options={options}
+          onChange={(selectedOption) => setSelectCategory(selectedOption.value)}
+          placeholder="Choose  meal"
+          isSearchable={false}
+        />
+  
       </div>
   
 

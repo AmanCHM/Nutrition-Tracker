@@ -1,8 +1,8 @@
 
-  .modal-content {
-    background-color: #b0c6d5;
+.modal-content {
+    background-color: #efeeec;
 
-
+ margin-top: 0;
     padding: 20px;
     border-radius: 8px;
     width: auto;
@@ -26,6 +26,6 @@
   }
   
   p{
-    color: rgb(47, 47, 47);
+    color: rgb(186, 186, 186);
   }
   

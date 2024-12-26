@@ -10,6 +10,7 @@ import { RiAccountCircleFill } from "react-icons/ri";
 import { CgLogIn } from "react-icons/cg";
 
 import LogoutModal from "../Modals/LogoutModal";
+import { toast } from "react-toastify";
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -17,6 +18,17 @@ const Navbar = () => {
   const [isModalOpen,setIsModalOpen]=useState(false);
 
   const [email,setEmail]= useState();
+
+  const customStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+    },
+  };
   const handleLogout = () => {
 
 
@@ -49,7 +61,7 @@ const Navbar = () => {
         <div id="company-name">Nutrition Tracker</div>
 
         {islogged === false ? (
-          <div className="navbar">
+          <div className="navbar-login">
             <NavLink to={"/"}>Home</NavLink>
 
             <NavLink to={"/aboutus"}>About</NavLink>
@@ -59,7 +71,7 @@ const Navbar = () => {
         )}
 
         {islogged ? (
-          <div className="navbar">
+          <div className="navbar-login">
               <NavLink to={"/"}>Home</NavLink>
             <NavLink to={"/home"}>Dashboard</NavLink>
             {/* <NavLink to={"/image-search"}>ImageSearch</NavLink> */}
@@ -77,16 +89,17 @@ const Navbar = () => {
              <RiAccountCircleFill size={40} onClick={handleModal}/>
            
           ) : (
-             <CgLogIn  size={35}  onClick={handleLogin} />
+            <span  className="login-span" onClick={handleLogin}   style={{fontSize:"1.1rem" }}> Login    </span>
           )}
         </div>
 
-        <Modal isOpen={isModalOpen}  >
+        <Modal isOpen={isModalOpen}  style={customStyles} >
               <LogoutModal
               onClose={() => setIsModalOpen(false)}
-              onConfirm={() => {
+                onConfirm={() => {
                 handleLogout();
                 setIsModalOpen(false);
+                toast.success("Logged out successfully");
               }}
             />
             </Modal>

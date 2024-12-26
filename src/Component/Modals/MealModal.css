@@ -38,20 +38,10 @@
     padding: 10px;
     margin-top: 5px;
     font-size: 1rem;
-    border-radius: 8px;
-    border: 1px solid #4d6a92;
-    background-color: #6686a7;
     color: #e5e7eb;
-    transition: border-color 0.3s ease, background-color 0.3s ease;
+
   }
-  
-  .input-container input:focus,
-  .select-container select:focus,
-  .meal-select:focus {
-    outline: none;
-    border-color: #588bdb;
-    background-color: #585656;
-  }
+
   
   .calorie-info {
     color: #333333;

@@ -121,7 +121,7 @@ const Dashboard = () => {
       <div className="select-date">
         
 
-      <h3 id="selectDate-header" >Select Date</h3>
+      <h3 className="selectDate-header" >Select Date</h3>
         <input
           type="Date"
           className="date-input"

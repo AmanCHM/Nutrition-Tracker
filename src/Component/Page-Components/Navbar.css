@@ -6,7 +6,7 @@
     padding: 0 2rem;
     background-color: rgb(253, 250, 250);
     height: 4rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);  
   }
   
   #company-name {
@@ -63,5 +63,15 @@
     display: inline-block;
     margin: 0 1.5rem;
   }
-  
-  
+
+.login-span{
+  height:35px   ;
+  width:70px;
+  padding-left: 10px;
+  border-radius: 3px;
+}  
+  .login-span:hover{
+    background-color: #a29e9e;
+    cursor: pointer;
+    color: rgb(244, 242, 242);
+  }

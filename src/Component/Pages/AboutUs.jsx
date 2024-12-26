@@ -43,7 +43,7 @@ const AboutUs = () => {
       </section>
 
       <section className="about-team">
-        <h2>Meet Our Team</h2>
+        <h2 style={{color:"rgb(137, 130, 130)"}}>Meet Our Team</h2>
       </section>
 
       <Footer />

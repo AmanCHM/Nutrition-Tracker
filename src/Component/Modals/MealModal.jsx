@@ -34,10 +34,7 @@ const MealModal = ({
   ];
 
 
-  const quantityOptions = Array.from({ length: 10 }, (_, i) => ({
-    value: i + 1,
-    label: `${i + 1}`,
-  }));
+ 
 
   return (
     <>
@@ -46,12 +43,13 @@ const MealModal = ({
           X
         </button>
         <h2>Select Meal</h2>
-        <h3 style={{ fontSize: "1.3rem" }}>
-          <strong>{selectedFoodData?.foods[0]?.food_name}</strong>
-        </h3>
+        <h3 style={{ color: "#063970", textAlign:'center', paddingTop:'10px'}}>{selectedFoodData?.foods[0]?.food_name?.charAt(0).toUpperCase() + 
+selectedFoodData?.foods[0]?.food_name?.slice(1)
+}</h3>
+       
         <div className="input-container">
           <label>Choose Quantity</label>
-          <label>Choose Quantity</label>
+          {/* <label>Choose Quantity</label> */}
           <input
             type="number"
             min='0'

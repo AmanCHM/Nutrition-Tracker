@@ -84,7 +84,7 @@ const UserInfo = () => {
           />
         </div>
 
-        <button type="submit" style={{ color: "white", fontSize: "17px" }}>
+        <button type="submit" style={{ color: "white", fontSize: "17px", marginLeft:'130px' }}>
           Next
         </button>
       </form>

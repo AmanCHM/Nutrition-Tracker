@@ -19,10 +19,10 @@ const ShowCalorie = () => {
 
   if (goal === "loose") {
     recommendedCalories = calories;
-    goalDescription = "to lose  1 kg weight/week ";
+    goalDescription = "to lose  0.5 kg weight/week ";
   } else if (goal === "gain") {
     recommendedCalories = calories;
-    goalDescription = "to gain 1 kg weight/week";
+    goalDescription = "to gain 0.5 kg weight/week";
   } else {
     recommendedCalories = calories;
     goalDescription = "to maintain weight";

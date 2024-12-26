@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import {  ToastContainer, toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,33 +29,27 @@ const Login = () => {
     validationSchema: Yup.object({
       email: Yup.string().email("Invalid email address").required("Required"),
       password: Yup.string()
-        .min(8, "Must be 8 characters")
-        .required("Required"),
+      .min(8, "Must be 8 characters")
+      .required("Required"),
     }),
     onSubmit: async (values) => {
       dispatch(showLoader());
       const { email, password } = values;
-
-    await  signInWithEmailAndPassword(auth, email, password)
-        
-     
-        .then((userCredential) => {
-          const user = userCredential.user;
-          dispatch(loggedin());
-          toast.success("Login successful!");
-          alert("successfully logged in")
-        })
-        .then(() => {
-          navigate("/home");
-        }) 
-
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          toast.error("Login not successful");
-          console.log(errorCode, errorMessage);
-        });
-      dispatch(hideLoader());
+    
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        toast.success('Logged in Successfully');
+        dispatch(loggedin());
+        navigate("/home");
+      } catch (error) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        toast.error("Login not successful");
+        console.log(errorCode, errorMessage);
+      } finally {
+        dispatch(hideLoader());
+      }
     },
   });
 
@@ -127,9 +121,10 @@ const Login = () => {
             </Link>
           </p>
         </form>
-        <ToastContainer />
+        {/* <ToastContainer/> */}
       </div>
       </div>
+       
     </>
   );
 };

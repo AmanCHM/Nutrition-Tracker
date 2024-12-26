@@ -96,12 +96,9 @@
     margin-top: auto;
   }
 
+.login-page{
+  height: 100%;
+  width: 100vw;
+}
 
-
-  /* .login-page{
-    background-image: url("https://cdn1.cronometer.com/wf-2024-12-18/images/image-overlay-home.svg");
-    background-size:cover; 
   
-    background-position: center; 
-    background-repeat: no-repeat; 
-  } */
