@@ -1,9 +1,9 @@
 import React from "react";
 import "./NutritionModal.css";
 
+import GlobalSelect from './../Page-Components/Globalselect';
 
 const EditDataModal = ({
- 
   setModal,
   quantity,
   setQuantity,
@@ -14,68 +14,70 @@ const EditDataModal = ({
   calculateCalories,
   handleEditModalData,
 }) => {
-
-
-
-    
   return (
     <>
+      <div>
+        <button className="close-button" onClick={() => setModal(false)}>
+          x
+        </button>
+        <h2 className="modal-title" style={{ color: "black" }}>
+          Update Meal
+        </h2>
 
-    <div >
-      <button className="close-button"  onClick={() => setModal(false)}>
-        x
-      </button>
-      <h2 className="modal-title" style={{color:"black"}}>Update Meal</h2>
+        <label>
+          <strong>{selectedFoodData?.foods[0]?.food_name}</strong>
+        </label>
 
-      <label > <strong>{selectedFoodData?.foods[0]?.food_name}</strong></label>
+        <div className="input-container">
+          <label>Choose Quantity</label>
+          <input
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            step="1"
+          />
+        </div>
 
-      <div className="input-container">
-        <label>Choose Quantity</label>
-        <input
-          type="number"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          step="1"
+        <div className="select-container">
+          <label>Select Slices</label>
+          <GlobalSelect
+            options={
+              selectedFoodData?.foods.flatMap((food, foodIndex) =>
+                food.alt_measures.map((measure, index) => ({
+                  value: measure.serving_weight,
+                  label: measure.measure,
+                }))
+              )
+            }
+            value={
+              selectquantity
+                ? {
+                    value: selectquantity,
+                    label: selectedFoodData?.foods
+                      .flatMap((food) => food.alt_measures)
+                      .find((measure) => measure.serving_weight === selectquantity)?.measure,
+                  }
+                : null
+            }
+            onChange={(selectedOption) => setSelectquantity(selectedOption.value)}
+          />
+        </div>
+
+        <label className="meal-label">Choose Meal</label>
+        <GlobalSelect
+          options={[
+            { value: "Breakfast", label: "Breakfast" },
+            { value: "Lunch", label: "Lunch" },
+            { value: "Snack", label: "Snack" },
+            { value: "Dinner", label: "Dinner" },
+          ]}
+          onChange={(selectedOption) => setSelectCategory(selectedOption.value)}
         />
-      </div>
 
-      <div className="select-container">
-        <label>Select Slices</label>
-        <select
-          onChange={(e) => setSelectquantity(e.target.value)}
-        >
-          {selectedFoodData?.foods.map((food, foodIndex) =>
-            food.alt_measures.map((measure, index) => (
-              <option
-                key={`${foodIndex}-${index}`}
-                value={measure.serving_weight}
-              >
-                {` ${measure.measure} `}
-              </option>
-            ))
-          )}
-        </select>
-      </div>
-
-      <label className="meal-label">Choose Meal</label>
-      <select
-        className="meal-select"
-        name="meal-category"
-        id="meal-category"
-        onChange={(e) => setSelectCategory(e.target.value)}
-      >
-        <option value="choose">Choose here</option>
-        <option value="Breakfast">Breakfast</option>
-        <option value="Lunch">Lunch</option>
-        <option value="Snack">Snack</option>
-        <option value="Dinner">Dinner</option>
-      </select>
-      <p className="calorie-info">
-        Calorie Served: {Math.round(calculateCalories)}
-      </p>
-      <button className="add-meal-button" onClick={handleEditModalData}>
-        Update Meal
-      </button>
+        <p className="calorie-info">Calorie Served: {Math.round(calculateCalories)}</p>
+        <button className="add-meal-button" onClick={handleEditModalData}>
+          Update Meal
+        </button>
       </div>
     </>
   );

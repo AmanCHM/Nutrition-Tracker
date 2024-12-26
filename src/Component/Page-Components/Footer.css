@@ -1,32 +1,25 @@
-
-
-
-
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  margin: 0;
-}
-
-.main-content {
-  flex: 1;
-}
-
+/* Footer Styles */
 
 .footer {
-  background-color: #121929;
+  background-color: #1b242e;
   color: white;
   padding: 20px 0;
-  width: 100
+  font-family: Arial, sans-serif;
 }
 
 .footer-container {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 0 20px;
   flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-logo-section h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #c6c3be;
 }
 
 .footer-section {
@@ -38,35 +31,76 @@ body {
 .footer-section h4 {
   font-size: 18px;
   margin-bottom: 10px;
+  color: #c2bfb9;
 }
 
-.footer-section p,
-.footer-section ul {
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.footer-section ul {
+.footer-links {
   list-style: none;
   padding: 0;
+  
 }
 
-.footer-section ul li a {
-  text-decoration: none;
+.footer-links li {
+  margin-bottom: 8px;
+  color: rgb(59, 58, 58);
+}
+
+.footer-links a {
   color: white;
-  transition: color 0.3s ease;
+  text-decoration: none;
+  transition: color 0.3s;
 }
 
-.footer-section ul li a:hover {
-  color: #ffdd57;
+.footer-links a:hover {
+  color: #ff9800;
+}
+
+.footer-section p {
+  margin: 5px 0;
+}
+
+.footer-input {
+  padding: 10px;
+  width: calc(100% - 20px);
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+}
+
+.footer-button {
+  padding: 10px 20px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.footer-button:hover {
+  background-color: #e68a00;
 }
 
 .footer-bottom {
   text-align: center;
+  padding: 10px 20px;
+  border-top: 1px solid #444;
   margin-top: 20px;
-  font-size: 14px;
 }
 
-p {
-  color: rgb(235, 225, 225);
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.social-icons a {
+  color: rgb(80, 64, 64);
+  font-size: 20px;
+  transition: color 0.3s;
+}
+
+.social-icons a:hover {
+  color: #ff9800;
 }

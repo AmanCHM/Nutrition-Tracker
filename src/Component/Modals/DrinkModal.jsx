@@ -35,7 +35,7 @@ const DrinkModal = ({ setShowDrinkModal }) => {
       };
         const newData = { [drinkType]: arrayUnion(data) };
           await setDoc(docRef,newData , { merge: true })
-        console.log(newData);
+        // console.log(newData);
     } catch (error) {
       console.log(error);
     } finally {

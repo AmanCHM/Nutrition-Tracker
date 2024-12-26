@@ -33,7 +33,7 @@ import NutritionModal from "../Modals/NutritionModal";
 import EditDataModal from "../Modals/EditDataModal";
 import ImageSearch from "./ImageSearch";
 import DrinkModal from "../Modals/DrinkModal";
-import { setWater } from "../../Redux/waterSlice";
+
 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -65,6 +65,7 @@ const Home = () => {
     (state) => state.waterReducer
   );
 
+  // console.log(totalWater)
   const dispatch = useDispatch();
   
   //food suggestion search bar
@@ -365,7 +366,7 @@ const Home = () => {
   const remainingCalories = Math.max(
     requiredCarlorie - totalConsumedCalories,
     0
-  ); // Remaining calories
+  ); 
 
   // Calculate the total calories consumed from the dataset
   const totalCaloriesFromDataset = chartData.datasets[0].data.reduce(
@@ -463,6 +464,7 @@ const Home = () => {
   };
 
   useEffect(() => {
+    console.log("inside the getDrink data")
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       getDrinkData(user);
       if (user) {
@@ -476,23 +478,27 @@ const Home = () => {
     return () => unsubscribe();
   }, []);
 
- 
+  const calculateTotals = () => {
+    const waterTotal = drinkData?.water?.reduce((acc, item) => acc + item.totalAmount, 0) || 0;
+    const alcoholTotal = drinkData?.alcohol?.reduce((acc, item) => acc + item.totalAmount, 0) || 0;
+    const caffeineTotal = drinkData?.caffeine?.reduce((acc, item) => acc + item.totalAmount, 0) || 0;
+   
 
- const Water  =drinkData?.water?.map((item)=>{
-    setWater(totalWater+=item.totalAmount)
-  });
+    console.log("water",waterTotal)
+    // Update state after calculations
+    setTotalWater(waterTotal);
+    setTotalAlcohol(alcoholTotal);
+    setTotalCaffeine(caffeineTotal);
+  };
 
-  const Alcohol = drinkData?.alcohol?.map((item)=>{
-    setWater(totalAlcohol+=item.totalAmount)
-  });
+  // Calculate totals when drinkData changes
+  useEffect(() => {
+    if (drinkData) {
+      calculateTotals();
+    }
+  }, [drinkData]);
 
-
-  const Caffeine = drinkData?.caffeine?.map((item)=>{
-    setWater(totalCaffeine+=item.totalAmount)
-  });
-
-
- console.log("drinkData",drinkData?.Water[0]?.totalAmount);
+  
   return (
     <>
       <Navbar />
@@ -932,7 +938,7 @@ const Home = () => {
               alt=""
               style={{ height: "60px" }}
             />
-            {Water}ml
+            {totalWater}ml
           </label>
 
           <label htmlFor="">

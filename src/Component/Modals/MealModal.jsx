@@ -1,6 +1,8 @@
 import React from "react";
+import Select from "react-select";
 import "./MealModal.css";
-import { Modal } from "react-modal";
+
+import GlobalSelect from './../Page-Components/Globalselect';
 
 const MealModal = ({
   modal,
@@ -14,19 +16,41 @@ const MealModal = ({
   calculateCalories,
   handleModalData,
 }) => {
+  // Prepare options for react-select
+  const sliceOptions = selectedFoodData?.foods.flatMap((food, foodIndex) =>
+    food.alt_measures.map((measure, index) => ({
+      value: measure.serving_weight,
+      label: measure.measure,
+      key: `${foodIndex}-${index}`,
+    }))
+  );
+
+  const mealOptions = [
+    { value: "choose", label: "Choose here" },
+    { value: "Breakfast", label: "Breakfast" },
+    { value: "Lunch", label: "Lunch" },
+    { value: "Snack", label: "Snack" },
+    { value: "Dinner", label: "Dinner" },
+  ];
+
+
+  const quantityOptions = Array.from({ length: 10 }, (_, i) => ({
+    value: i + 1,
+    label: `${i + 1}`,
+  }));
 
   return (
     <>
-      <div className="" >
+      <div>
         <button className="close-button" onClick={() => setModal(false)}>
           X
         </button>
-        <h2  >Select Meal</h2>
+        <h2>Select Meal</h2>
         <h3 style={{ fontSize: "1.3rem" }}>
-          {" "}
           <strong>{selectedFoodData?.foods[0]?.food_name}</strong>
         </h3>
         <div className="input-container">
+          <label>Choose Quantity</label>
           <label>Choose Quantity</label>
           <input
             type="number"
@@ -39,38 +63,23 @@ const MealModal = ({
 
         <div className="select-container">
           <label>Select Slices</label>
-          <select
-            onChange={(e) => setSelectquantity(e.target.value)}
-          >
-            {selectedFoodData?.foods.map((food, foodIndex) =>
-              food.alt_measures.map((measure, index) => (
-                <option
-                  key={`${foodIndex}-${index}`}
-                  value={measure.serving_weight}
-                >
-                  {` ${measure.measure} `}
-                </option>
-              ))
-            )}
-          </select>
+          <GlobalSelect
+            options={sliceOptions}
+            onChange={(selectedOption) => setSelectquantity(selectedOption.value)}
+            placeholder="Select slice"
+            isSearchable={true}
+          />
         </div>
 
         <label className="meal-label">Choose Meal</label>
-        <select
-          className="meal-select"
-          name="meal-category"
-          id="meal-category"
-          onChange={(e) => setSelectCategory(e.target.value)}
-        >
-          <option value="choose">Choose here</option>
-          <option value="Breakfast">Breakfast</option>
-          <option value="Lunch">Lunch</option>
-          <option value="Snack">Snack</option>
-          <option value="Dinner">Dinner</option>
-        </select>
-        <p className="calorie-info">
-          Calorie Served: {Math.round(calculateCalories)}
-        </p>
+        <GlobalSelect
+          options={mealOptions}
+          onChange={(selectedOption) => setSelectCategory(selectedOption.value)}
+          placeholder="Choose a meal"
+          isSearchable={false}
+        />
+
+        <p className="calorie-info">Calorie Served: {Math.round(calculateCalories)}</p>
         <button className="add-meal-button" onClick={handleModalData}>
           Add Meal
         </button>

@@ -14,7 +14,7 @@
   .modalClose-button {
     margin-top: 60%;
     margin-left: 40%;
-    background-color: #ff784b;
+    background-color: #62230e;
     color: white;
     border: none;
     border-radius: 4px;
@@ -22,7 +22,7 @@
   }
   
   .close-button:hover {
-    background-color: #ff784b;
+    background-color: #5f230f;
   }
   
   p{
