@@ -351,6 +351,8 @@ const Home = () => {
   const totalCalories =
     breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
+
+    
   const requiredCarlorie = dailycalorie - totalCalories;
  
 
@@ -782,17 +784,20 @@ const Home = () => {
 
 
    
-        <div className="progress-line" style={{height:'20vh', width:"50vw", }}>
+        <div className="progress-line" style={{height:'auto', width:"50vw", }}>
         <h2
             style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.0rem" }}
           >
             {" "}
             Today Meal Progress Report
           </h2>
-
+          <div  style={{margin:'20px 20px'}}>
+        <label htmlFor=""> <strong>  Consumed Calorie: </strong>{totalCalories} kcal</label>
+         <label htmlFor=""  style={{paddingLeft:"47%"}}><strong>Daily Required Calorie: </strong>{dailycalorie} kcal</label>
+        </div>
       <Progress.Line percent={progressPercent}  status="active"  strokeColor="#e15f41"  />
 
-
+      
    </div>
         <div className="total-calorie">
           <h2
@@ -819,10 +824,7 @@ const Home = () => {
           </div>
         </div>
 
-      
-      
 
-        {/* <Bar data={bardata} options={options}/> */}
       </section>
 
       <Modal isOpen={editModal}>
