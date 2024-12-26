@@ -787,7 +787,7 @@ const Home = () => {
             style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.0rem" }}
           >
             {" "}
-            Today Progress Report
+            Today Meal Progress Report
           </h2>
 
       <Progress.Line percent={progressPercent}  status="active"  strokeColor="#e15f41"  />
