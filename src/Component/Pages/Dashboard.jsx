@@ -3,9 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
-
 import { auth, db } from "../../firebase";
-
 import { Doughnut, Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Navbar from "../Page-Components/Navbar";
@@ -13,11 +11,12 @@ import Footer from "../Page-Components/Footer";
 ChartJS.register(ArcElement, Tooltip, Legend);
 import "./Dashboard.css";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
+import Table from "../Page-Components/Table";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [logData, setlLogdata] = useState(null);
+  const [logData, setLogdata] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectDate, setSelectDate] = useState(
     new Date().toISOString().split("T")[0]
@@ -32,7 +31,7 @@ const Dashboard = () => {
 
     try {
       // console.log("user", user)
-    dispatch(showLoader())
+      dispatch(showLoader())
       if (!user) {
         console.log("User is not authenticated");
         setLoading(false);
@@ -55,9 +54,9 @@ const Dashboard = () => {
       if (docSnap.exists()) {
         const mealData = docSnap.data();
         console.log("mealdata", mealData);
-        setlLogdata(mealData);
+        setLogdata(mealData);
       } else {
-        setlLogdata({});
+        setLogdata({});
       }
     } catch (error) {
       console.error("error fetching data", error);
@@ -69,7 +68,6 @@ const Dashboard = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // console.log("User authenticated:", user);
         setLoading(true);
         handleGetData(user);
       } else {
@@ -102,7 +100,6 @@ const Dashboard = () => {
         data: [breakfastCalorie, lunchCalorie, snackCalorie, dinnerCalorie],
         backgroundColor: [
           "rgb(255, 99, 132)",
-         
           "rgb(54, 162, 235)",
           "#afc0d9",
           "#D1C28A",
@@ -132,86 +129,11 @@ const Dashboard = () => {
         <br />
       </div>
 
-      <section className="view-data">
-        <div className="meal-log">
-          <h2>Your Food Diary for {selectDate}</h2>
-          <table className="meal-table">
-            <thead>
-              <tr>
-                <th>Meal</th>
-                <th>Food Name</th>
-                <th>Calories (kcal)</th>
-               
-              </tr>
-            </thead>
-            <tbody>
-              {logData?.Breakfast?.length > 0 ? (
-                logData.Breakfast.map((item, index) => (
-                  <tr key={`breakfast-${index}`}>
-                    <td>Breakfast</td>
-                    <td>{item.name}</td>
-                    <td>{item.calories}</td>
-                   
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td>Breakfast</td>
-                  <td colSpan="3">No breakfast items</td>
-                </tr>
-              )}
-
-              {logData?.Lunch?.length > 0 ? (
-                logData.Lunch.map((item, index) => (
-                  <tr key={`lunch-${index}`}>
-                    <td>Lunch</td>
-                    <td>{item.name}</td>
-                    <td>{item.calories}</td>
-                    
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td>Lunch</td>
-                  <td colSpan="3">No lunch items</td>
-                </tr>
-              )}
-
-              {logData?.Snack?.length > 0 ? (
-                logData.Snack.map((item, index) => (
-                  <tr key={`snack-${index}`}>
-                    <td>Snack</td>
-                    <td>{item.name}</td>
-                    <td>{item.calories}</td>
-                   
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td>Snack</td>
-                  <td colSpan="3">No snack items</td>
-                </tr>
-              )}
-
-              {logData?.Dinner?.length > 0 ? (
-                logData.Dinner.map((item, index) => (
-                  <tr key={`dinner-${index}`}>
-                    <td>Dinner</td>
-                    <td>{item.name}</td>
-                    <td>{item.calories}</td>
-                  
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td>Dinner</td>
-                  <td colSpan="3">No dinner items</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
+      <Table
+      logData={logData}
+      showFeature={false}
+      />
+        
         <div className="reports-data">
           
           <h2 style={{marginRight:"1%",marginTop:'5vh'}}> Today Calorie Consumed :{totalCalories} kcal</h2>
@@ -234,8 +156,6 @@ const Dashboard = () => {
           </div>
           </div>
         </div>
-      </section>
-      
       
       <Footer />
     </>

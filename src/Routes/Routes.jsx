@@ -14,6 +14,7 @@ import WeightTracker from "../Component/Goal_Pages/WeightTracker";
 import Exercise from "../Component/Goal_Pages/Exercise";
 import UserInfo from "../Component/Goal_Pages/UserInfo";
 import ShowCalorie from "../Component/Goal_Pages/ShowCalorie";
+import ContactUs from "../Component/Pages/ContactUs";
 
 const PrivateRoute = ({ children }) => {
   const islogged = useSelector((state) => state.loggedReducer.logged);
@@ -66,6 +67,10 @@ const RoutesConfig = () => {
       element: <ShowCalorie/>,
     },
 
+    {
+      path: "/contactUs",
+      element: <ContactUs/>,
+    },
 
     {
       path: "/home",

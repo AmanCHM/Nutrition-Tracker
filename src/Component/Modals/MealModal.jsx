@@ -26,7 +26,7 @@ const MealModal = ({
   );
 
   const mealOptions = [
-    { value: "choose", label: "Choose here" },
+   
     { value: "Breakfast", label: "Breakfast" },
     { value: "Lunch", label: "Lunch" },
     { value: "Snack", label: "Snack" },
@@ -48,12 +48,13 @@ selectedFoodData?.foods[0]?.food_name?.slice(1)
 }</h3>
        
         <div className="input-container">
-          <label>Choose Quantity</label>
+          <label >Choose Quantity</label>
           {/* <label>Choose Quantity</label> */}
           <input
             type="number"
             min='0'
             value={quantity}
+            style={{color:'black'}}
             onChange={(e) => setQuantity(e.target.value)}
             step="1"
           />
@@ -62,9 +63,9 @@ selectedFoodData?.foods[0]?.food_name?.slice(1)
         <div className="select-container">
           <label>Select Slices</label>
           <GlobalSelect
+            placeholder="Choose a meal"
             options={sliceOptions}
             onChange={(selectedOption) => setSelectquantity(selectedOption.value)}
-            placeholder="Select slice"
             isSearchable={true}
           />
         </div>

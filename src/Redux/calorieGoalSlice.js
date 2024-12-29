@@ -11,6 +11,7 @@ const initialState = {
   requiredCalorie: "",
   goal: "",
   waterIntake: "",
+  showrecommendation: false,
 };
 
 const calorieGoalSlice = createSlice({
@@ -39,6 +40,12 @@ const calorieGoalSlice = createSlice({
     setRequiredCalorie: (state, action) => {
       state.requiredCalorie = action.payload;
     },
+    openCalorieModal: (state) => {
+      state.showrecommendation = true;
+    },
+    closeCalorieModal: (state) => {
+      state.showrecommendation = false;
+    },
 
     resetGoal: () => initialState,
   },
@@ -50,9 +57,7 @@ export const {
   setActivityLevel,
   setRequiredCalorie,
   resetGoal,
+  openCalorieModal,
+  closeCalorieModal,
 } = calorieGoalSlice.actions;
 export default calorieGoalSlice.reducer;
-
-// setRequiredCalorie: (state, action) => {
-//   state.requiredCalorie = action.payload;
-// }

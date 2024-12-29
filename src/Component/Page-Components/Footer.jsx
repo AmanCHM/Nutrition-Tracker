@@ -38,7 +38,7 @@ const Footer = () => {
             className="footer-input"
             placeholder="Your email address"
           />
-          <button className="footer-button" onClick={()=> navigate('./signup')}>Sign Up</button>
+          <button className="footer-button" onClick={()=> navigate('/signup')}>Sign Up</button>
         </div>
       </div>
 

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { Link,  useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase";
-
+import { Link, useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth, db } from "../../firebase";
 import "react-toastify/dist/ReactToastify.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -12,13 +11,18 @@ import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import { useDispatch } from "react-redux";
 import Navbar from "../Page-Components/Navbar";
 import { toast } from "react-toastify";
-import { loggedin } from "../../Redux/logSlice";
+import { loggedin, setSignup } from "../../Redux/logSlice";
+import { doc, setDoc } from "firebase/firestore";
+import googleLogo from "../../assets/images/google.png"; 
 
 const Signup = () => {
   const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const dispatch = useDispatch();
+  const provider = new GoogleAuthProvider(); 
+  
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -33,28 +37,51 @@ const Signup = () => {
         .required("Required"),
     }),
     onSubmit: async (values) => {
-        dispatch(showLoader());
+      dispatch(showLoader());
       const { email, password } = values;
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        console.log(user.email);
+
+        const userDocRef = doc(db, "users", user.uid);
+        await setDoc(userDocRef, { calorie: 2000 });
+
         toast.success("SignUp Successful");
         dispatch(loggedin());
         navigate("/");
       } catch (error) {
         toast.error("SignUp not successful");
         console.log(error.message);
-      } finally{
-          dispatch(hideLoader());
+      } finally {
+        dispatch(setSignup());
+        dispatch(hideLoader());
       }
-
     },
   });
 
+  const handleGoogleSignup = async () => {
+    dispatch(showLoader());
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const userDocRef = doc(db, "users", user.uid);
+      await setDoc(userDocRef, { calorie: 2000 });
+
+      toast.success("Google Sign-Up Successful");
+      dispatch(loggedin());
+      navigate("/");
+    } catch (error) {
+      toast.error("Google Sign-Up Failed");
+      console.error("Error with Google Sign-Up: ", error.message);
+    } finally {
+      dispatch(hideLoader());
+    }
+  };
+
   return (
     <>
-    <Navbar/>
+      <Navbar />
       <div className="signup-container">
         <h2 className="signup-title">Sign-Up Form</h2>
         <form className="signup-form" onSubmit={formik.handleSubmit}>
@@ -116,13 +143,17 @@ const Signup = () => {
             <div className="error-message">{formik.errors.confirmPassword}</div>
           ) : null}
 
-          <button className="signup-button" type="submit">Submit</button>
-
-          <p className="signup-footer">
-            Already have an account? <Link className="signup-link" to="/login">Log In</Link>
-          </p>
+          <button className="signup-button" type="submit">Sign Up</button>
         </form>
-   
+        <p className="login-footer">Or</p>
+        <button className="signup-button" onClick={handleGoogleSignup}>
+          <img src={googleLogo} alt="Google Logo" className="google-logo" />
+          Sign Up with Google
+        </button>
+
+        <p className="signup-footer">
+          Already have an account? <Link className="signup-link" to="/login">Log In</Link>
+        </p>
       </div>
     </>
   );

@@ -1,42 +1,40 @@
-/* Navbar.css */
+
 .navbar {
     display: flex;
-    justify-content:space-between;
+    justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
     background-color: rgb(253, 250, 250);
     height: 4rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);  
-  }
-  
-  #company-name {
+}
+
+#company-name {
     color: #3e3d3d;
     font-size: 1.2rem;
     font-weight: bold;
     display: flex;
     align-items: center;
-  }
-  
-  .navbar a {
+}
+
+.navbar a {
     color: #1c1b1b;
     text-decoration: none;
     margin: 0 1rem;
+    padding: 10px;
     font-size: 0.9rem;
     font-weight: 500;
-    border-radius: 30%;
-  }
-  
-  .navbar a:hover {
-   color: #888787;
-  }
-  
-  .nav-button {
+    /* border-radius: 30%; */
+}
+
+
+.nav-button {
     display: flex;
     align-items: center;
     gap: 1rem;
-  }
-  
-  .nav-button button {
+}
+
+.nav-button button {
     background-color: #e6e6e6;
     border: none;
     border-radius: 50%;
@@ -47,40 +45,40 @@
     align-items: center;
     cursor: pointer;
     transition: background-color 0.3s;
-  }
-  
-  .nav-button button:hover {
+}
+
+.nav-button button:hover {
     background-color: #cfcfcf;
-  }
-  
-  .nav-button img {
+}
+
+.nav-button img {
     border-radius: 50%;
     width: 2.5rem;
     height: 2.5rem;
-  }
-  
-  .navbar .navbar a {
+}
+
+.navbar .navbar a {
     display: inline-block;
     margin: 0 1.5rem;
-  }
+}
 
-.login-span{
-  height:35px   ;
-  width:70px;
-  padding-left: 10px;
-  border-radius: 3px;
+.login-span {
+    height: 35px;
+    width: 70px;
+    padding-left: 10px;
+    border-radius: 3px;
 }  
-  .login-span:hover{
+
+.login-span:hover {
     background-color: #a29e9e;
     cursor: pointer;
     color: rgb(244, 242, 242);
-  }
+}
 
-
-  .active_link {
-  
- background-color: #e6e6e6;
-    color: rgb(2, 2, 2);
-  }
-  
-  
+.active_link {
+   background-color: rgb(99, 103, 112);
+    color: rgb(244, 236, 236);
+    padding: 0.5rem .5rem ;
+   
+    box-shadow:  1px 1px 2px rgba(0, 0, 0, 0.2); 
+}

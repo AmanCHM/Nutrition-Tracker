@@ -14,7 +14,7 @@ const GlobalSelect = ({
 const defaultStyles = {
   control: (provided) => ({
     ...provided,
-    borderColor: "gray",
+    borderColor: "#3371ff",
     "&:hover": { borderColor: "black" },
     boxShadow: "none",
   }),

@@ -33,8 +33,13 @@ import NutritionModal from "../Modals/NutritionModal";
 import EditDataModal from "../Modals/EditDataModal";
 import ImageSearch from "./ImageSearch";
 import DrinkModal from "../Modals/DrinkModal";
-import Progress from 'rsuite/Progress';
-import 'rsuite/Progress/styles/index.css';
+import Progress from "rsuite/Progress";
+import "rsuite/Progress/styles/index.css";
+import { Notification } from 'rsuite';
+import 'rsuite/Notification/styles/index.css';
+import { setSignout, setSignup } from "../../Redux/logSlice";
+import SetCalorieModal from "../Modals/SetCalorieModal";
+import Table from "../Page-Components/Table";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -55,16 +60,16 @@ const Home = () => {
   const [foodMeasure, setFoodMeasure] = useState();
   const [showDrinkModal, setShowDrinkModal] = useState(false);
   const [imageData, setImageData] = useState();
-  const [drinkData,setDrinkData]= useState();
-  const [totalWater,setTotalWater] = useState();
- const [totalAlcohol,setTotalAlcohol] = useState();
- const [totalCaffeine, setTotalCaffeine] =useState();
- const [dataUpdated,setDataUpdated]= useState(false)
-
-
-  // console.log(totalWater)
-  const dispatch = useDispatch();
+  const [drinkData, setDrinkData] = useState();
+  const [totalWater, setTotalWater] = useState();
+  const [totalAlcohol, setTotalAlcohol] = useState();
+  const [totalCaffeine, setTotalCaffeine] = useState();
+  const [dataUpdated, setDataUpdated] = useState(false);
+  const [energyModal,setEnergyModal] = useState(false);
   
+
+  const dispatch = useDispatch();
+
   //food suggestion search bar
   const {
     data: suggestions,
@@ -76,14 +81,12 @@ const Home = () => {
     setInputValue(query);
   };
 
-  
-
   const style = {
     width: 120,
-    display: 'inline-block',
-    marginRight: 10
+    display: "inline-block",
+    marginRight: 10,
   };
-  
+
   const groupedOptions = [
     {
       label: "Common Foods",
@@ -221,11 +224,15 @@ const Home = () => {
       console.log(error);
     } finally {
       dispatch(hideLoader());
+      <Stack spacing={10} direction="column" alignItems="flex-start">
+      <Notification type="success" header="Operation successful">
+      The email has been sent successfully, please check it in the mailbox.
+    </Notification>
+    </Stack>
     }
   };
-  // console.log("selectedFood", selectedFoodData);
 
-  // console.log("selected quantity", selectquantity);
+
 
   const handleEditLog = async (meal, name, id) => {
     setSelectedId(id);
@@ -277,7 +284,7 @@ const Home = () => {
 
   // required calorie
   const dailyRequiredCalorie = async () => {
-    dispatch(showLoader());
+    // dispatch(showLoader());
     const currentUser = auth.currentUser;
     const userId = currentUser?.uid;
 
@@ -294,14 +301,14 @@ const Home = () => {
       } catch (error) {
         console.error("Error fetching calorie data:", error);
       } finally {
-        dispatch(hideLoader());
+        // dispatch(hideLoader());
       }
     }
   };
 
   useEffect(() => {
     dailyRequiredCalorie();
-  }, [dailycalorie]);
+  }, [handleGetData]);
 
   // Meal details in nutrientwise
 
@@ -337,29 +344,98 @@ const Home = () => {
 
   //Meal Details in Calorie
 
-  const calculateMealCalories = (mealData) => {
-    return mealData?.length > 0
-      ? mealData.reduce((total, item) => total + item.calories, 0)
-      : 0;
+const calculateMealNutrient = (mealData, nutrient) => {
+  return mealData?.length > 0
+    ? mealData.reduce((total, item) => total + item[nutrient], 0)
+    : 0;
+};
+
+
+const calculateMealCalories = (mealData) => {
+  return calculateMealNutrient(mealData, "calories");
+};
+
+
+const calculateMealProtein = (mealData) => {
+  return calculateMealNutrient(mealData, "proteins");
+};
+
+const calculateMealCarbs = (mealData) => {
+  return calculateMealNutrient(mealData, "carbs");
+};
+
+const calculateMealFats = (mealData) => {
+  return calculateMealNutrient(mealData, "fats");
+};
+
+
+const breakfastCalorie = calculateMealCalories(logData?.Breakfast);
+const breakfastProtein = calculateMealProtein(logData?.Breakfast);
+const breakfastCarbs = calculateMealCarbs(logData?.Breakfast);
+const breakfastFats = calculateMealFats(logData?.Breakfast);
+
+const lunchCalorie = calculateMealCalories(logData?.Lunch);
+const lunchProtein = calculateMealProtein(logData?.Lunch);
+const lunchCarbs = calculateMealCarbs(logData?.Lunch);
+const lunchFats = calculateMealFats(logData?.Lunch);
+
+const snackCalorie = calculateMealCalories(logData?.Snack);
+const snackProtein = calculateMealProtein(logData?.Snack);
+const snackCarbs = calculateMealCarbs(logData?.Snack);
+const snackFats = calculateMealFats(logData?.Snack);
+
+const dinnerCalorie = calculateMealCalories(logData?.Dinner);
+const dinnerProtein = calculateMealProtein(logData?.Dinner);
+const dinnerCarbs = calculateMealCarbs(logData?.Dinner);
+const dinnerFats = calculateMealFats(logData?.Dinner);
+
+// Calculate totals for the day
+const totalCalories = breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
+const totalProtein = breakfastProtein + lunchProtein + snackProtein + dinnerProtein;
+const totalCarbs = breakfastCarbs + lunchCarbs + snackCarbs + dinnerCarbs;
+const totalFats = breakfastFats + lunchFats + snackFats + dinnerFats;
+
+console.log("Total Calories:", totalCalories);
+console.log("Total Protein:", totalProtein, "g");
+console.log("Total Carbs:", totalCarbs, "g");
+console.log("Total Fats:", totalFats, "g");
+
+
+const calculateMacronutrients = (totalCalories) => {
+  // Define percentage distribution
+  const proteinPercent = 0.25;
+  const carbsPercent = 0.50;   
+  const fatsPercent = 0.25;   
+
+  // Calculate  calorie allocation
+  const proteinCalories = dailycalorie * proteinPercent;
+  const carbsCalories = dailycalorie * carbsPercent;
+  const fatsCalories = dailycalorie * fatsPercent;
+
+  // Convert calories to grams
+  const proteinGrams = Math.round(proteinCalories / 4); 
+  const carbsGrams = Math.round(carbsCalories / 4);     
+  const fatsGrams = Math.round(fatsCalories / 9);     
+
+  return {
+    proteinGrams,
+    carbsGrams,
+    fatsGrams,
   };
+};
 
-  const breakfastCalorie = calculateMealCalories(logData?.Breakfast);
-  const lunchCalorie = calculateMealCalories(logData?.Lunch);
-  const snackCalorie = calculateMealCalories(logData?.Snack);
-  const dinnerCalorie = calculateMealCalories(logData?.Dinner);
-
-  const totalCalories =
-    breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
+const { proteinGrams, carbsGrams, fatsGrams } = calculateMacronutrients(totalCalories);
 
 
-    
-  const requiredCarlorie = dailycalorie - totalCalories;
- 
 
-  const progressPercent = Math.floor((totalCalories / dailycalorie) * 100);
+  const requiredCalorie = dailycalorie > 0 ? dailycalorie - totalCalories : 0;
 
+const progressPercent = dailycalorie > 0 ? Math.floor((totalCalories / dailycalorie) * 100) : 0;
+const proteinPercentage =   Math.floor((totalProtein / proteinGrams) * 100);
+const carbsPercentage = Math.floor((totalCarbs / carbsGrams) * 100);
+const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
 
-  //doughnut Data 
+  //doughnut Data
 
   const doughnutdata = {
     labels: ["Breakfast", "Lunch", "Snack", "Dinner"],
@@ -368,7 +444,7 @@ const Home = () => {
         data: [breakfastCalorie, lunchCalorie, snackCalorie, dinnerCalorie],
         backgroundColor: [
           "rgb(255, 99, 132)",
-         
+
           "rgb(54, 162, 235)",
           "#afc0d9",
           "#D1C28A",
@@ -462,21 +538,20 @@ const Home = () => {
   }, [dataUpdated]);
 
   const handleDataUpdated = () => {
-    setDataUpdated((prev) => !prev); 
+    setDataUpdated((prev) => !prev);
   };
 
   const calculateTotals = () => {
-  const calculateDrinkTotals = (drinkData) => {
-    return drinkData?.length > 0
-      ? drinkData.reduce((total, item) => total + item.totalAmount, 0)
-      : 0;
+    const calculateDrinkTotals = (drinkData) => {
+      return drinkData?.length > 0
+        ? drinkData.reduce((total, item) => total + item.totalAmount, 0)
+        : 0;
+    };
+    setTotalWater(calculateDrinkTotals(drinkData?.Water));
+    setTotalAlcohol(calculateDrinkTotals(drinkData?.Alcohol));
+    setTotalCaffeine(calculateDrinkTotals(drinkData?.Caffeine));
   };
-  setTotalWater(calculateDrinkTotals(drinkData?.Water));
-  setTotalAlcohol(calculateDrinkTotals(drinkData?.Alcohol));
-  setTotalCaffeine(calculateDrinkTotals(drinkData?.Caffeine));
 
-}
-  
   // Calculate totals when drinkData changes
   useEffect(() => {
     if (drinkData) {
@@ -484,12 +559,26 @@ const Home = () => {
     }
   }, [drinkData]);
 
+
+
+  //energy modal
+  const isSignup = useSelector((state) => state.loggedReducer.signedup);
+  useEffect(() => {
+    if (isSignup === true) {
+      setEnergyModal(true); 
+      //  dispatch(setSignout())
+    }
+  }, []);
   
+
+  console.log("signupmodal",isSignup)
+
+  console.log("signup",useSelector((state) => state.loggedReducer.signedup))
   return (
     <>
       <Navbar />
       <div className="search">
-        <h1 id="header-text">Search  Your Meals Below</h1>
+        <h1 id="header-text">Search Your Meals Below</h1>
 
         <Select
           id="search-box"
@@ -513,7 +602,7 @@ const Home = () => {
           </span>
           AI Food Search
         </button>
-        <Modal isOpen={imageModal}   >
+        <Modal isOpen={imageModal}>
           <ImageSearch
             setImageModal={setImageModal}
             setImageData={setImageData}
@@ -522,6 +611,17 @@ const Home = () => {
           ></ImageSearch>
         </Modal>
       </div>
+
+   {/* Energy Modal */}
+     <div>
+    <Modal isOpen={energyModal}>
+     <SetCalorieModal
+        setEnergyModal={setEnergyModal}
+     />
+
+    </Modal>
+
+     </div>
 
       <Modal isOpen={modal}>
         <MealModal
@@ -539,266 +639,76 @@ const Home = () => {
         />
       </Modal>
 
-      <section className="view-data">
-        <div className="meal-log">
+      <Table
+      logData={logData}
+      handleNutritionModal={handleNutritionModal}
+      handleEditLog={handleEditLog}
+      handleDeleteLog={handleDeleteLog}
+      showFeature={true}
+      />
+
+        <div
+          className="progress-line"
+          style={{ height: "auto", width: "50vw", marginLeft:"25%" }}
+         >
           <h2
-            style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.5rem" }}
-          >
-            {" "}
-            Your Food Diary
-          </h2>
-
-          <div className="meal-section">
-            <div>
-              <label className="table-label">
-              <strong>BreakFast :</strong> {breakfastCalorie} kcal
-              </label>
-            </div>
-
-            <div>
-              <table className="meal-table">
-                <thead>
-                  <tr>
-                    <th>Food Name</th>
-                    <th>Proteins (g)</th>
-                    <th>Carbs (g)</th>
-                    <th>Fats (g)</th>
-                    <th>Calories (kcal)</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {logData?.Breakfast?.length > 0 ? (
-                    logData.Breakfast.map((item, index) => (
-                      <tr key={`breakfast-${index}`}>
-                        <td>
-                          <span onClick={() => handleNutritionModal(item.name)}>
-                            {item.name}
-                          </span>
-                        </td>
-                        <td>{item.proteins}</td>
-                        <td>{item.carbs}</td>
-                        <td>{item.fats}</td>
-                        <td>{item.calories}</td>
-                        <td>
-                          <div style={{ display: "flex" }}>
-                            <span
-                              onClick={() =>
-                                handleDeleteLog("Breakfast", item.id)
-                              }
-                              className="icon-button delete"
-                            >
-                              <FaTrashAlt style={{ color: "#e15f41" }} />
-                            </span>
-                            <span
-                              onClick={() =>
-                                handleEditLog("Breakfast", item.name, item.id)
-                              }
-                              className="icon-button edit"
-                            >
-                              <FaEdit />
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="6">No breakfast items</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div className="meal-section">
-            <label className="table-label"><strong>Lunch :</strong>{lunchCalorie} kcal</label>
-            <table className="meal-table">
-              <thead>
-                <tr>
-                  <th>Food Name</th>
-                  <th>Proteins (g)</th>
-                  <th>Carbs (g)</th>
-                  <th>Fats (g)</th>
-                  <th>Calories (kcal)</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logData?.Lunch?.length > 0 ? (
-                  logData.Lunch.map((item, index) => (
-                    <tr key={`lunch-${index}`}>
-                      <td>
-                        <span
-                          // style={{ backgroundColor: "#0077b6" }}
-                          onClick={() => handleNutritionModal(item.name)}
-                        >
-                          {item.name}
-                        </span>
-                      </td>
-                      <td>{item.proteins}</td>
-                      <td>{item.carbs}</td>
-                      <td>{item.fats}</td>
-                      <td>{item.calories}</td>
-
-                      <div style={{ display: "flex" }}>
-                        <span
-                          onClick={() => handleDeleteLog("Lunch", item.id)}
-                          className="icon-button delete"
-                        >
-                          <FaTrashAlt style={{ color: "#e15f41" }} />
-                        </span>
-                        <span
-                          onClick={() =>
-                            handleEditLog("Lunch", item.name, item.id)
-                          }
-                          className="icon-button edit"
-                        >
-                          <FaEdit />
-                        </span>
-                      </div>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="6">No lunch items</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="meal-section">
-            <label className="table-label"><strong>Snack :</strong>{snackCalorie} kcal</label>
-            <table className="meal-table">
-              <thead>
-                <tr id="header-color">
-                  <th>Food Name</th>
-                  <th>Proteins (g)</th>
-                  <th>Carbs (g)</th>
-                  <th>Fats (g)</th>
-                  <th>Calories (kcal)</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logData?.Snack?.length > 0 ? (
-                  logData.Snack.map((item, index) => (
-                    <tr key={`snack-${index}`}>
-                      <td>
-                        <span
-                          // style={{ backgroundColor: "#0077b6" }}
-                          onClick={() => handleNutritionModal(item.name)}
-                        >
-                          {item.name}
-                        </span>
-                      </td>
-                      <td>{item.proteins}</td>
-                      <td>{item.carbs}</td>
-                      <td>{item.fats}</td>
-                      <td>{item.calories}</td>
-                      <div style={{ display: "flex" }}>
-                        <span
-                          onClick={() => handleDeleteLog("Snack", item.id)}
-                          className="icon-button delete"
-                        >
-                          <FaTrashAlt style={{ color: "#e15f41" }} />
-                        </span>
-                        <span
-                          onClick={() =>
-                            handleEditLog("Snack", item.name, item.id)
-                          }
-                          className="icon-button edit"
-                        >
-                          <FaEdit />
-                        </span>
-                      </div>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="6">No snack items</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="meal-section">
-            <label className="table-label"> <strong>Dinner :</strong>{dinnerCalorie} kcal</label>
-            <table className="meal-table">
-              <thead>
-                <tr>
-                  <th>Food Name</th>
-                  <th>Proteins (g)</th>
-                  <th>Carbs (g)</th>
-                  <th>Fats (g)</th>
-                  <th>Calories (kcal)</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logData?.Dinner?.length > 0 ? (
-                  logData.Dinner.map((item, index) => (
-                    <tr key={`dinner-${index}`}>
-                      <td>
-                        <span
-                          // style={{ backgroundColor: "#0077b6" }}/
-                          onClick={() => handleNutritionModal(item.name)}
-                        >
-                          {item.name}
-                        </span>
-                      </td>
-                      <td>{item.proteins}</td>
-                      <td>{item.carbs}</td>
-                      <td>{item.fats}</td>
-                      <td>{item.calories}</td>
-                      <div style={{ display: "flex" }}>
-                        <span
-                          onClick={() => handleDeleteLog("Dinner", item.id)}
-                          className="icon-button delete"
-                        >
-                          <FaTrashAlt style={{ color: "#e15f41" }} />
-                        </span>
-                        <span
-                          onClick={() =>
-                            handleEditLog("Dinner", item.name, item.id)
-                          }
-                          className="icon-button edit"
-                        >
-                          <FaEdit />
-                        </span>
-                      </div>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="6">No dinner items</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-
-
-   
-        <div className="progress-line" style={{height:'auto', width:"50vw", }}>
-        <h2
             style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.0rem" }}
           >
-            {" "}
+           
             Today Meal Progress Report
           </h2>
-          <div  style={{margin:'20px 20px'}}>
-        <label htmlFor=""> <strong>  Consumed Calorie: </strong>{totalCalories} kcal</label>
-         <label htmlFor=""  style={{paddingLeft:"47%"}}><strong>Daily Required Calorie: </strong>{dailycalorie} kcal</label>
+          <div style={{ margin: "20px 20px" }}>
+            <label htmlFor="">
+            
+              <strong> Energy Calorie: </strong>
+              {totalCalories}/{dailycalorie} kcal
+            </label>
+          <Progress.Line
+            percent={progressPercent}
+            status="active"
+            strokeColor="#e15f41"
+            /> 
+             </div>
+            <div style={{ margin: "20px 20px" }}>
+            <label htmlFor="">
+              <strong> Protein: </strong>
+              {totalProtein}/{proteinGrams}g
+            </label>
+          <Progress.Line
+            percent={proteinPercentage}
+            status="active"
+            strokeColor="#55a630"
+            />
+            </div>
+            <div style={{ margin: "20px 20px" }}>
+            <label htmlFor="">
+              {" "}
+              <strong> Carbs </strong>
+              {totalCarbs}/{carbsGrams} g
+            </label>
+          <Progress.Line
+            percent={carbsPercentage}
+            status="active"
+          strokeColor="355070"
+            />
+            </div>
+            <div style={{ margin: "20px 20px" }}>
+            <label htmlFor="">
+              {" "}
+              <strong> Fat: </strong>
+              {totalFats}/{fatsGrams} g
+            </label>
+          <Progress.Line
+            percent={fatsPercentage}
+            status="active"
+              strokeColor="#52b788"
+            
+            />
+            </div>
         </div>
-      <Progress.Line percent={progressPercent}  status="active"  strokeColor="#e15f41"  />
 
-      
-   </div>
+        
+
         <div className="total-calorie">
           <h2
             style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.5rem" }}
@@ -813,7 +723,7 @@ const Home = () => {
             <div className="doughnut-text">
               {doughnutdata.labels.map((label, index) => {
                 const value = doughnutdata.datasets[0].data[index];
-                const percentage = getPercentage(value, total);
+                const percentage = Math.floor(getPercentage(value, total));
                 return (
                   <div key={index} className="doughnut-text-item">
                     <strong>{label}:</strong> {value} kcal ({percentage}%)
@@ -823,9 +733,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-
-
-      </section>
+     
 
       <Modal isOpen={editModal}>
         <EditDataModal
@@ -869,76 +777,96 @@ const Home = () => {
         <Modal isOpen={showDrinkModal}>
           <DrinkModal
             setShowDrinkModal={setShowDrinkModal}
-              onDataUpdated= {handleDataUpdated}
+            onDataUpdated={handleDataUpdated}
           />
         </Modal>
 
         <div style={{ width: "100%", margin: "20px auto" }}>
-  {/* <h2 style={{ textAlign: "center", color: "#2980b9" }}>Drink Details</h2> */}
-  <table
-    style={{
-      width: "40%",
-      borderCollapse: "collapse",
-      textAlign: "center",
-      fontSize: "1rem",
-      color: "#2c3e50",
-      marginTop: "10px",
-      marginLeft:"30%",
-      borderRadius:"2px"
-    }}
-  >
-    <thead>
-      <tr style={{ backgroundColor: "#f4f6f7" }}>
-        <th style={{ padding: "7px", border: "1px solid #ddd",color:"white" ,backgroundColor:"#aa6f5e" ,borderRadius:'2px'}}>Drink</th>
-        <th style={{ padding: "7px", border: "1px solid #ddd",color:"white" ,backgroundColor:"#aa6f5e" ,borderRadius:'2px' }}>Total Quantity</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style={{ padding: "12px", border: "1px solid #ddd" }}>
-          <img
-            src="./src/assets/images/glass-of-water.png"
-            alt="Water"
-            style={{ height: "60px" }}
-          />
-          <p style={{ margin: "2px 0", fontWeight: "bold" }}>Water</p>
-        </td>
-        <td style={{ padding: "12x", border: "1px solid #ddd" }}>{totalWater} ml</td>
-      </tr>
-      <tr style={{ backgroundColor: "#f9f9f9" }}>
-        <td style={{ padding: "12px", border: "1px solid #ddd" }}>
-          <img
-            src="./src/assets/images/beer.png"
-            alt="Alcohol"
-            style={{ height: "60px" }}
-          />
-          <p style={{ margin: "2px 0", fontWeight: "bold" }}>Alcohol</p>
-        </td>
-        <td style={{ padding: "12px", border: "1px solid #ddd" }}>{totalAlcohol} ml</td>
-      </tr>
-      <tr>
-        <td style={{ padding: "12px", border: "1px solid #ddd" }}>
-          <img
-            src="./src/assets/images/coffee.png"
-            alt="Caffeine"
-            style={{ height: "60px" }}
-          />
-          <p style={{ margin: "2px 0", fontWeight: "bold" }}>Caffeine</p>
-        </td>
-        <td style={{ padding: "12px", border: "1px solid #ddd" }}>{totalCaffeine} ml</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
+          {/* <h2 style={{ textAlign: "center", color: "#2980b9" }}>Drink Details</h2> */}
+          <table
+            style={{
+              width: "40%",
+              borderCollapse: "collapse",
+              textAlign: "center",
+              fontSize: "1rem",
+              color: "#2c3e50",
+              marginTop: "10px",
+              marginLeft: "30%",
+              borderRadius: "2px",
+            }}
+          >
+            <thead>
+              <tr style={{ backgroundColor: "#f4f6f7" }}>
+                <th
+                  style={{
+                    padding: "7px",
+                    border: "1px solid #ddd",
+                    color: "white",
+                    backgroundColor: "#aa6f5e",
+                    borderRadius: "2px",
+                  }}
+                >
+                  Drink
+                </th>
+                <th
+                  style={{
+                    padding: "7px",
+                    border: "1px solid #ddd",
+                    color: "white",
+                    backgroundColor: "#aa6f5e",
+                    borderRadius: "2px",
+                  }}
+                >
+                  Total Quantity
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={{ padding: "12px", border: "1px solid #ddd" }}>
+                  <img
+                    src="./src/assets/images/glass-of-water.png"
+                    alt="Water"
+                    style={{ height: "60px" }}
+                  />
+                  <p style={{ margin: "2px 0", fontWeight: "bold" }}>Water</p>
+                </td>
+                <td style={{ padding: "12x", border: "1px solid #ddd" }}>
+                  {totalWater} ml
+                </td>
+              </tr>
+              <tr style={{ backgroundColor: "#f9f9f9" }}>
+                <td style={{ padding: "12px", border: "1px solid #ddd" }}>
+                  <img
+                    src="./src/assets/images/beer.png"
+                    alt="Alcohol"
+                    style={{ height: "60px" }}
+                  />
+                  <p style={{ margin: "2px 0", fontWeight: "bold" }}>Alcohol</p>
+                </td>
+                <td style={{ padding: "12px", border: "1px solid #ddd" }}>
+                  {totalAlcohol} ml
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "12px", border: "1px solid #ddd" }}>
+                  <img
+                    src="./src/assets/images/coffee.png"
+                    alt="Caffeine"
+                    style={{ height: "60px" }}
+                  />
+                  <p style={{ margin: "2px 0", fontWeight: "bold" }}>
+                    Caffeine
+                  </p>
+                </td>
+                <td style={{ padding: "12px", border: "1px solid #ddd" }}>
+                  {totalCaffeine} ml
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-
-{/* 
-      <div className="progress-line" style={{height:'20vh', width:"70vw", marginLeft:"15%"}}>
-<Progress.Line percent={(requiredCarlorie/totalCalories)*100}   />
-
-
-   </div> */}
       <Footer className="footer" />
     </>
   );

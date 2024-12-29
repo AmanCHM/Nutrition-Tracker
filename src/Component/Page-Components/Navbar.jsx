@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import Modal from "react-modal";
 import { loggedin, loggedout } from "../../Redux/logSlice";
@@ -8,12 +7,13 @@ import { RiAccountCircleFill } from "react-icons/ri";
 import LogoutModal from "../Modals/LogoutModal";
 import { toast } from "react-toastify";
 import { NavLink, useNavigate } from "react-router-dom";
+import { auth } from "../../firebase";
+
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const islogged = useSelector((state) => state.loggedReducer.logged);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [email, setEmail] = useState();
 
   const customStyles = {
@@ -26,12 +26,24 @@ const Navbar = () => {
       transform: "translate(-50%, -50%)",
     },
   };
+
+  useEffect(() => {
+    if (islogged) {
+      const user = auth.currentUser;
+      if (user) {
+        setEmail(user.email);
+      } else {
+        setEmail();
+      }
+    }
+  }, [islogged]);
+
   const handleLogout = () => {
     dispatch(loggedout());
     navigate("/");
   };
+
   const handleLogin = () => {
-    // dispatch(loggedin());
     navigate("/login");
   };
 
@@ -39,57 +51,40 @@ const Navbar = () => {
     setIsModalOpen(true);
   };
 
-  // if(islogged){
-  //   const user = auth.currentUser;
-  //   if(user){
-  //     setEmail(user.email)
-  //   }{
-  //    setEmail()
-  //   }
-  // }
+  const classNameFunc = ({ isActive }) => (isActive ? "active_link" : "");
 
-  // console.log("login details",islogged)
-        // console.log(isActive);
-        const classNameFunc = ({ isActive }) => (isActive ? "active_link" : "");
   return (
     <div>
       <nav className="navbar">
         <div id="company-name">Nutrition Tracker</div>
 
-        {islogged === false ? (
-          <div className="navbar-login" >
-            <NavLink to='./' className={classNameFunc} >Home</NavLink>
-
-            <NavLink to="/aboutus" className={classNameFunc}>About</NavLink>
-          </div>
-        ) : (
-          ""
-        )}
-
         {islogged ? (
           <div className="navbar-login">
             <NavLink to="/" className={classNameFunc}>Home</NavLink>
             <NavLink to="/home" className={classNameFunc}>Dashboard</NavLink>
-            {/* <NavLink to={"/image-search"}>ImageSearch</NavLink> */}
             <NavLink to="/dashboard" className={classNameFunc}>Reports</NavLink>
             <NavLink to="/calorie-calculator" className={classNameFunc}>Calculator</NavLink>
-            <NavLink to="/aboutus" className={classNameFunc} >About</NavLink>
+            <NavLink to="/aboutus" className={classNameFunc}>About</NavLink>
           </div>
         ) : (
-          ""
+          <div className="navbar-login">
+            <NavLink to='/' className={classNameFunc}>Home</NavLink>
+            <NavLink to="/aboutus" className={classNameFunc}>About</NavLink>
+            <NavLink  to='/contactUs'  className={classNameFunc}>ContactUs</NavLink>
+          </div>
         )}
 
         <div className="nav-button">
           {islogged ? (
-            <RiAccountCircleFill size={40} onClick={handleModal} />
+        <div  style={{display:"flex", gap:"10px"}}>{email !== undefined ? email : ''}
+            <RiAccountCircleFill size={40} onClick={handleModal} /></div>
           ) : (
             <span
               className="login-span"
               onClick={handleLogin}
               style={{ fontSize: "1.1rem" }}
             >
-              {" "}
-              Login{" "}
+              Login
             </span>
           )}
         </div>

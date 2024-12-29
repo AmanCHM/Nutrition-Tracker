@@ -5,6 +5,8 @@ import { updateGoal } from "../../Redux/calorieGoalSlice";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
 
+import GlobalSelect from './../Page-Components/Globalselect';
+
 function WeightTracker() {
   const [presentWeight, setPresentWeight] = useState("");
   const [targetWeight, setTargetWeight] = useState("");
@@ -28,6 +30,12 @@ function WeightTracker() {
     navigate("/input-workout");
   };
 
+  const goalOptions = [
+    { value: "loose", label: "Loose Weight" },
+    { value: "gain", label: "Gain Weight" },
+    { value: "maintain", label: "Maintain Weight" },
+  ];
+
   return (
     <>
       <Navbar />
@@ -40,24 +48,21 @@ function WeightTracker() {
           marginTop: "3%",
         }}
       >
-      Thanks fds! Now for your goals.
+        Thanks! Now for your goals.
       </h3>
-      <h3 style={{textAlign:"center",color:"#627373"}}>You have to select your goal. <br /> Provide your targets.</h3>
+      <h3 style={{ textAlign: "center", color: "#627373" }}>
+        Select your goal and provide your target weights.
+      </h3>
       <div className="calorie-container">
-        {/* <h1>User Details</h1> */}
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <label htmlFor="goal">Select Goal:</label>
-            <select
-              id="goal"
-              value={goal}
-              onChange={(e) => setGoal(e.target.value)}
-            >
-              <option value="">-- Select a Goal --</option>
-              <option value="loose">Loose Weight</option>
-              <option value="gain">Gain Weight</option>
-              <option value="maintain">Maintain Weight</option>
-            </select>
+            <GlobalSelect
+              options={goalOptions}
+              value={goalOptions.find((option) => option.value === goal)}
+              onChange={(selectedOption) => setGoal(selectedOption.value)}
+              placeholder="-- Select a Goal --"
+            />
           </div>
 
           <div className="input-group">
@@ -86,7 +91,10 @@ function WeightTracker() {
             />
           </div>
 
-          <button type="submit" style={{ color: "white", fontSize: "17px",marginLeft:'130px'}}>
+          <button
+            type="submit"
+            style={{ color: "white", fontSize: "17px", marginLeft: "130px" }}
+          >
             Next
           </button>
         </form>
