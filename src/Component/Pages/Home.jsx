@@ -244,7 +244,7 @@ const Home = () => {
     console.log("id", id);
   };
 
-  console.log("selecteditem", selectItem?.label);
+  // console.log("selecteditem", selectItem?.label);
 
   const handleEditModalData = async () => {
     console.log("insdie edit");
@@ -327,7 +327,7 @@ const Home = () => {
         (selectedFoodData?.foods[0].nf_calories /
           selectedFoodData?.foods[0].nf_protein)
       : "no data";
-
+console.log("caloriecalculate",calculateCalories)
   const carbs =
     selectedFoodData?.foods.length > 0
       ? calculateCalories /
@@ -395,10 +395,6 @@ const totalProtein = breakfastProtein + lunchProtein + snackProtein + dinnerProt
 const totalCarbs = breakfastCarbs + lunchCarbs + snackCarbs + dinnerCarbs;
 const totalFats = breakfastFats + lunchFats + snackFats + dinnerFats;
 
-console.log("Total Calories:", totalCalories);
-console.log("Total Protein:", totalProtein, "g");
-console.log("Total Carbs:", totalCarbs, "g");
-console.log("Total Fats:", totalFats, "g");
 
 
 const calculateMacronutrients = (totalCalories) => {
@@ -571,9 +567,9 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
   }, []);
   
 
-  console.log("signupmodal",isSignup)
+  // console.log("signupmodal",isSignup)
 
-  console.log("signup",useSelector((state) => state.loggedReducer.signedup))
+  // console.log("signup",useSelector((state) => state.loggedReducer.signedup))
   return (
     <>
       <Navbar />
@@ -723,7 +719,7 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
             <div className="doughnut-text">
               {doughnutdata.labels.map((label, index) => {
                 const value = doughnutdata.datasets[0].data[index];
-                const percentage = Math.floor(getPercentage(value, total));
+                const percentage =( value>0?Math.floor(getPercentage(value, total)) :0);
                 return (
                   <div key={index} className="doughnut-text-item">
                     <strong>{label}:</strong> {value} kcal ({percentage}%)
@@ -752,11 +748,17 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
       <Modal isOpen={isModalOpen}>
         <NutritionModal
           onClose={handleCloseModal}
-          foodData={selectedFoodData}
-          calories={Math.round(calculateCalories)}
-          proteins={Math.round(protein)}
-          carbs={Math.round(carbs)}
-          fats={Math.round(fats)}
+          selectedFoodData={selectedFoodData}
+          quantity={quantity}
+          setQuantity={setQuantity}
+          selectquantity={selectquantity}
+          setSelectquantity={setSelectquantity}
+
+          setSelectCategory={setSelectCategory}
+          // calories={Math.round(calculateCalories)}
+          // proteins={Math.round(protein)}
+          // carbs={Math.round(carbs)}
+          // fats={Math.round(fats)}
         />
       </Modal>
 

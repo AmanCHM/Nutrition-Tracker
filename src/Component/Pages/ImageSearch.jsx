@@ -144,7 +144,6 @@ const ImageSearch = ({
 
 
   const options = [
-    { value: "choose", label: "Choose here" },
     { value: "Breakfast", label: "Breakfast" },
     { value: "Lunch", label: "Lunch" },
     { value: "Snack", label: "Snack" },
