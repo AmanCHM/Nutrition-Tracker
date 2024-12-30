@@ -19,9 +19,9 @@ body {
      
       /* width: 100%;  */
       /* margin-left: 45vw; */
-      margin-top: 0%;
-      height: 35vh;
-      background-image: url('https://pro-saas-system-multitenant-assets.s3.amazonaws.com/azumio-inc/2017/06/23/CM-top-banner-d0932c4096f40667.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA54NROH55VDD7YDVV%2F20241224%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241224T080512Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=17ac846a07676b12cacab422f35210d9a5cc11dbc7a30d3f05b51944c4e2d329');
+      padding: 20px;
+      height: 50vh;
+      background-image: url('src/assets/images/bdDashBoard.svg');
       background-size: 100vw; 
       background-position: center; 
       background-repeat: no-repeat; 
@@ -30,8 +30,8 @@ body {
     display: block;
     width: 25%;
     height: 5%;
-    margin-top: 5px;
-    margin-left: 38vw;
+    margin-top: 20px;
+    margin-left: 37vw;
     padding: 30px;
     border: 1px solid #ccc;
     border-radius: 30px;
