@@ -77,15 +77,15 @@ body {
   .reports-chart{
     
       width: 25vw;
-      /* margin-top: 5%; */
+      margin-top: 3%; 
       display: flex;
       gap: 50px;
-      margin-left: 35%;
+      margin-left: 32vw;
       margin-bottom: 5vh;
    }
    .dashboard-text {
     margin-top: 20vh;
-    text-align: center;
+    /* text-align: center; */
 
   }
   

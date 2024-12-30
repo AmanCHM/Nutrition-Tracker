@@ -63,7 +63,7 @@ const Navbar = () => {
             <NavLink to="/" className={classNameFunc}>Home</NavLink>
             <NavLink to="/dashboard" className={classNameFunc}>Dashboard</NavLink>
             <NavLink to="/reports" className={classNameFunc}>Reports</NavLink>
-            <NavLink to="/calorie-calculator" className={classNameFunc}>Calculator</NavLink>
+            <NavLink to="/calorie-calculator" className={classNameFunc}>BMR Calculator</NavLink>
             <NavLink to="/about" className={classNameFunc}>About</NavLink>
             <NavLink  to='/contact'  className={classNameFunc}>Contact</NavLink>
           </div>

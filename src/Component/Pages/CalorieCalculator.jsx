@@ -6,6 +6,7 @@ import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
 import "./CalorieCalculator.css";
 import { toast } from 'react-toastify';
+import GlobalSelect from "../Page-Components/Globalselect";
 
 
 const activityOptions = [
@@ -116,7 +117,7 @@ const CalorieCalculator = () => {
         </div>
         <div className="input-group">
           <label htmlFor="activity">Activity Level:</label>
-          <Select
+          <GlobalSelect
             id="activity"
             options={activityOptions}
             value={activityLevel}

@@ -404,12 +404,12 @@ const totalFats = breakfastFats + lunchFats + snackFats + dinnerFats;
 
 
 const calculateMacronutrients = (totalCalories) => {
-  // Define percentage distribution
+  //percentage distribution
   const proteinPercent = 0.25;
   const carbsPercent = 0.50;   
   const fatsPercent = 0.25;   
 
-  // Calculate  calorie allocation
+  // Calculate  calorie 
   const proteinCalories = dailycalorie * proteinPercent;
   const carbsCalories = dailycalorie * carbsPercent;
   const fatsCalories = dailycalorie * fatsPercent;
@@ -665,7 +665,7 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
           <div style={{ margin: "20px 20px" }}>
             <label htmlFor="">
             
-              <strong> Energy Calorie: </strong>
+              <strong> Energy : </strong>
               {totalCalories}/{dailycalorie} kcal
             </label>
           <Progress.Line

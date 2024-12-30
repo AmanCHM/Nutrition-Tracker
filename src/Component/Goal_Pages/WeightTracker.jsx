@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { updateGoal } from "../../Redux/calorieGoalSlice";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
@@ -61,7 +61,7 @@ function WeightTracker() {
               options={goalOptions}
               value={goalOptions.find((option) => option.value === goal)}
               onChange={(selectedOption) => setGoal(selectedOption.value)}
-              placeholder="-- Select a Goal --"
+              // placeholder="-- Select a Goal --"
             />
           </div>
 
@@ -91,12 +91,25 @@ function WeightTracker() {
             />
           </div>
 
+
+            <button id="button">
+            
+            <Link
+              to={"/userinfo"}
+              style={{ color: "white", fontSize: "17px"  }}
+            >
+              Back
+            </Link>{" "}
+          </button>
+
+
           <button
             type="submit"
-            style={{ color: "white", fontSize: "17px", marginLeft: "130px" }}
+            style={{ color: "white", fontSize: "17px",  marginLeft:"40%" }}
           >
             Next
           </button>
+
         </form>
       </div>
       <Footer />

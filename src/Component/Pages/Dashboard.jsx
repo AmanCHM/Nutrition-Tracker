@@ -137,7 +137,7 @@ const Dashboard = () => {
         
         {/* <div className="reports-data"> */}
           
-          <h2 style={{marginRight:"1%",marginTop:'5vh'}}> Today Calorie Consumed :{totalCalories} kcal</h2>
+          <h2  style={{marginRight:"1%",marginTop:'5vh', fontSize:"2rem"}}> Total Calorie Consumed : {totalCalories} kcal</h2>
           <div className="reports-chart">
           <Doughnut 
             data={chartData}

@@ -88,14 +88,14 @@ const Exercise = () => {
               </label>
               <GlobalSelect
                 options={activityOptions}
-                value={activity}
+                value={activityOptions.find((option)=>option.value === activity)}
                 onChange={(selectedOption) => setActivity(selectedOption.value)}
               />
             </div>
 
             <button
               type="submit"
-              style={{ color: "white", fontSize: "17px", marginLeft: "130px" }}
+              style={{ color: "white", fontSize: "17px", marginLeft:"40%" }}
             >
               Next
             </button>

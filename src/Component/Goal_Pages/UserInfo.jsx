@@ -97,12 +97,13 @@ const UserInfo = () => {
             />
           </div>
 
+
           <button
             type="submit"
             style={{
               color: "white",
               fontSize: "17px",
-              marginLeft: "130px",
+              marginLeft:"40%"
             }}
           >
             Next
