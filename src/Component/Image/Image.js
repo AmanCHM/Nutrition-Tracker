@@ -6,6 +6,7 @@ import  water from '../../assets/images/glass-of-water.png';
 import beer  from  '../../assets/images/beer.png';
 import  coffee from '../../assets/images/coffee.png';
 import  bgSelectImage from '../../assets/images/Vector.png';
+import  bgSelectDate from '../../assets/images/bdDashBoard.svg';
 export  default  Image ={
   
     mobile ,
@@ -15,6 +16,7 @@ export  default  Image ={
     beer,
     coffee,
     bgSelectImage,
+    bgSelectDate
 
 }
 

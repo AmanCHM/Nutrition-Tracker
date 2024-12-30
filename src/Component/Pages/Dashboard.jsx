@@ -12,6 +12,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 import "./Dashboard.css";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import Table from "../Page-Components/Table";
+import Image from "../Image/Image";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -115,7 +116,7 @@ const Dashboard = () => {
     <>
       <Navbar />
 
-      <div className="select-date">
+      <div className="select-date" style={{ backgroundImage: `url(${Image.bgSelectDate})` }}>
         
 
       <h3 className="selectDate-header" >Select Date</h3>

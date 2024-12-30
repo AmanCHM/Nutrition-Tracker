@@ -574,7 +574,8 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
   return (
     <>
       <Navbar />
-      <div className="search">
+      <div className="search" style={{ backgroundImage: `url(${Image.bgSelectImage})` }}
+>
         <h1 id="header-text">Search Your Meals Below</h1>
 
         <Select
