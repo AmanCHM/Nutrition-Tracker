@@ -1,6 +1,7 @@
 import React from "react";
 import FeatureCards from "./FeatureCards";
 import "./Feature.css";
+import Image from "../Image/Image";
 const Feature = () => {
   return (
     <div> 
@@ -18,7 +19,7 @@ const Feature = () => {
       <div className="feature-component">
         <img
           id="feature-image"
-          src={"https://www.foodnoms.com/_next/static/media/goals.fdef777c.png"}
+          src={Image.goals}
           alt="feature"
         />
         <div id="feature-card">

@@ -30,7 +30,7 @@ const RoutesConfig = () => {
       element: <LandingPage />,
     },
     {
-      path: "/aboutus",
+      path: "/about",
       element: <AboutUs />,
     },
     {
@@ -68,12 +68,12 @@ const RoutesConfig = () => {
     },
 
     {
-      path: "/contactUs",
+      path: "/contact",
       element: <ContactUs/>,
     },
 
     {
-      path: "/home",
+      path: "/dashboard",
       element: (
         <PrivateRoute>
           <Home />
@@ -81,7 +81,7 @@ const RoutesConfig = () => {
       ),
     },
     {
-      path: "/dashboard",
+      path: "/reports",
       element: (
         <PrivateRoute>
           <Dashboard/>

@@ -40,6 +40,7 @@ import 'rsuite/Notification/styles/index.css';
 import { setSignout, setSignup } from "../../Redux/logSlice";
 import SetCalorieModal from "../Modals/SetCalorieModal";
 import Table from "../Page-Components/Table";
+import Image from "../Image/Image";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -586,7 +587,10 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
         />
       </div>
 
+
+<h2 style={{padding:'40px'}}>AI Food Vision: Identify Your Dish Instantly</h2>
       <div className="ai-search">
+        
         <button
           className="ai-search-button"
           onClick={() => {
@@ -595,8 +599,7 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
         >
           <span className="ai-search-button-icon">
             <FaSearch size={16} color="white" />
-          </span>
-          AI Food Search
+          </span>Visual Food Search
         </button>
         <Modal isOpen={imageModal}>
           <ImageSearch
@@ -827,7 +830,7 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
               <tr>
                 <td style={{ padding: "12px", border: "1px solid #ddd" }}>
                   <img
-                    src="./src/assets/images/glass-of-water.png"
+                    src={Image.water}
                     alt="Water"
                     style={{ height: "60px" }}
                   />
@@ -840,7 +843,7 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
               <tr style={{ backgroundColor: "#f9f9f9" }}>
                 <td style={{ padding: "12px", border: "1px solid #ddd" }}>
                   <img
-                    src="./src/assets/images/beer.png"
+                    src={Image.beer}
                     alt="Alcohol"
                     style={{ height: "60px" }}
                   />
@@ -853,7 +856,7 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
               <tr>
                 <td style={{ padding: "12px", border: "1px solid #ddd" }}>
                   <img
-                    src="./src/assets/images/coffee.png"
+                    src={Image.coffee}
                     alt="Caffeine"
                     style={{ height: "60px" }}
                   />

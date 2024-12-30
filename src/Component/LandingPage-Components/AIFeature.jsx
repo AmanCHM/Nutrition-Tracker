@@ -1,6 +1,7 @@
 import React from 'react'
 import './AIFeature.css'
 import FeatureCards from './FeatureCards'
+import Image from '../Image/Image'
 const AIFeature = () => {
   return (
     <>
@@ -19,7 +20,7 @@ const AIFeature = () => {
         <img 
           id="feature-image"
           
-          src={"https://www.caloriemama.ai/img/phone2b.png"}
+          src={Image.aiImage}
           alt="feature"
         />
         <div id="feature-card">

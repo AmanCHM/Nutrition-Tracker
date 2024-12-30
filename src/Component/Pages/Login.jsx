@@ -35,7 +35,7 @@ const Login = () => {
 
       toast.success("Logged in successfully with Google!");
       dispatch(loggedin());
-      navigate("/home"); // Redirect to the home page after successful login
+      navigate("/dashboard"); // Redirect to the home page after successful login
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -69,7 +69,7 @@ const Login = () => {
         const user = userCredential.user;
         toast.success("Logged in Successfully");
         dispatch(loggedin());
-        navigate("/home");
+        navigate("/dashboard");
       } catch (error) {
         const errorCode = error.code;
         const errorMessage = error.message;

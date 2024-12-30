@@ -48,7 +48,7 @@ const Signup = () => {
 
         toast.success("SignUp Successful");
         dispatch(loggedin());
-        navigate("/");
+        navigate("/dashboard");
       } catch (error) {
         toast.error("SignUp not successful");
         console.log(error.message);
@@ -70,7 +70,7 @@ const Signup = () => {
 
       toast.success("Google Sign-Up Successful");
       dispatch(loggedin());
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       toast.error("Google Sign-Up Failed");
       console.error("Error with Google Sign-Up: ", error.message);

@@ -7,7 +7,7 @@ import Feature from "../LandingPage-Components/Feature";
 import Overview from "../LandingPage-Components/Overview";
 import AIFeature from "../LandingPage-Components/AIFeature";
 import { useSelector } from "react-redux";
-import { ToastContainer } from "react-toastify";
+import Image from "../Image/Image";
 
 
 const LandingPage = () => {
@@ -56,7 +56,7 @@ const LandingPage = () => {
               id="front-image"
             
               src={
-                "src/assets/images/mobile.svg"
+               Image.mobile
               }
               alt=""
             />
