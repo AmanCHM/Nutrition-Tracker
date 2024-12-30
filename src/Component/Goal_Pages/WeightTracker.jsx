@@ -92,7 +92,7 @@ function WeightTracker() {
           </div>
 
 
-            <button id="button">
+            {/* <button id="button">
             
             <Link
               to={"/userinfo"}
@@ -100,7 +100,7 @@ function WeightTracker() {
             >
               Back
             </Link>{" "}
-          </button>
+          </button> */}
 
 
           <button
