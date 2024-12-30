@@ -45,7 +45,7 @@ import Image from "../Image/Image";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Home = () => {
-  const [inputValue, setInputValue] = useState();
+  const [inputValue, setInputValue] = useState(null);
   const [selectItem, setSelectItem] = useState();
   const [modal, setModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,6 +78,8 @@ const Home = () => {
     isError,
   } = useFetchSuggestionsQuery(inputValue);
 
+
+  // const filteredSuggestions = suggestions?.filter((suggestion) => suggestion !== "default_value" && suggestion !== null)
   const handleSearch = (query) => {
     setInputValue(query);
   };
@@ -110,6 +112,9 @@ const Home = () => {
   // console.log("grouped Option", groupedOptions);
   //add food
   const [addMeal, { data: selectedFoodData }] = useAddMealMutation();
+
+  console.log("selectedDood",selectedFoodData);
+  console.log(suggestions);
 
   const handleSelect = (selectedOption) => {
     setSelectItem(selectedOption);
