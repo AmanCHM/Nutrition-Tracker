@@ -34,7 +34,15 @@ const MealModal = ({
   ];
 
 
- 
+  const image =
+  selectedFoodData?.foods.length > 0
+    ? (
+        selectedFoodData?.foods[0]?.photo?.thumb
+
+      )
+    : "no data";
+    console.log("imagea",image)
+console.log("fooddata",selectedFoodData)
 
   return (
     <>
@@ -43,6 +51,9 @@ const MealModal = ({
           X
         </button>
         <h2>Select Meal</h2>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+  <img src={image} alt="" />
+</div>
         <h3 style={{ color: "#063970", textAlign:'center', paddingTop:'10px'}}>{selectedFoodData?.foods[0]?.food_name?.charAt(0).toUpperCase() + 
 selectedFoodData?.foods[0]?.food_name?.slice(1)
 }</h3>
