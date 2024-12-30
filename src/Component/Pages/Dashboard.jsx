@@ -134,28 +134,28 @@ const Dashboard = () => {
       showFeature={false}
       />
         
-        <div className="reports-data">
+        {/* <div className="reports-data"> */}
           
           <h2 style={{marginRight:"1%",marginTop:'5vh'}}> Today Calorie Consumed :{totalCalories} kcal</h2>
           <div className="reports-chart">
-          <Doughnut className="doughnut-chart"
+          <Doughnut 
             data={chartData}
             style={{ marginRight: "20px", marginTop: "30px",   height: "auto",
             width: "50%" }}
           ></Doughnut>
-                  <div className="reports-chart-text">
+                  <div className="dashboard-text">
             {chartData.labels.map((label, index) => {
               const value = chartData.datasets[0].data[index];
              
               return (
-                <div key={index} className="report-text-item">
+                <div key={index} className="dashboard-text-item">
                   <strong>{label}:</strong> {value} kcal
                 </div>
               );
             })}
           </div>
           </div>
-        </div>
+        {/* </div> */}
       
       <Footer />
     </>

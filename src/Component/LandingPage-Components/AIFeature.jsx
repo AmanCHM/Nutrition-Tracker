@@ -18,6 +18,7 @@ const AIFeature = () => {
       <div className="feature-component">
         <img 
           id="feature-image"
+          
           src={"https://www.caloriemama.ai/img/phone2b.png"}
           alt="feature"
         />

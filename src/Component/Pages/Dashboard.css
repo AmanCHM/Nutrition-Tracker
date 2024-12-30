@@ -66,22 +66,33 @@ body {
   padding: 20px
   }
 
-  .reports.dada{
-    height: auto;
-    width: 50%;
+  .dashboard-text-item{
+           width: 20vw;
   }
-  .doughnut-chart{
-    height: 30vh;
-    width: 50vw;
-  }
+
   .meal-log{
     margin-top: 3vh;
   }
 
+  .reports-chart{
+    
+      width: 25vw;
+      /* margin-top: 5%; */
+      display: flex;
+      gap: 50px;
+      margin-left: 35%;
+      margin-bottom: 5vh;
+   }
+   .dashboard-text {
+    margin-top: 20vh;
+    text-align: center;
 
-  .reports-chart-text{
- margin-top: 5vh;
-  text-align: center;
-  margin-left: 3%;
-  margin-bottom: 5vh;
   }
+  
+  
+
+  /* .reports-chart-text{
+    margin-top: 15vh;
+    text-align: center;
+    margin-left: 10%;
+  } */
