@@ -1,13 +1,20 @@
-const Image ={
 
-    mobile :'src/assets/images/mobile.svg',
-    aiImage:'src/assets/images/AiPhone.png',
-    goals:'src/assets/images/Goals.png',
-    water:'./src/assets/images/glass-of-water.png',
-    beer:'./src/assets/images/beer.png',
-    coffee:"./src/assets/images/coffee.png",
-bgSelectImage:'src/assets/images/Vector.png',
-    //   reportsBgImage:'src/assets/images/dashboardBg.avif'
+import  mobile from '../../assets/images/mobile.svg';
+import  aiImage from '../../assets/images/AiPhone.png';
+import  goals from '../../assets/images/Goals.png';
+import  water from '../../assets/images/glass-of-water.png';
+import beer  from  '../../assets/images/beer.png';
+import  coffee from '../../assets/images/coffee.png';
+import  bgSelectImage from '../../assets/images/Vector.png';
+export  default  Image ={
+  
+    mobile ,
+    aiImage,
+    goals,
+    water,
+    beer,
+    coffee,
+    bgSelectImage,
+
 }
 
-export default Image
