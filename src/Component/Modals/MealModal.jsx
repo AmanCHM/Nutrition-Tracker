@@ -63,7 +63,7 @@ selectedFoodData?.foods[0]?.food_name?.slice(1)
           {/* <label>Choose Quantity</label> */}
           <input
             type="number"
-            min='0'
+            min='1'
             value={quantity}
             style={{color:'black'}}
             onChange={(e) => setQuantity(e.target.value)}

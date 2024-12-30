@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import axios from "axios";
 import GlobalSelect from "../Page-Components/Globalselect";
-
+import { toast } from "react-toastify";
 const ImageSearch = ({
   setImageModal,
   setImageData,
@@ -15,7 +15,7 @@ const ImageSearch = ({
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  
+  const [quantity,setQuantity] = useState(1);
   // const loader = useSelector((state) => state.loaderReducer.loading);
   
   const dispatch = useDispatch();
@@ -83,6 +83,7 @@ const ImageSearch = ({
       // console.log("imageId", imageId);
     } catch (error) {
       console.log(error);
+      toast.error('Please upload a food image')
     } finally {
       dispatch(hideLoader());
     }
@@ -115,6 +116,7 @@ const ImageSearch = ({
       setNutritionInfo(result.data);
     } catch (error) {
       console.log(error);
+      
     }
   };
 
@@ -125,18 +127,18 @@ const ImageSearch = ({
   useEffect(() => {
     if (nutritionInfo) {
       setName(nutritionInfo?.foodName[0] || "");
-      setCalories(Math.floor(nutritionInfo?.nutritional_info?.calories) || 0);
+      setCalories((Math.floor(nutritionInfo?.nutritional_info?.calories))*quantity || 0);
       setCarbohydrates(
-        Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.CHOCDF?.quantity) || 0
+        (Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.CHOCDF?.quantity))*quantity || 0
       );
       setFat(
-        Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.FAT?.quantity) || 0
+       (Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.FAT?.quantity))*quantity || 0
       );
       setProtein(
-        Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.PROCNT?.quantity) || 0
+       ( Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.PROCNT?.quantity))*quantity || 0
       );
     }
-  }, [nutritionInfo]); 
+  }, [nutritionInfo,quantity]); 
   
 
   console.log("name",name);
@@ -243,7 +245,18 @@ const ImageSearch = ({
   
       </div>
   
-
+      <div className="input-container">
+          {/* <label  >Choose Quantity</label> */}
+          <input
+            type="number"
+            min='1'
+            placeholder="Choose quantity"
+            value={quantity}
+            style={{color:'black'}}
+            onChange={(e) => setQuantity(e.target.value)}
+            step="1"
+          />
+        </div>
       <div>
         <p className="calorie-info">Calorie Served: {calories || "N/A"}</p>
         <button

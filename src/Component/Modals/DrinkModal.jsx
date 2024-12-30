@@ -104,7 +104,7 @@ const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
         <label htmlFor="quantity">Quantity</label>
         <input
             type="number"
-            min='0'
+            min='1'
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             step="1"

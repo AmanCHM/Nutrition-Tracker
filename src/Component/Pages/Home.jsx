@@ -41,6 +41,7 @@ import { setSignout, setSignup } from "../../Redux/logSlice";
 import SetCalorieModal from "../Modals/SetCalorieModal";
 import Table from "../Page-Components/Table";
 import Image from "../Image/Image";
+import { toast } from "react-toastify";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -67,8 +68,8 @@ const Home = () => {
   const [totalCaffeine, setTotalCaffeine] = useState();
   const [dataUpdated, setDataUpdated] = useState(false);
   const [energyModal,setEnergyModal] = useState(false);
-  
-
+// const [suggestions,setSuggestion] = useState();
+const [skip, setSkip] = useState(true)
   const dispatch = useDispatch();
 
   //food suggestion search bar
@@ -76,13 +77,21 @@ const Home = () => {
     data: suggestions,
     isLoading,
     isError,
-  } = useFetchSuggestionsQuery(inputValue);
+  } = useFetchSuggestionsQuery(inputValue
+  //   ,{
+  //   skip,
+  // },
+);
 
 
-  // const filteredSuggestions = suggestions?.filter((suggestion) => suggestion !== "default_value" && suggestion !== null)
+
   const handleSearch = (query) => {
     setInputValue(query);
+   
   };
+
+  
+  console.log('skip',skip)
 
   const style = {
     width: 120,
@@ -124,6 +133,9 @@ const Home = () => {
     setModal(true);
   };
 
+
+
+
   // Add Meal data
 
   const handleModalData = async () => {
@@ -148,6 +160,7 @@ const Home = () => {
         await setDoc(docRef, categorisedData, { merge: true });
         await handleGetData(user);
         console.log("Data saved successfully!");
+        toast.success("Food Saved")
       } else {
         console.log("User not authenticated.");
       }
@@ -155,6 +168,7 @@ const Home = () => {
       console.error("Error saving data:", error);
     } finally {
       setModal(false);
+      toast.error('Error in saving Data')
       dispatch(hideLoader());
     }
   };

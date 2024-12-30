@@ -88,6 +88,7 @@ const CalorieCalculator = () => {
           <input
             id="height"
             type="number"
+            min='25'
             value={height}
             onChange={(e) => setHeight(e.target.value)}
             placeholder="Enter height in cm"
@@ -98,7 +99,7 @@ const CalorieCalculator = () => {
           <input
             id="weight"
             type="number"
-            min="0"
+            min="1"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
             placeholder="Enter weight in kg"
@@ -108,7 +109,7 @@ const CalorieCalculator = () => {
           <label htmlFor="age">Age (years):</label>
           <input
             id="age"
-            min="0"
+            min="1"
             type="number"
             value={age}
             onChange={(e) => setAge(e.target.value)}
@@ -144,8 +145,8 @@ const CalorieCalculator = () => {
             <p className="result">
               You require approximately {calculatedCalorie} kcal daily based on your activity level.
             </p>
-            <button className="save-button" onClick={handleSave}>
-              Save
+            <button className="calculate-button " onClick={handleSave}>
+                Set Your Daily Meal
             </button>
           </>
         )}

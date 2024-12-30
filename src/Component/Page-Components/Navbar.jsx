@@ -6,7 +6,7 @@ import { loggedin, loggedout } from "../../Redux/logSlice";
 import { RiAccountCircleFill } from "react-icons/ri";
 import LogoutModal from "../Modals/LogoutModal";
 import { toast } from "react-toastify";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 
 const Navbar = () => {
@@ -36,7 +36,7 @@ const Navbar = () => {
         setEmail();
       }
     }
-  }, [islogged]);
+  }, []);
 
   const handleLogout = () => {
     dispatch(loggedout());
@@ -56,7 +56,12 @@ const Navbar = () => {
   return (
     <div>
       <nav className="navbar">
-        <div id="company-name">Nutrition Tracker</div>
+          <Link to={"/"}>
+        <div id="company-name">
+          Nutrition Tracker 
+
+          </div>
+          </Link>
 
         {islogged ? (
           <div className="navbar-login">
