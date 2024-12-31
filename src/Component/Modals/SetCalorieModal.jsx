@@ -3,11 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { auth, db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
-import { closeCalorieModal } from "../../Redux/calorieGoalSlice";
+import { closeCalorieModal, resetGoal } from "../../Redux/calorieGoalSlice";
 import { setSignout } from "../../Redux/logSlice";
 
 const SetCalorieModal = ({ setEnergyModal }) => {
 
+
+  const user = useSelector((state)=>state.calorieGoalReducer.userName);
   const dispatch = useDispatch()
   const navigate = useNavigate();
   const calories = useSelector(
@@ -43,6 +45,7 @@ const SetCalorieModal = ({ setEnergyModal }) => {
       } finally {
         dispatch(closeCalorieModal())
         dispatch(setSignout())
+        dispatch(resetGoal());
         setEnergyModal(false);
       }
     }
@@ -51,6 +54,7 @@ const SetCalorieModal = ({ setEnergyModal }) => {
   const handlePlan  = ()=>{
     setEnergyModal(false);
     dispatch(setSignout())
+    
     navigate('/calorie-calculator')
 
   }
@@ -68,7 +72,7 @@ const SetCalorieModal = ({ setEnergyModal }) => {
           >
             Welcome to Your Nutrition Journey! 🌟
           </h3>
-          <h2> Your Calorie Requirements</h2>
+          <h2>Hi {user}! Your Calorie Requirements</h2>
           <div className="calorie-data">
             <ul>
               <li>

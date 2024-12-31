@@ -8,9 +8,10 @@ const initialState = {
   gender: "",
   age: "",
   activity: "",
-  requiredCalorie: "",
+  requiredCalorie: 0,
   goal: "",
-  waterIntake: "",
+  waterIntake: 0,
+  weightDifference:0,
   showrecommendation: false,
 };
 
@@ -27,10 +28,11 @@ const calorieGoalSlice = createSlice({
     },
 
     updateGoal: (state, action) => {
-      const { currentWeight, targetWeight, goal } = action.payload;
+      const { currentWeight, targetWeight, goal ,weightDifference} = action.payload;
       state.currentWeight = currentWeight || state.currentWeight;
       state.targetWeight = targetWeight || state.targetWeight;
       state.goal = goal || action.payload;
+      state.weightDifference = weightDifference || state.weightDifference;
     },
 
     setActivityLevel: (state, action) => {
@@ -40,13 +42,15 @@ const calorieGoalSlice = createSlice({
     setRequiredCalorie: (state, action) => {
       state.requiredCalorie = action.payload;
     },
+
     openCalorieModal: (state) => {
       state.showrecommendation = true;
     },
+
     closeCalorieModal: (state) => {
       state.showrecommendation = false;
     },
-
+    
     resetGoal: () => initialState,
   },
 });

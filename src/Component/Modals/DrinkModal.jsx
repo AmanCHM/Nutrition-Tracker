@@ -17,10 +17,11 @@ const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
 
   
   const servingSize =
-    container === "sGlass" ? 100 : container === "mGlass" ? 175 : 250;
+    container === "Small Glass (100ml)" ? 100 : container === "Medium Glass (175ml)" ? 175 : 250;
   const totalAmount = servingSize * quantity;
 
-  const handleDrinkData = async () => {
+  const handleDrinkData = async (e) => {
+
     try {
       dispatch(showLoader())
       const user = auth.currentUser;
@@ -30,6 +31,7 @@ const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
       const data = {
         id: Date.now(),
         totalAmount:  totalAmount,
+        drinklabel:container
       };
         const newData = { [drinkType]: arrayUnion(data) };
           await setDoc(docRef,newData , { merge: true })
@@ -61,11 +63,13 @@ const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
   ];
 
   const containerOptions = [
-    { value: "sGlass", label: "Small Glass (100ml)" },
-    { value: "mGlass", label: "Medium Glass (175ml)" },
-    { value: "lGlass", label: "Large Glass (250ml)" },
+    { value: "Small Glass (100ml)", label: "Small Glass (100ml)" },
+    { value: "Medium Glass (175ml)", label: "Medium Glass (175ml)" },
+    { value: "Large Glass (250ml)", label: "Large Glass (250ml)" },
   ];
 
+
+  console.log("container",container);
   return (
     <div>
 
@@ -86,6 +90,7 @@ const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
             value={drinkTypeOptions.find((opt) => opt.value === drinkType)}
             onChange={(selected) => setDrinkType(selected?.value || "")}
             placeholder="Select a drink type"
+            
           />
         </div>
       </div>
@@ -108,6 +113,7 @@ const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             step="1"
+            required
           />
       </div>
 

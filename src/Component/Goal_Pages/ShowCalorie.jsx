@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
 
@@ -9,25 +9,25 @@ const ShowCalorie = () => {
     (state) => state.calorieGoalReducer.requiredCalorie
   );
   const goal = useSelector((state) => state.calorieGoalReducer.goal);
-
+  const username = useSelector((state)=> state.calorieGoalReducer.userName)
   // if (!calories || !goal) {
   //   return <h2>Calorie information not available. Please calculate first!</h2>;
   // }
   const navigate = useNavigate();
 
-  console.log(calories);
+  // console.log(calories);
   let recommendedCalories = 0;
   let goalDescription = "";
 
-  if (goal === "loose") {
+  if (goal === "Loose Weight") {
     recommendedCalories = calories;
-    goalDescription = " Lose  0.5 kg weight/week ";
-  } else if (goal === "gain") {
+    goalDescription = "Lose  0.5 kg weight/week ";
+  } else if (goal === "Gain Weight") {
     recommendedCalories = calories;
-    goalDescription = " Gain 0.5 kg weight/week";
+    goalDescription = "Gain 0.5 kg weight/week";
   } else {
     recommendedCalories = calories;
-    goalDescription = " Maintain weight";
+    goalDescription = "Maintain weight";
   }
 
   return (
@@ -50,7 +50,7 @@ const ShowCalorie = () => {
       </h3>
 
       <div className="calorie-container" style={{ height: "300px" }}>
-        <h2>Calorie Requirements</h2>
+        <h2>Hi ! {username}  Your Calorie Requirements</h2>
         <div className="calorie-data">
           <ul>
             <p
@@ -74,26 +74,33 @@ const ShowCalorie = () => {
               }}
             >
               <strong>Recommended Calories:</strong> {recommendedCalories}{" "} kcal/day
-            </p>
-
-            
+            </p> 
           </ul>
         </div>
-
+ 
+ <div style={{marginTop:"20px",marginLeft: "5%"}}>
+        <button className="submit">
+            <Link
+              to={"/input-workout"}
+              style={{ color: "white", fontSize: "17px" , }}
+            >
+              Back
+            </Link>{" "}
+          </button>
         <button
           type="submit"
           style={{
             color: "white",
             fontSize: "17px",
             marginTop: "20px",
-            marginLeft: "25%",
+            marginLeft: "35%",
           }}
           onClick={() => navigate("../signup")}
         >
           Create Your Account
         </button>
       </div>
-
+      </div>
       <Footer />
     </>
   );

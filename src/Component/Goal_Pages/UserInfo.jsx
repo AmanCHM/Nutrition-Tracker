@@ -6,6 +6,7 @@ import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
 
 import GlobalSelect from "./../Page-Components/Globalselect";
+import { toast } from "react-toastify";
 
 const UserInfo = () => {
   const userheight = useSelector((state) => state.calorieGoalReducer.height);
@@ -25,7 +26,7 @@ const UserInfo = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!userName || !height || !gender || !age) {
-      alert("Please fill out all fields.");
+      toast.error("Please fill out all fields.")
       return;
     }
     dispatch(setUserInfo({ userName, height, gender, age }));
@@ -33,8 +34,8 @@ const UserInfo = () => {
   };
 
   const genderOptions = [
-    { value: "male", label: "Male" },
-    { value: "female", label: "Female" },
+    { value: "Male", label: "Male" },
+    { value: "Female", label: "Female" },
   ];
 console.log(userName)
   return (

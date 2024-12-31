@@ -10,10 +10,24 @@ const EditDataModal = ({
   selectquantity,
   setSelectquantity,
   selectedFoodData,
+  selectCategory,
   setSelectCategory,
   calculateCalories,
   handleEditModalData,
+  mealName
 }) => {
+
+console.log("mealname",mealName);
+console.log(selectquantity);
+// console.log(object);
+  const options =[
+    { value: "Breakfast", label: "Breakfast" },
+    { value: "Lunch", label: "Lunch" },
+    { value: "Snack", label: "Snack" },
+    { value: "Dinner", label: "Dinner" },
+  ];
+
+ console.log("claculate Calories",calculateCalories);
   return (
     <>
       <div>
@@ -25,14 +39,14 @@ const EditDataModal = ({
         </h2>
 
         <h3 style={{ color: "#063970", textAlign:'center', paddingTop:'10px'}}>{selectedFoodData?.foods[0]?.food_name?.charAt(0).toUpperCase() + 
-selectedFoodData?.foods[0]?.food_name?.slice(1)
-}</h3>
+         selectedFoodData?.foods[0]?.food_name?.slice(1)}</h3>
        
 
         <div className="input-container">
           <label>Choose Quantity</label>
           <input
             type="number"
+            min='1'
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             step="1"
@@ -73,6 +87,7 @@ selectedFoodData?.foods[0]?.food_name?.slice(1)
             { value: "Snack", label: "Snack" },
             { value: "Dinner", label: "Dinner" },
           ]}
+         value= {options.find((option)=>option.value ===options.value)} 
           onChange={(selectedOption) => setSelectCategory(selectedOption.value)}
         />
 

@@ -125,14 +125,14 @@ body {
   #header-text{
     color: rgb(255, 255, 255);
     text-align: center;
-    
+    padding-top: 5vh;
     /* margin-top: 20px; */
   }
  #search-box{
   width: 25%;
   
-  margin-left: 37vw;
-  margin-top: 33px;
+  margin-left: 38vw;
+  margin-top: 40px;
  }
 
  .calorie-range{

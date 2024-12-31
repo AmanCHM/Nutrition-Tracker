@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth, db } from "../../firebase";
 import "react-toastify/dist/ReactToastify.css";
-import { useFormik } from "formik";
+import { Formik, useFormik } from "formik";
 import * as Yup from "yup";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Signup.css";
@@ -44,7 +44,7 @@ const Signup = () => {
         const user = userCredential.user;
 
         const userDocRef = doc(db, "users", user.uid);
-        await setDoc(userDocRef, { calorie: 2000 });
+        await setDoc(userDocRef, { calorie: 2000 ,water: 3000 ,alcohol:600,caffeine:850});
 
         toast.success("SignUp Successful");
         dispatch(loggedin());
@@ -60,6 +60,9 @@ const Signup = () => {
   });
 
   const handleGoogleSignup = async () => {
+    formik.values.email="";
+    formik.values.password="";
+    formik.values.confirmPassword="";
     dispatch(showLoader());
     try {
       const result = await signInWithPopup(auth, provider);

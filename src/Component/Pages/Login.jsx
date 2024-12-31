@@ -28,19 +28,23 @@ const Login = () => {
   // Handle Google Sign-In
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
-
+    formik.values.email ="";
+    formik.values.password="";
+    dispatch(showLoader());
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      toast.success("Logged in successfully with Google!");
       dispatch(loggedin());
-      navigate("/dashboard"); // Redirect to the home page after successful login
+      navigate("/dashboard"); 
+      toast.success("Logged in successfully with Google!");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
       toast.error("Google Login failed");
       console.error(errorCode, errorMessage);
+    }finally {
+      dispatch(hideLoader());
     }
   };
 

@@ -35,13 +35,14 @@ import ImageSearch from "./ImageSearch";
 import DrinkModal from "../Modals/DrinkModal";
 import Progress from "rsuite/Progress";
 import "rsuite/Progress/styles/index.css";
-import { Notification } from 'rsuite';
-import 'rsuite/Notification/styles/index.css';
+import { Notification } from "rsuite";
+import "rsuite/Notification/styles/index.css";
 import { setSignout, setSignup } from "../../Redux/logSlice";
 import SetCalorieModal from "../Modals/SetCalorieModal";
 import Table from "../Page-Components/Table";
 import Image from "../Image/Image";
 import { toast } from "react-toastify";
+import UpdateDrinkModal from "../Modals/UpdateDrinkModal";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -61,15 +62,19 @@ const Home = () => {
   const [editMealName, setEditMealName] = useState();
   const [foodMeasure, setFoodMeasure] = useState();
   const [showDrinkModal, setShowDrinkModal] = useState(false);
+  const [drinkUpdateModal,setDrinkUpdateModal] =useState(false);
   const [imageData, setImageData] = useState();
   const [drinkData, setDrinkData] = useState();
   const [totalWater, setTotalWater] = useState();
   const [totalAlcohol, setTotalAlcohol] = useState();
   const [totalCaffeine, setTotalCaffeine] = useState();
   const [dataUpdated, setDataUpdated] = useState(false);
-  const [energyModal,setEnergyModal] = useState(false);
-// const [suggestions,setSuggestion] = useState();
-const [skip, setSkip] = useState(true)
+  const [energyModal, setEnergyModal] = useState(false);
+  const [requiredWater, setRequiredWater] = useState();
+  const [requiredAlcohol, setRequiredAlcohol] = useState();
+  const [requiredCaffeine, setRequiredCaffeine] = useState();
+
+  const [skip, setSkip] = useState(true);
   const dispatch = useDispatch();
 
   //food suggestion search bar
@@ -77,21 +82,18 @@ const [skip, setSkip] = useState(true)
     data: suggestions,
     isLoading,
     isError,
-  } = useFetchSuggestionsQuery(inputValue
-  //   ,{
-  //   skip,
-  // },
-);
-
-
+  } = useFetchSuggestionsQuery(
+    inputValue
+    //   ,{
+    //   skip,
+    // },
+  );
 
   const handleSearch = (query) => {
     setInputValue(query);
-   
   };
 
-  
-  console.log('skip',skip)
+  // console.log('skip',skip)
 
   const style = {
     width: 120,
@@ -122,8 +124,8 @@ const [skip, setSkip] = useState(true)
   //add food
   const [addMeal, { data: selectedFoodData }] = useAddMealMutation();
 
-  console.log("selectedDood",selectedFoodData);
-  console.log(suggestions);
+  // console.log("selectedDood",selectedFoodData);
+  // console.log(suggestions);
 
   const handleSelect = (selectedOption) => {
     setSelectItem(selectedOption);
@@ -133,12 +135,10 @@ const [skip, setSkip] = useState(true)
     setModal(true);
   };
 
-
-
-
   // Add Meal data
 
-  const handleModalData = async () => {
+  const handleModalData = async (e) => {
+    e.preventDefault();
     try {
       dispatch(showLoader());
       // console.log("inside modal");
@@ -160,7 +160,7 @@ const [skip, setSkip] = useState(true)
         await setDoc(docRef, categorisedData, { merge: true });
         await handleGetData(user);
         console.log("Data saved successfully!");
-        toast.success("Food Saved")
+        toast.success("Food Saved");
       } else {
         console.log("User not authenticated.");
       }
@@ -168,7 +168,7 @@ const [skip, setSkip] = useState(true)
       console.error("Error saving data:", error);
     } finally {
       setModal(false);
-      toast.error('Error in saving Data')
+      toast.error("Error in saving Data");
       dispatch(hideLoader());
     }
   };
@@ -245,18 +245,18 @@ const [skip, setSkip] = useState(true)
     } finally {
       dispatch(hideLoader());
       <Stack spacing={10} direction="column" alignItems="flex-start">
-      <Notification type="success" header="Operation successful">
-      The email has been sent successfully, please check it in the mailbox.
-    </Notification>
-    </Stack>
+        <Notification type="success" header="Operation successful">
+          The email has been sent successfully, please check it in the mailbox.
+        </Notification>
+      </Stack>;
     }
   };
 
-
-
   const handleEditLog = async (meal, name, id) => {
     setSelectedId(id);
+    setQuantity(1);
     setEditMealName(meal);
+    setSelectquantity(1);
     dispatch(showLoader());
     addMeal(name);
     setEditModal(true);
@@ -314,6 +314,9 @@ const [skip, setSkip] = useState(true)
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
           const data = userDoc.data();
+          setRequiredWater(data.water);
+          setRequiredCaffeine(data.caffeine);
+          setRequiredAlcohol(data.alcohol);
           setDailyCalorie(data.calorie);
         } else {
           setDailyCalorie(null);
@@ -339,7 +342,8 @@ const [skip, setSkip] = useState(true)
         selectquantity *
         quantity
       : "no data";
-  // console.log("calculated calorie", calculateCalories);
+  console.log("calculated calorie", calculateCalories);
+  console.log("selected food", selectedFoodData);
 
   const protein =
     selectedFoodData?.foods.length > 0
@@ -347,7 +351,7 @@ const [skip, setSkip] = useState(true)
         (selectedFoodData?.foods[0].nf_calories /
           selectedFoodData?.foods[0].nf_protein)
       : "no data";
-console.log("caloriecalculate",calculateCalories)
+  // console.log("caloriecalculate",calculateCalories)
   const carbs =
     selectedFoodData?.foods.length > 0
       ? calculateCalories /
@@ -364,92 +368,89 @@ console.log("caloriecalculate",calculateCalories)
 
   //Meal Details in Calorie
 
-const calculateMealNutrient = (mealData, nutrient) => {
-  return mealData?.length > 0
-    ? mealData.reduce((total, item) => total + item[nutrient], 0)
-    : 0;
-};
-
-
-const calculateMealCalories = (mealData) => {
-  return calculateMealNutrient(mealData, "calories");
-};
-
-
-const calculateMealProtein = (mealData) => {
-  return calculateMealNutrient(mealData, "proteins");
-};
-
-const calculateMealCarbs = (mealData) => {
-  return calculateMealNutrient(mealData, "carbs");
-};
-
-const calculateMealFats = (mealData) => {
-  return calculateMealNutrient(mealData, "fats");
-};
-
-
-const breakfastCalorie = calculateMealCalories(logData?.Breakfast);
-const breakfastProtein = calculateMealProtein(logData?.Breakfast);
-const breakfastCarbs = calculateMealCarbs(logData?.Breakfast);
-const breakfastFats = calculateMealFats(logData?.Breakfast);
-
-const lunchCalorie = calculateMealCalories(logData?.Lunch);
-const lunchProtein = calculateMealProtein(logData?.Lunch);
-const lunchCarbs = calculateMealCarbs(logData?.Lunch);
-const lunchFats = calculateMealFats(logData?.Lunch);
-
-const snackCalorie = calculateMealCalories(logData?.Snack);
-const snackProtein = calculateMealProtein(logData?.Snack);
-const snackCarbs = calculateMealCarbs(logData?.Snack);
-const snackFats = calculateMealFats(logData?.Snack);
-
-const dinnerCalorie = calculateMealCalories(logData?.Dinner);
-const dinnerProtein = calculateMealProtein(logData?.Dinner);
-const dinnerCarbs = calculateMealCarbs(logData?.Dinner);
-const dinnerFats = calculateMealFats(logData?.Dinner);
-
-// Calculate totals for the day
-const totalCalories = breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
-const totalProtein = breakfastProtein + lunchProtein + snackProtein + dinnerProtein;
-const totalCarbs = breakfastCarbs + lunchCarbs + snackCarbs + dinnerCarbs;
-const totalFats = breakfastFats + lunchFats + snackFats + dinnerFats;
-
-
-
-const calculateMacronutrients = (totalCalories) => {
-  //percentage distribution
-  const proteinPercent = 0.25;
-  const carbsPercent = 0.50;   
-  const fatsPercent = 0.25;   
-
-  // Calculate  calorie 
-  const proteinCalories = dailycalorie * proteinPercent;
-  const carbsCalories = dailycalorie * carbsPercent;
-  const fatsCalories = dailycalorie * fatsPercent;
-
-  // Convert calories to grams
-  const proteinGrams = Math.round(proteinCalories / 4); 
-  const carbsGrams = Math.round(carbsCalories / 4);     
-  const fatsGrams = Math.round(fatsCalories / 9);     
-
-  return {
-    proteinGrams,
-    carbsGrams,
-    fatsGrams,
+  const calculateMealNutrient = (mealData, nutrient) => {
+    return mealData?.length > 0
+      ? mealData.reduce((total, item) => total + item[nutrient], 0)
+      : 0;
   };
-};
 
-const { proteinGrams, carbsGrams, fatsGrams } = calculateMacronutrients(totalCalories);
+  const calculateMealCalories = (mealData) => {
+    return calculateMealNutrient(mealData, "calories");
+  };
 
+  const calculateMealProtein = (mealData) => {
+    return calculateMealNutrient(mealData, "proteins");
+  };
 
+  const calculateMealCarbs = (mealData) => {
+    return calculateMealNutrient(mealData, "carbs");
+  };
+
+  const calculateMealFats = (mealData) => {
+    return calculateMealNutrient(mealData, "fats");
+  };
+
+  const breakfastCalorie = calculateMealCalories(logData?.Breakfast);
+  const breakfastProtein = calculateMealProtein(logData?.Breakfast);
+  const breakfastCarbs = calculateMealCarbs(logData?.Breakfast);
+  const breakfastFats = calculateMealFats(logData?.Breakfast);
+
+  const lunchCalorie = calculateMealCalories(logData?.Lunch);
+  const lunchProtein = calculateMealProtein(logData?.Lunch);
+  const lunchCarbs = calculateMealCarbs(logData?.Lunch);
+  const lunchFats = calculateMealFats(logData?.Lunch);
+
+  const snackCalorie = calculateMealCalories(logData?.Snack);
+  const snackProtein = calculateMealProtein(logData?.Snack);
+  const snackCarbs = calculateMealCarbs(logData?.Snack);
+  const snackFats = calculateMealFats(logData?.Snack);
+
+  const dinnerCalorie = calculateMealCalories(logData?.Dinner);
+  const dinnerProtein = calculateMealProtein(logData?.Dinner);
+  const dinnerCarbs = calculateMealCarbs(logData?.Dinner);
+  const dinnerFats = calculateMealFats(logData?.Dinner);
+
+  // Calculate totals for the day
+  const totalCalories =
+    breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
+  const totalProtein =
+    breakfastProtein + lunchProtein + snackProtein + dinnerProtein;
+  const totalCarbs = breakfastCarbs + lunchCarbs + snackCarbs + dinnerCarbs;
+  const totalFats = breakfastFats + lunchFats + snackFats + dinnerFats;
+
+  const calculateNutrients = (totalCalories) => {
+    //percentage distribution
+    const proteinPercent = 0.25;
+    const carbsPercent = 0.5;
+    const fatsPercent = 0.25;
+
+    // Calculate  calorie
+    const proteinCalories = dailycalorie * proteinPercent;
+    const carbsCalories = dailycalorie * carbsPercent;
+    const fatsCalories = dailycalorie * fatsPercent;
+
+    // Convert calories to grams
+    const proteinGrams = Math.round(proteinCalories / 4);
+    const carbsGrams = Math.round(carbsCalories / 4);
+    const fatsGrams = Math.round(fatsCalories / 9);
+
+    return {
+      proteinGrams,
+      carbsGrams,
+      fatsGrams,
+    };
+  };
+
+  const { proteinGrams, carbsGrams, fatsGrams } =
+    calculateNutrients(totalCalories);
 
   const requiredCalorie = dailycalorie > 0 ? dailycalorie - totalCalories : 0;
 
-const progressPercent = dailycalorie > 0 ? Math.floor((totalCalories / dailycalorie) * 100) : 0;
-const proteinPercentage =   Math.floor((totalProtein / proteinGrams) * 100);
-const carbsPercentage = Math.floor((totalCarbs / carbsGrams) * 100);
-const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
+  const progressPercent =
+    dailycalorie > 0 ? Math.floor((totalCalories / dailycalorie) * 100) : 0;
+  const proteinPercentage = Math.floor((totalProtein / proteinGrams) * 100);
+  const carbsPercentage = Math.floor((totalCarbs / carbsGrams) * 100);
+  const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
 
   //doughnut Data
 
@@ -575,17 +576,14 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
     }
   }, [drinkData]);
 
-
-
   //energy modal
   const isSignup = useSelector((state) => state.loggedReducer.signedup);
   useEffect(() => {
     if (isSignup === true) {
-      setEnergyModal(true); 
+      setEnergyModal(true);
       //  dispatch(setSignout())
     }
   }, []);
-  
 
   // console.log("signupmodal",isSignup)
 
@@ -593,8 +591,10 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
   return (
     <>
       <Navbar />
-      <div className="search" style={{ backgroundImage: `url(${Image.bgSelectImage})` }}
->
+      <div
+        className="search"
+        style={{ backgroundImage: `url(${Image.bgSelectImage})` }}
+      >
         <h1 id="header-text">Search Your Meals Below</h1>
 
         <Select
@@ -605,12 +605,13 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
           placeholder="Search here ..."
           className="search-bar"
         />
+        <h1 id="header-text">or</h1>
       </div>
 
-
-<h2 style={{padding:'40px'}}>AI Food Vision: Identify Your Dish Instantly</h2>
+      <h2 style={{ padding: "40px" }}>
+        AI Food Vision: Identify Your Dish Instantly
+      </h2>
       <div className="ai-search">
-        
         <button
           className="ai-search-button"
           onClick={() => {
@@ -619,7 +620,8 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
         >
           <span className="ai-search-button-icon">
             <FaSearch size={16} color="white" />
-          </span>Visual Food Search
+          </span>
+          Visual Food Search
         </button>
         <Modal isOpen={imageModal}>
           <ImageSearch
@@ -631,16 +633,12 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
         </Modal>
       </div>
 
-   {/* Energy Modal */}
-     <div>
-    <Modal isOpen={energyModal}>
-     <SetCalorieModal
-        setEnergyModal={setEnergyModal}
-     />
-
-    </Modal>
-
-     </div>
+      {/* Energy Modal */}
+      <div>
+        <Modal isOpen={energyModal}>
+          <SetCalorieModal setEnergyModal={setEnergyModal} />
+        </Modal>
+      </div>
 
       <Modal isOpen={modal}>
         <MealModal
@@ -659,106 +657,98 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
       </Modal>
 
       <Table
-      logData={logData}
-      handleNutritionModal={handleNutritionModal}
-      handleEditLog={handleEditLog}
-      handleDeleteLog={handleDeleteLog}
-      showFeature={true}
+        logData={logData}
+        handleNutritionModal={handleNutritionModal}
+        handleEditLog={handleEditLog}
+        handleDeleteLog={handleDeleteLog}
+        showFeature={true}
       />
 
-        <div
-          className="progress-line"
-          style={{ height: "auto", width: "50vw", marginLeft:"25%" }}
-         >
-          <h2
-            style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.0rem" }}
-          >
-           
-            Today Meal Progress Report
-          </h2>
-          <div style={{ margin: "20px 20px" }}>
-            <label htmlFor="">
-            
-              <strong> Energy : </strong>
-              {totalCalories}/{dailycalorie} kcal
-            </label>
+      <div
+        className="progress-line"
+        style={{ height: "auto", width: "50vw", marginLeft: "25%" }}
+      >
+        <h2 style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.0rem" }}>
+          Today Meal Progress Report
+        </h2>
+        <div style={{ margin: "20px 20px" }}>
+          <label htmlFor="">
+            <strong> Energy : </strong>
+            {totalCalories}/{dailycalorie} kcal
+          </label>
           <Progress.Line
             percent={progressPercent}
             status="active"
             strokeColor="#e15f41"
-            /> 
-             </div>
-            <div style={{ margin: "20px 20px" }}>
-            <label htmlFor="">
-              <strong> Protein: </strong>
-              {totalProtein}/{proteinGrams}g
-            </label>
+          />
+        </div>
+        <div style={{ margin: "20px 20px" }}>
+          <label htmlFor="">
+            <strong> Protein: </strong>
+            {totalProtein}/{proteinGrams}g
+          </label>
           <Progress.Line
             percent={proteinPercentage}
             status="active"
             strokeColor="#55a630"
-            />
-            </div>
-            <div style={{ margin: "20px 20px" }}>
-            <label htmlFor="">
-              {" "}
-              <strong> Carbs </strong>
-              {totalCarbs}/{carbsGrams} g
-            </label>
+          />
+        </div>
+        <div style={{ margin: "20px 20px" }}>
+          <label htmlFor="">
+            {" "}
+            <strong> Carbs </strong>
+            {totalCarbs}/{carbsGrams} g
+          </label>
           <Progress.Line
             percent={carbsPercentage}
             status="active"
-          strokeColor="355070"
-            />
-            </div>
-            <div style={{ margin: "20px 20px" }}>
-            <label htmlFor="">
-              {" "}
-              <strong> Fat: </strong>
-              {totalFats}/{fatsGrams} g
-            </label>
+            strokeColor="355070"
+          />
+        </div>
+        <div style={{ margin: "20px 20px" }}>
+          <label htmlFor="">
+            {" "}
+            <strong> Fat: </strong>
+            {totalFats}/{fatsGrams} g
+          </label>
           <Progress.Line
             percent={fatsPercentage}
             status="active"
-              strokeColor="#52b788"
-            
-            />
-            </div>
+            strokeColor="#52b788"
+          />
         </div>
+      </div>
 
-        
-
-        <div className="total-calorie">
-          <h2
-            style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.5rem" }}
-          >
-            {" "}
-            Your Calorie Journey Today
-          </h2>
-          <div className="doughnut-data">
-            <div className="doughnut-graph">
-              <Doughnut data={doughnutdata} />
-            </div>
-            <div className="doughnut-text">
-              {doughnutdata.labels.map((label, index) => {
-                const value = doughnutdata.datasets[0].data[index];
-                const percentage =( value>0?Math.floor(getPercentage(value, total)) :0);
-                return (
-                  <div key={index} className="doughnut-text-item">
-                    <strong>{label}:</strong> {value} kcal ({percentage}%)
-                  </div>
-                );
-              })}
-            </div>
+      <div className="total-calorie">
+        <h2 style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.5rem" }}>
+          {" "}
+          Your Calorie Journey Today
+        </h2>
+        <div className="doughnut-data">
+          <div className="doughnut-graph">
+            <Doughnut data={doughnutdata} />
+          </div>
+          <div className="doughnut-text">
+            {doughnutdata.labels.map((label, index) => {
+              const value = doughnutdata.datasets[0].data[index];
+              const percentage =
+                value > 0 ? Math.floor(getPercentage(value, total)) : 0;
+              return (
+                <div key={index} className="doughnut-text-item">
+                  <strong>{label}:</strong> {value} kcal ({percentage}%)
+                </div>
+              );
+            })}
           </div>
         </div>
-     
+      </div>
 
       <Modal isOpen={editModal}>
         <EditDataModal
           setModal={setEditModal}
           quantity={quantity}
           setQuantity={setQuantity}
+          mealName={editMealName}
           selectquantity={selectquantity}
           setSelectquantity={setSelectquantity}
           selectedFoodData={selectedFoodData}
@@ -776,7 +766,6 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
           setQuantity={setQuantity}
           selectquantity={selectquantity}
           setSelectquantity={setSelectquantity}
-
           setSelectCategory={setSelectCategory}
           // calories={Math.round(calculateCalories)}
           // proteins={Math.round(protein)}
@@ -844,6 +833,17 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
                 >
                   Total Quantity
                 </th>
+                <th
+                  style={{
+                    padding: "7px",
+                    border: "1px solid #ddd",
+                    color: "white",
+                    backgroundColor: "#aa6f5e",
+                    borderRadius: "2px",
+                  }}
+                >
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -859,6 +859,22 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
                 <td style={{ padding: "12x", border: "1px solid #ddd" }}>
                   {totalWater} ml
                 </td>
+                <td>
+                  <div style={{ display: "flex" }}>
+                    <span
+                      onClick={() => setDrinkUpdateModal(true)}
+                      className="icon-button delete"
+                    >
+                      <FaTrashAlt style={{ color: "#e15f41" }} />
+                    </span>
+                    <span
+                       onClick={() => setDrinkUpdateModal(true)}
+                      className="icon-button edit"
+                    >
+                      <FaEdit />
+                    </span>
+                  </div>
+                </td>
               </tr>
               <tr style={{ backgroundColor: "#f9f9f9" }}>
                 <td style={{ padding: "12px", border: "1px solid #ddd" }}>
@@ -871,6 +887,26 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
                 </td>
                 <td style={{ padding: "12px", border: "1px solid #ddd" }}>
                   {totalAlcohol} ml
+                </td>
+                <td>
+                  <div style={{ display: "flex" }}>
+                    <span
+                    onClick={() => 
+                       
+                      setDrinkUpdateModal(true)
+                      
+                    }
+                      className="icon-button delete"
+                    >
+                      <FaTrashAlt style={{ color: "#e15f41" }} />
+                    </span>
+                    <span
+                     onClick={() => setDrinkUpdateModal(true)}
+                      className="icon-button edit"
+                    >
+                      <FaEdit />
+                    </span>
+                  </div>
                 </td>
               </tr>
               <tr>
@@ -887,9 +923,79 @@ const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
                 <td style={{ padding: "12px", border: "1px solid #ddd" }}>
                   {totalCaffeine} ml
                 </td>
+                <td>
+                  <div style={{ display: "flex" }}>
+                    <span
+                      onClick={() => setDrinkUpdateModal(true)}
+                      className="icon-button delete"
+                    >
+                      <FaTrashAlt style={{ color: "#e15f41" }} />
+                    </span>
+                    <span
+                      onClick={() => 
+                        setDrinkUpdateModal(true)}
+                      className="icon-button edit"
+                    >
+                      <FaEdit />
+                    </span>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
+
+          <Modal isOpen={drinkUpdateModal}>
+          <UpdateDrinkModal
+            setDrinkUpdateModal={setDrinkUpdateModal}
+            onDataUpdated={handleDataUpdated}
+          />
+        </Modal>
+
+          <div
+            className="progress-line"
+            style={{ height: "auto", width: "50vw", marginLeft: "25%" }}
+          >
+            <h2
+              style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.0rem" }}
+            >
+              Today's Drink Progress Report
+            </h2>
+
+            <div style={{ margin: "20px 20px" }}>
+              <label htmlFor="">
+                <strong> Water : </strong>
+                {totalWater}/{requiredWater} ml
+              </label>
+              <Progress.Line
+                percent={Math.floor((totalWater / requiredWater) * 100)}
+                status="active"
+                strokeColor="#e15f41"
+              />
+            </div>
+            <div style={{ margin: "20px 20px" }}>
+              <label htmlFor="">
+                <strong> Alcohol: </strong>
+                {totalAlcohol}/{requiredAlcohol}ml
+              </label>
+              <Progress.Line
+                percent={Math.floor((totalAlcohol / requiredAlcohol) * 100)}
+                status="active"
+                strokeColor="#55a630"
+              />
+            </div>
+            <div style={{ margin: "20px 20px" }}>
+              <label htmlFor="">
+                {" "}
+                <strong> Caffeine: </strong>
+                {totalCaffeine}/{requiredCaffeine} ml
+              </label>
+              <Progress.Line
+                percent={Math.floor((totalCaffeine / requiredCaffeine) * 100)}
+                status="active"
+                strokeColor="355070"
+              />
+            </div>
+          </div>
         </div>
       </div>
       <Footer className="footer" />

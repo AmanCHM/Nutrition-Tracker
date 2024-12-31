@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import axios from "axios";
 import GlobalSelect from "../Page-Components/Globalselect";
-import { toast } from "react-toastify";
+import {  toast } from "react-toastify";
 const ImageSearch = ({
   setImageModal,
   setImageData,
@@ -15,9 +15,9 @@ const ImageSearch = ({
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  const [quantity,setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
   // const loader = useSelector((state) => state.loaderReducer.loading);
-  
+
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [calories, setCalories] = useState(0);
@@ -29,7 +29,6 @@ const ImageSearch = ({
   const [imageId, setImageId] = useState(null);
   const [nutritionInfo, setNutritionInfo] = useState();
   const [mealQuantity, setMealQuantity] = useState();
-
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -43,8 +42,6 @@ const ImageSearch = ({
     setSelectedFile(file);
   };
 
-
-
   const handleSaveData = async () => {
     dispatch(showLoader());
     const newData = {
@@ -55,15 +52,14 @@ const ImageSearch = ({
       carbs: carbohydrates,
       fats: fat,
     };
-    setImageData(newData); 
-   handelImageSearchModal(newData);
+    setImageData(newData);
+    handelImageSearchModal(newData);
     dispatch(hideLoader());
   };
 
-
   // ImageID API
   const handleUpload = async () => {
-    setImageData()
+    setImageData();
     dispatch(showLoader());
     const formData = new FormData();
     formData.append("image", selectedFile);
@@ -82,25 +78,21 @@ const ImageSearch = ({
       setImageId(result.data?.imageId);
       // console.log("imageId", imageId);
     } catch (error) {
+    toast.error("Please upload a food Image")
       console.log(error);
-      toast.error('Please upload a food image')
     } finally {
       dispatch(hideLoader());
     }
   };
 
-
- 
   useEffect(() => {
     if (imageId) {
       fetchNutritionInfo(imageId);
     }
   }, [imageId]);
 
-
   // Nutritioninfo api
   const fetchNutritionInfo = async (imageId) => {
-
     const data = { imageId: imageId };
     try {
       const result = await axios.post(
@@ -115,165 +107,202 @@ const ImageSearch = ({
       );
       setNutritionInfo(result.data);
     } catch (error) {
+      toast.error("Please upload a food image");
       console.log(error);
-      
     }
   };
 
-
-
-
-  
   useEffect(() => {
     if (nutritionInfo) {
       setName(nutritionInfo?.foodName[0] || "");
-      setCalories((Math.floor(nutritionInfo?.nutritional_info?.calories))*quantity || 0);
+      setCalories(
+        Math.floor(nutritionInfo?.nutritional_info?.calories) * quantity || 0
+      );
       setCarbohydrates(
-        (Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.CHOCDF?.quantity))*quantity || 0
+        Math.floor(
+          nutritionInfo?.nutritional_info?.totalNutrients?.CHOCDF?.quantity
+        ) * quantity || 0
       );
       setFat(
-       (Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.FAT?.quantity))*quantity || 0
+        Math.floor(
+          nutritionInfo?.nutritional_info?.totalNutrients?.FAT?.quantity
+        ) * quantity || 0
       );
       setProtein(
-       ( Math.floor(nutritionInfo?.nutritional_info?.totalNutrients?.PROCNT?.quantity))*quantity || 0
+        Math.floor(
+          nutritionInfo?.nutritional_info?.totalNutrients?.PROCNT?.quantity
+        ) * quantity || 0
       );
     }
-  }, [nutritionInfo,quantity]); 
-  
+  }, [nutritionInfo, quantity]);
 
-  console.log("name",name);
-  console.log("calories",calories);
-
+  console.log("name", name);
+  console.log("calories", calories);
 
   const options = [
     { value: "Breakfast", label: "Breakfast" },
     { value: "Lunch", label: "Lunch" },
     { value: "Snack", label: "Snack" },
     { value: "Dinner", label: "Dinner" },
-  ]
-
+  ];
 
   return (
     <>
- 
-    <span
-      className="close-button"
-      onClick={() => setImageModal(false)}
-      style={{color:'black', backgroundColor:'white', padding:'5px',cursor:'pointer'}} 
-    >
-      X
-    </span>
-  
-    <div className="image-search-container">
-      <h2 className="title"> Recognize Food Facts
-</h2>
+      <span
+        className="close-button"
+        onClick={() => setImageModal(false)}
+        style={{
+          color: "black",
+          backgroundColor: "white",
+          padding: "5px",
+          cursor: "pointer",
+        }}
+      >
+        X
+      </span>
 
-      <div className="upload-section">
-        <input
-          type="file"
-          onChange={handleFileChange}
-          className="file-input"
-        />
-      </div>
-  
+      <div className="image-search-container">
+        <h2 className="title"> Recognize Food Facts</h2>
 
-      {imageSrc && (
-        <div className="image-preview">
-          <img
-            ref={imageRef}
-            src={imageSrc}
-            alt="Uploaded Preview"
-            className="preview-image"
-          />
-        </div>
-      )}
-  
-
-      <button onClick={handleUpload} className="upload-button">
-        Upload
-      </button>
-  
- 
-      {nutritionInfo && (
-        <div>
-          <h2>Nutrition Information</h2>
-          <h3>{name}</h3>
-          <table
-    style={{
-      width: "100%",
-      borderCollapse: "collapse",
-      marginTop: "20px",
-      fontSize: "1rem",
-      color: "#2c3e50",
-      textAlign: "left",
-    }}
-  >
-    <thead>
-      <tr style={{ backgroundColor: "#f4f6f7" }}>
-        <th style={{ padding: "10px", borderBottom: "2px solid #ddd" }}>Nutrient</th>
-        <th style={{ padding: "10px", borderBottom: "2px solid #ddd" }}>Quantity</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Calories</td>
-        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>{calories} kcal</td>
-      </tr>
-      <tr style={{ backgroundColor: "#f9f9f9" }}>
-        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Carbohydrates</td>
-        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>{carbohydrates} g</td>
-      </tr>
-      <tr>
-        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Fat</td>
-        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>{fat} g</td>
-      </tr>
-      <tr style={{ backgroundColor: "#f9f9f9" }}>
-        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Protein</td>
-        <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>{protein} g</td>
-      </tr>
-    </tbody>
-  </table>
-          <div style={{marginTop:'30px'}}>
-        {/* <label className="meal-label" >Choose Meal</label> */}
-
-        <GlobalSelect
-          options={options}
-          onChange={(selectedOption) => setSelectCategory(selectedOption.value)}
-          placeholder="Choose  meal"
-          isSearchable={false}
-        />
-  
-      </div>
-  
-      <div className="input-container">
-          {/* <label  >Choose Quantity</label> */}
+        <div className="upload-section">
           <input
-            type="number"
-            min='1'
-            placeholder="Choose quantity"
-            value={quantity}
-            style={{color:'black'}}
-            onChange={(e) => setQuantity(e.target.value)}
-            step="1"
+            type="file"
+            onChange={handleFileChange}
+            className="file-input"
           />
         </div>
-      <div>
-        <p className="calorie-info">Calorie Served: {calories || "N/A"}</p>
-        <button
-          className="add-meal-button"
-          onClick={handleSaveData}
-        >
-          Add Meal
-        </button>
-      </div>
-        </div>
-      )}
-     
 
-      
-    </div>
-  </>
-  
+        {imageSrc && (
+          <div className="image-preview">
+            <img
+              ref={imageRef}
+              src={imageSrc}
+              alt="Uploaded Preview"
+              className="preview-image"
+            />
+          </div>
+        )}
+
+        <button onClick={handleUpload} className="upload-button">
+          Upload
+        </button>
+
+        {nutritionInfo && (
+          <div>
+            <h2>Nutrition Information</h2>
+            <h3>{name}</h3>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                marginTop: "20px",
+                fontSize: "1rem",
+                color: "#2c3e50",
+                textAlign: "left",
+              }}
+            >
+              <thead>
+                <tr style={{ backgroundColor: "#f4f6f7" }}>
+                  <th
+                    style={{ padding: "10px", borderBottom: "2px solid #ddd" }}
+                  >
+                    Nutrient
+                  </th>
+                  <th
+                    style={{ padding: "10px", borderBottom: "2px solid #ddd" }}
+                  >
+                    Quantity
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td
+                    style={{ padding: "10px", borderBottom: "1px solid #ddd" }}
+                  >
+                    Calories
+                  </td>
+                  <td
+                    style={{ padding: "10px", borderBottom: "1px solid #ddd" }}
+                  >
+                    {calories} kcal
+                  </td>
+                </tr>
+                <tr style={{ backgroundColor: "#f9f9f9" }}>
+                  <td
+                    style={{ padding: "10px", borderBottom: "1px solid #ddd" }}
+                  >
+                    Carbohydrates
+                  </td>
+                  <td
+                    style={{ padding: "10px", borderBottom: "1px solid #ddd" }}
+                  >
+                    {carbohydrates} g
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style={{ padding: "10px", borderBottom: "1px solid #ddd" }}
+                  >
+                    Fat
+                  </td>
+                  <td
+                    style={{ padding: "10px", borderBottom: "1px solid #ddd" }}
+                  >
+                    {fat} g
+                  </td>
+                </tr>
+                <tr style={{ backgroundColor: "#f9f9f9" }}>
+                  <td
+                    style={{ padding: "10px", borderBottom: "1px solid #ddd" }}
+                  >
+                    Protein
+                  </td>
+                  <td
+                    style={{ padding: "10px", borderBottom: "1px solid #ddd" }}
+                  >
+                    {protein} g
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div style={{ marginTop: "30px" }}>
+              {/* <label className="meal-label" >Choose Meal</label> */}
+
+              <GlobalSelect
+                options={options}
+                onChange={(selectedOption) =>
+                  setSelectCategory(selectedOption.value)
+                }
+                placeholder="Choose  meal"
+                isSearchable={false}
+              />
+            </div>
+
+            <div className="input-container">
+              {/* <label  >Choose Quantity</label> */}
+              <input
+                type="number"
+                min="1"
+                placeholder="Choose quantity"
+                value={quantity}
+                style={{ color: "black" }}
+                onChange={(e) => setQuantity(e.target.value)}
+                step="1"
+              />
+            </div>
+            <div>
+              <p className="calorie-info">
+                Calorie Served: {calories || "N/A"}
+              </p>
+              <button className="add-meal-button" onClick={handleSaveData}>
+                Add Meal
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

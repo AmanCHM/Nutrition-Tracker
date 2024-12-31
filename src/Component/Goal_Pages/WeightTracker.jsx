@@ -1,48 +1,77 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { updateGoal } from "../../Redux/calorieGoalSlice";
+import { resetGoal, updateGoal } from "../../Redux/calorieGoalSlice";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
-
-import GlobalSelect from './../Page-Components/Globalselect';
+import GlobalSelect from "./../Page-Components/Globalselect";
+import { toast } from "react-toastify";
 
 function WeightTracker() {
-
-  const currentweight = useSelector((state) => state.calorieGoalReducer.currentWeight);
-  const target =useSelector((state) => state.calorieGoalReducer.targetWeight);
+  const currentweight = useSelector(
+    (state) => state.calorieGoalReducer.currentWeight
+  );
+  const target = useSelector((state) => state.calorieGoalReducer.targetWeight);
+  const goaloption = useSelector((state) => state.calorieGoalReducer.goal);
   const [presentWeight, setPresentWeight] = useState(currentweight);
   const [targetWeight, setTargetWeight] = useState(target);
-  const [goal, setGoal] = useState("");
+  const [goal, setGoal] = useState(goaloption);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+//  const  reset = useSelector((state)=>state.calorieGoalReducer.resetGoal)
+useEffect(()=>{
+  if(goal=="Maintain Weight"){
+   setTargetWeight(presentWeight)
+  }
+} ,[presentWeight])
   const handleSubmit = (event) => {
     event.preventDefault();
 
     if (!goal) {
-      alert("Please select a goal.");
+      toast.error("Please select a goal.");
       return;
     }
     if (!presentWeight || !targetWeight) {
-      alert("Please enter both present and target weights.");
+      toast.error("Please enter both present and target weights.");
       return;
     }
-    dispatch(updateGoal({ goal, currentWeight: presentWeight, targetWeight }));
+
+    let weightdifference = targetWeight - presentWeight;
+
+    console.log(weightdifference);
+    console.log("weightDifference", weightdifference);
+    if (goal === "Loose Weight" && weightdifference > 0) {
+      toast.error("Target weight must less than current weight");
+      return;
+    } else if (goal === "Gain Weight" && weightdifference < 0) {
+      toast.error("Target weight must greater than current weight");
+      return;
+    } else if (goal === "Maintain Weight" && !weightdifference == 0) {
+      toast.error("Target weight must equal to current weight");
+      return;
+    }
+    dispatch(
+      updateGoal({
+        goal,
+        currentWeight: presentWeight,
+        targetWeight,
+        weightdifference,
+      })
+    );
+ 
     navigate("/input-workout");
   };
 
   const goalOptions = [
-    { value: "loose", label: "Loose Weight" },
-    { value: "gain", label: "Gain Weight" },
-    { value: "maintain", label: "Maintain Weight" },
+    { value: "Loose Weight", label: "Loose Weight" },
+    { value: "Gain Weight", label: "Gain Weight" },
+    { value: "Maintain Weight", label: "Maintain Weight" },
   ];
 
   return (
     <>
       <Navbar />
-
       <h3
         style={{
           fontSize: "2.3rem",
@@ -73,7 +102,7 @@ function WeightTracker() {
             <input
               type="number"
               id="CurrentWeight"
-              min="0"
+              min="1"
               value={presentWeight}
               onChange={(e) => setPresentWeight(e.target.value)}
               placeholder="Enter your current weight"
@@ -86,33 +115,29 @@ function WeightTracker() {
             <input
               type="number"
               id="targetWeight"
-              min="0"
+              min="1"
               value={targetWeight}
               onChange={(e) => setTargetWeight(e.target.value)}
               placeholder="Enter your target weight"
               required
             />
           </div>
-
-
+          <div style={{ marginTop: "20px", marginLeft: "5%" }}>
             <button className="submit">
-            
-            <Link
-              to={"/userinfo"}
-              style={{ color: "white", fontSize: "17px"  }}
+              <Link
+                to={"/userinfo"}
+                style={{ color: "white", fontSize: "17px" }}
+              >
+                Back
+              </Link>{" "}
+            </button>
+            <button
+              type="submit"
+              style={{ color: "white", fontSize: "17px", marginLeft: "60%" }}
             >
-              Back
-            </Link>{" "}
-          </button>
-
-
-          <button
-            type="submit"
-            style={{ color: "white", fontSize: "17px",  marginLeft:"40%" }}
-          >
-            Next
-          </button>
-
+              Next
+            </button>
+          </div>
         </form>
       </div>
       <Footer />
