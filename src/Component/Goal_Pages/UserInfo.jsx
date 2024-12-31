@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { setUserInfo } from "../../Redux/calorieGoalSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
@@ -8,14 +8,20 @@ import Footer from "../Page-Components/Footer";
 import GlobalSelect from "./../Page-Components/Globalselect";
 
 const UserInfo = () => {
-  const [userName, setUserName] = useState("");
-  const [height, setHeight] = useState("");
-  const [gender, setGender] = useState("");
-  const [age, setAge] = useState("");
+  const userheight = useSelector((state) => state.calorieGoalReducer.height);
+  const userage = useSelector((state) => state.calorieGoalReducer.age);
+ const usergender = useSelector((state) => state.calorieGoalReducer.gender);
+ const username = useSelector((state) => state.calorieGoalReducer. userName);
+
+  const [userName, setUserName] = useState(username);
+  const [height, setHeight] = useState(userheight);
+  const [gender, setGender] = useState(usergender);
+  const [age, setAge] = useState(userage);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+ 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!userName || !height || !gender || !age) {
@@ -30,7 +36,7 @@ const UserInfo = () => {
     { value: "male", label: "Male" },
     { value: "female", label: "Female" },
   ];
-
+console.log(userName)
   return (
     <>
       <Navbar />
@@ -66,7 +72,7 @@ const UserInfo = () => {
             <input
               type="number"
               id="height"
-              min="0"
+              min="25"
               value={height}
               onChange={(e) => setHeight(e.target.value)}
               placeholder="Enter your height"
@@ -89,7 +95,7 @@ const UserInfo = () => {
             <input
               id="age"
               type="number"
-              min="0"
+              min="1"
               value={age}
               onChange={(e) => setAge(e.target.value)}
               placeholder="Enter age in years"

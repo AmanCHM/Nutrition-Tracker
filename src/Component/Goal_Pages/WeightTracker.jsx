@@ -8,8 +8,11 @@ import Footer from "../Page-Components/Footer";
 import GlobalSelect from './../Page-Components/Globalselect';
 
 function WeightTracker() {
-  const [presentWeight, setPresentWeight] = useState("");
-  const [targetWeight, setTargetWeight] = useState("");
+
+  const currentweight = useSelector((state) => state.calorieGoalReducer.currentWeight);
+  const target =useSelector((state) => state.calorieGoalReducer.targetWeight);
+  const [presentWeight, setPresentWeight] = useState(currentweight);
+  const [targetWeight, setTargetWeight] = useState(target);
   const [goal, setGoal] = useState("");
 
   const dispatch = useDispatch();
@@ -92,7 +95,7 @@ function WeightTracker() {
           </div>
 
 
-            {/* <button id="button">
+            <button className="submit">
             
             <Link
               to={"/userinfo"}
@@ -100,7 +103,7 @@ function WeightTracker() {
             >
               Back
             </Link>{" "}
-          </button> */}
+          </button>
 
 
           <button
