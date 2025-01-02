@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import Select from "react-select";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import "./CalorieCalculator.css";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import GlobalSelect from "../Page-Components/Globalselect";
-
 
 const activityOptions = [
   { value: 1.2, label: "Sedentary (little to no exercise)" },
@@ -18,20 +19,40 @@ const activityOptions = [
 ];
 
 const CalorieCalculator = () => {
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("male");
-  const [activityLevel, setActivityLevel] = useState(activityOptions[0]);
   const [calculatedCalorie, setCalculatedCalorie] = useState(null);
   const currentUser = auth.currentUser;
 
-  const calculateCalorieIntake = () => {
-    if (!height || !weight || !age) {
-      toast.error('Please fill out all fields.')
-      return null;
-    }
+  const formik = useFormik({
+    initialValues: {
+      height: "",
+      weight: "",
+      age: "",
+      gender: "male",
+      activityLevel: activityOptions[0],
+    },
+    validationSchema: Yup.object({
+      height: Yup.number()
+        .required("Height is required")
+        .positive("Height must be positive")
+        .integer("Height must be a whole number"),
+      weight: Yup.number()
+        .required("Weight is required")
+        .positive("Weight must be positive")
+        .integer("Weight must be a whole number"),
+      age: Yup.number()
+        .required("Age is required")
+        .positive("Age must be positive")
+        .integer("Age must be a whole number"),
+    }),
+    onSubmit: (values) => {
+      const totalCalories = calculateCalorieIntake(values);
+      if (totalCalories) {
+        setCalculatedCalorie(totalCalories);
+      }
+    },
+  });
 
+  const calculateCalorieIntake = ({ height, weight, age, gender, activityLevel }) => {
     const h = parseFloat(height);
     const w = parseFloat(weight);
     const a = parseInt(age, 10);
@@ -51,27 +72,21 @@ const CalorieCalculator = () => {
       try {
         const userDocRef = doc(db, "users", currentUser.uid);
         await setDoc(userDocRef, { calorie: totalCalories }, { merge: true });
+        toast.success("Calorie data saved successfully.");
       } catch (error) {
         console.error("Error saving data", error);
+        toast.error("Failed to save calorie data.");
       }
     } else {
-      toast.error('User not authenticated. Please log in.')
-    }
-  };
-
-  const handleCalculate = () => {
-    const totalCalories = calculateCalorieIntake();
-    if (totalCalories) {
-      setCalculatedCalorie(totalCalories);
+      toast.error("User not authenticated. Please log in.");
     }
   };
 
   const handleSave = async () => {
     if (calculatedCalorie) {
       await saveCalorieToDatabase(calculatedCalorie);
-     toast.success("Save Successfully")
     } else {
-       toast.error("Login not successful");
+      toast.error("No calorie data to save. Please calculate first.");
     }
   };
 
@@ -79,74 +94,77 @@ const CalorieCalculator = () => {
     <>
       <Navbar />
       <div className="calorie-container">
-        <h1 className="calorie-title"> Calculate your Daily Energy Intake</h1>
-        {/* <p className="header-description">
-          Plan your daily energy intake and achieve your fitness goals effortlessly. Fill in your details, select your activity level, and discover your personalized energy needs.
-        </p> */}
-        <div className="input-group">
-          <label htmlFor="height">Height (cm):</label>
-          <input
-            id="height"
-            type="number"
-            min='25'
-            value={height}
-            onChange={(e) => setHeight(e.target.value)}
-            placeholder="Enter height in cm"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="weight">Weight (kg):</label>
-          <input
-            id="weight"
-            type="number"
-            min="1"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-            placeholder="Enter weight in kg"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="age">Age (years):</label>
-          <input
-            id="age"
-            min="1"
-            type="number"
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-            placeholder="Enter age in years"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="activity">Activity Level:</label>
-          <GlobalSelect
-            id="activity"
-            options={activityOptions}
-            value={activityLevel}
-            onChange={(selectedOption) => setActivityLevel(selectedOption)}
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="gender">Gender:</label>
-          <select
-            id="gender"
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
-          >
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-        </div>
-       
-        <button className="calculate-button" onClick={handleCalculate}>
-          Calculate
-        </button>
+        <h1 className="calorie-title">Calculate Your Daily Energy Intake</h1>
+        <form onSubmit={formik.handleSubmit}>
+          <div className="input-group">
+            <label htmlFor="height">Height (cm):</label>
+            <input
+              id="height"
+              type="text"
+              {...formik.getFieldProps("height")}
+              placeholder="Enter height in cm"
+            />
+            {formik.touched.height && formik.errors.height && (
+              <p className="error-message">{formik.errors.height}</p>
+            )}
+          </div>
+          <div className="input-group">
+            <label htmlFor="weight">Weight (kg):</label>
+            <input
+              id="weight"
+              type="text"
+              {...formik.getFieldProps("weight")}
+              placeholder="Enter weight in kg"
+            />
+            {formik.touched.weight && formik.errors.weight && (
+              <p className="error-message">{formik.errors.weight}</p>
+            )}
+          </div>
+          <div className="input-group">
+            <label htmlFor="age">Age (years):</label>
+            <input
+              id="age"
+              type="text"
+              {...formik.getFieldProps("age")}
+              placeholder="Enter age in years"
+            />
+            {formik.touched.age && formik.errors.age && (
+              <p className="error-message">{formik.errors.age}</p>
+            )}
+          </div>
+          <div className="input-group">
+            <label htmlFor="activity">Activity Level:</label>
+            <GlobalSelect
+              id="activity"
+              options={activityOptions}
+              value={formik.values.activityLevel}
+              onChange={(selectedOption) =>
+                formik.setFieldValue("activityLevel", selectedOption)
+              }
+            />
+          </div>
+          <div className="input-group">
+            <label htmlFor="gender">Gender:</label>
+            <select
+              id="gender"
+              {...formik.getFieldProps("gender")}
+            >
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <button type="submit" className="calculate-button">
+            Calculate
+          </button>
+        </form>
         {calculatedCalorie && (
           <>
             <p className="result">
-              You require approximately {calculatedCalorie} kcal daily based on your activity level.
+              You require approximately {calculatedCalorie} kcal daily based on
+              your activity level.
             </p>
-            <button className="calculate-button " onClick={handleSave}>
-                Set Your Daily Meal
+            <button className="calculate-button" onClick={handleSave}>
+              Set Your Daily Meal
             </button>
           </>
         )}

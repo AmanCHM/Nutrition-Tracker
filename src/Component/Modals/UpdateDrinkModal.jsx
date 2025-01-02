@@ -12,12 +12,11 @@ const UpdateDrinkModal= (
   { 
     setDrinkUpdateModal
   }) => {
-
     const [drinkDetails , setDrinkDetails] = useState();
     const [drinkData,setDrinkdata]=useState();
     const [drinkName,setDrinkName]=useState();
     const [drinkId,setDrinkId]= useState();
-
+    const [showdrinkUpdateModal,setshowUpdateDrinkModal]=useState();
     // const [drinkUpdateModal,setDrinkUpdateModal]=useState();
     const dispatch = useDispatch();
 
@@ -32,12 +31,9 @@ const UpdateDrinkModal= (
       const getData = (await getDoc(docRef)).data();
       console.log("before update", getData);
       const drinkdata = getData[drinkType].filter((drinkId) => drinkId.id != id);
-     
       await updateDoc(docRef, { [drinkType]: drinkdata });
-
           const updatedDoc= (await getDoc(docRef)).data();
       setDrinkdata(updatedDoc);
-
       console.log("after update", getData);
       console.log("meal deleted");
     } catch (error) {
@@ -54,9 +50,6 @@ const UpdateDrinkModal= (
          setShowDrinkModal(true);
 
    }
-
-
-
 
   const handleEditModalData = async () => {
     console.log("insdie edit");
@@ -193,10 +186,10 @@ const UpdateDrinkModal= (
         </table>
       </div>
 
-      <Modal isOpen={drinkUpdateModal}>
+      <Modal isOpen={showdrinkUpdateModal}>
           <DrinkModal
             setShowDrinkModal={setshowUpdateDrinkModal}
-            onDataUpdated={handleDataUpdated}
+            // onDataUpdated={handleDataUpdated}
             editDataModal ={handleEditModalData}
           />
         </Modal>
