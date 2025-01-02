@@ -68,6 +68,7 @@ selectedFoodData?.foods[0]?.food_name?.slice(1)
             style={{color:'black'}}
             onChange={(e) => setQuantity(e.target.value)}
             step="1"
+            required
           />
         </div>
 
@@ -78,6 +79,7 @@ selectedFoodData?.foods[0]?.food_name?.slice(1)
             options={sliceOptions}
             onChange={(selectedOption) => setSelectquantity(selectedOption.value)}
             isSearchable={true}
+            required
           />
         </div>
 
@@ -87,6 +89,7 @@ selectedFoodData?.foods[0]?.food_name?.slice(1)
           onChange={(selectedOption) => setSelectCategory(selectedOption.value)}
           placeholder="Choose a meal"
           isSearchable={false}
+          required
         />
 
         <p className="calorie-info">Calorie Served: {Math.round(calculateCalories)}</p>

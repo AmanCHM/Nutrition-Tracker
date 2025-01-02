@@ -10,6 +10,8 @@ const ShowCalorie = () => {
   );
   const goal = useSelector((state) => state.calorieGoalReducer.goal);
   const username = useSelector((state)=> state.calorieGoalReducer.userName)
+
+  const difference  =useSelector((state)=> state.calorieGoalReducer.weightDifference)
   // if (!calories || !goal) {
   //   return <h2>Calorie information not available. Please calculate first!</h2>;
   // }
@@ -65,6 +67,7 @@ const ShowCalorie = () => {
               {goalDescription.charAt(0).toUpperCase() +
                 goalDescription.slice(1)}
             </p>
+
             <p
               style={{
                 color: "black",
@@ -75,6 +78,16 @@ const ShowCalorie = () => {
             >
               <strong>Recommended Calories:</strong> {recommendedCalories}{" "} kcal/day
             </p> 
+            {/* <p
+              style={{
+                color: "black",
+                fontSize: "17px",
+                marginLeft: "30%",
+                marginTop: "10px",
+              }}
+            >
+              for  {difference} week
+            </p> */}
           </ul>
         </div>
  

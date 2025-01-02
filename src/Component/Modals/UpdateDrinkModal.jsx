@@ -7,21 +7,33 @@ import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { Modal } from "rsuite";
 import DrinkModal from "./DrinkModal";
+import EditDrinkModal from "./EditDrinkModal";
 
 const UpdateDrinkModal= (
   { 
-    setDrinkUpdateModal
+    setDrinkUpdateModal,
+    updateDrinkName,
+    onDataUpdated,
+    setEditDrinkModal,
+    editDrinkModal,
+    setDrinkId ,
+    setDrinkName,
   }) => {
     const [drinkDetails , setDrinkDetails] = useState();
     const [drinkData,setDrinkdata]=useState();
-    const [drinkName,setDrinkName]=useState();
-    const [drinkId,setDrinkId]= useState();
-    const [showdrinkUpdateModal,setshowUpdateDrinkModal]=useState();
-    // const [drinkUpdateModal,setDrinkUpdateModal]=useState();
+    const [drinkId,setUpdateId]= useState();
+    // const [drinkName,setDrinkName] =useState();
+    const [editToggle,setEditToggle] =useState(false);
     const dispatch = useDispatch();
+ 
+      
+    //  console.log(editDrinkModal);
+  console.log("id",drinkId);
 
   const handleDeleteDrink = async ( drinkType,id) => {
     console.log("inside delete");
+
+    
     dispatch(showLoader());
     try {
       const user = auth.currentUser;
@@ -30,10 +42,13 @@ const UpdateDrinkModal= (
       const docRef = doc(db, "users", userId, "dailyLogs", date);
       const getData = (await getDoc(docRef)).data();
       console.log("before update", getData);
-      const drinkdata = getData[drinkType].filter((drinkId) => drinkId.id != id);
+      const drinkdata = getData[drinkType].filter((drink) => drink.id != id);
       await updateDoc(docRef, { [drinkType]: drinkdata });
           const updatedDoc= (await getDoc(docRef)).data();
       setDrinkdata(updatedDoc);
+      if (onDataUpdated) {
+        onDataUpdated(); 
+      }
       console.log("after update", getData);
       console.log("meal deleted");
     } catch (error) {
@@ -44,52 +59,24 @@ const UpdateDrinkModal= (
     }
   };
 
-   const handleEdit = (drinkType ,id)=>{
-         setDrinkName(drinkType);
-         setDrinkId(id);
-         setShowDrinkModal(true);
 
+  // open modal  can be optimised using the one function
+   const handleEditModal = (drink ,id)=>{
+         setDrinkName(drink);
+         setDrinkId(id);
+         setEditDrinkModal(true);
+         setUpdateId(id);
+         setDrinkUpdateModal(false);
+        //  setEditToggle(true);
+      
    }
 
-  const handleEditModalData = async () => {
-    console.log("insdie edit");
-    try {
-      const user = auth.currentUser;
-      const userId = user.uid;
-      const data = {
-        id: selectedId,
-        name: selectedFoodData?.foods[0]?.food_name,
-        calories: Math.round(calculateCalories),
-        proteins: Math.round(protein),
-        carbs: Math.round(carbs),
-        fats: Math.round(fats),
-      };
-      const date = new Date().toISOString().split("T")[0];
-      const docRef = doc(db, "users", userId, "dailyLogs", date);
-      const getData = (await getDoc(docRef)).data();
-      console.log("before update", getData);
-      const mealdata = getData[editMealName].filter(
-        (meal) => meal.id != selectedId
-      );
-      console.log("mealData", mealdata);
-      await updateDoc(docRef, { [editMealName]: mealdata });
+ 
 
-      const newData = { [selectCategory]: arrayUnion(data) };
-      await updateDoc(docRef, newData);
-      const updatedDoc = (await getDoc(docRef)).data();
-      setLogdata(updatedDoc);
-      console.log("updated doc", updatedDoc);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setEditModal(false);
-      dispatch(hideLoader());
-    }
-  };
 
    // drinkdata modal
    const getDrinkData = async (user) => {
-    console.log("inside drinkData");
+    // console.log("inside drinkData");
     try {
       dispatch(showLoader());
       if (!user) {
@@ -125,7 +112,6 @@ const UpdateDrinkModal= (
   }, [drinkData]);
 
 
-  console.log(drinkDetails);
   return (
     <>
       <button className="close-button" onClick={() => setDrinkUpdateModal(false)}>
@@ -134,11 +120,12 @@ const UpdateDrinkModal= (
 
 
 
-      <h2 className="modal-title" style={{ color: "black" }}>
-       Update Drink Details
-      </h2>
 
-      <div>
+      <h2 className="modal-title" style={{ color: "black" }}>
+       Update {updateDrinkName} Details
+      </h2>
+       
+      <div> 
         <table className="meal-table">
           <thead>
             <tr>
@@ -149,8 +136,8 @@ const UpdateDrinkModal= (
             </tr>
           </thead>
           <tbody>
-            {drinkDetails?.Water?.length > 0 ? (
-              drinkDetails?.Water?.map((item, index) => (
+            {drinkDetails?.[updateDrinkName]?.length > 0 ? (
+              drinkDetails?.[updateDrinkName]?.map((item, index) => (
                 <tr key={`water-${index}`}>
                 <td> {item.drinklabel}</td>
                   <td>{item.totalAmount}</td>
@@ -159,14 +146,14 @@ const UpdateDrinkModal= (
                     <td>
                       <div style={{ display: "flex" }}>
                         <span
-                          onClick={() => handleDeleteDrink("Water",   item.id)}
+                          onClick={() => handleDeleteDrink(updateDrinkName, item.id)}
                           className="icon-button delete"
                         >
                           <FaTrashAlt style={{ color: "#e15f41" }} />
                         </span>
                         <span
                           onClick={() =>
-                            handleEdit("Water", item.id)
+                            handleEditModal(updateDrinkName, item.id)
                           }
                           className="icon-button edit"
                         >
@@ -186,13 +173,20 @@ const UpdateDrinkModal= (
         </table>
       </div>
 
-      <Modal isOpen={showdrinkUpdateModal}>
-          <DrinkModal
-            setShowDrinkModal={setshowUpdateDrinkModal}
+      {/* <Modal isOpen={editDrinkModal}>
+          <EditDrinkModal
+           setEditDrinkModal={setEditDrinkModal}
             // onDataUpdated={handleDataUpdated}
-            editDataModal ={handleEditModalData}
+            editDataModal ={handleEditDrinkData}
+            drinkType ={drinkType}
+            setDrinkType={setDrinkType}
+            container ={container}
+            setContainer = {setContainer}
+            quantity={quantity}
+            setQuantity={setQuantity}
+            editToggle={editToggle}
           />
-        </Modal>
+        </Modal> */}
     </>
   );
 };

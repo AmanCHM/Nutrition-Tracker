@@ -9,6 +9,8 @@ import * as Yup from "yup";
 import "./CalorieCalculator.css";
 import { toast } from "react-toastify";
 import GlobalSelect from "../Page-Components/Globalselect";
+import { useDispatch } from "react-redux";
+import { setSignout } from "../../Redux/logSlice";
 
 const activityOptions = [
   { value: 1.2, label: "Sedentary (little to no exercise)" },
@@ -21,7 +23,7 @@ const activityOptions = [
 const CalorieCalculator = () => {
   const [calculatedCalorie, setCalculatedCalorie] = useState(null);
   const currentUser = auth.currentUser;
-
+     const dispatch = useDispatch()
   const formik = useFormik({
     initialValues: {
       height: "",
@@ -73,6 +75,7 @@ const CalorieCalculator = () => {
         const userDocRef = doc(db, "users", currentUser.uid);
         await setDoc(userDocRef, { calorie: totalCalories }, { merge: true });
         toast.success("Calorie data saved successfully.");
+        dispatch(setSignout())
       } catch (error) {
         console.error("Error saving data", error);
         toast.error("Failed to save calorie data.");
@@ -85,6 +88,8 @@ const CalorieCalculator = () => {
   const handleSave = async () => {
     if (calculatedCalorie) {
       await saveCalorieToDatabase(calculatedCalorie);
+      toast.success("Your calorie is set")
+      dispatch(setSignout())
     } else {
       toast.error("No calorie data to save. Please calculate first.");
     }

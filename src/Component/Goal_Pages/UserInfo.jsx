@@ -45,9 +45,10 @@ const UserInfo = () => {
     onSubmit: (values) => {
       dispatch(setUserInfo(values));
       navigate("/input-weight");
-      toast.success("Information saved successfully!");
+      // toast.success("Information saved successfully!");
     },
   });
+  
 
   return (
     <>
@@ -86,6 +87,7 @@ const UserInfo = () => {
             <input
               type="number"
               id="height"
+              min="25"
               {...formik.getFieldProps("height")}
               placeholder="Enter your height"
             />
@@ -116,6 +118,7 @@ const UserInfo = () => {
             <input
               type="number"
               id="age"
+              min="1"
               {...formik.getFieldProps("age")}
               placeholder="Enter age in years"
             />

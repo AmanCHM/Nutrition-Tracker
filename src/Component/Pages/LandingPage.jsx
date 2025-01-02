@@ -41,7 +41,7 @@ const LandingPage = () => {
 
 
            {islogged? '' : <button id="button">
-          
+            
           <Link
             to={"/userinfo"}
             style={{ color: "white", fontSize: "17px"  }}
@@ -73,3 +73,4 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+

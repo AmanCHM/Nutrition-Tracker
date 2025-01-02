@@ -6,9 +6,12 @@ import { arrayUnion, doc, getDoc, queryEqual, setDoc, updateDoc } from "firebase
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import { merge } from "lodash";
 import { auth, db } from "../../firebase";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { toast } from "react-toastify";
 // Import your reusable component
 
-const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
+const DrinkModal = ({ setShowDrinkModal ,onDataUpdated ,editDataModal,editToggle}) => {
   const [drinkType, setDrinkType] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [container, setContainer] = useState("");
@@ -21,9 +24,17 @@ const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
   const totalAmount = servingSize * quantity;
 
   const handleDrinkData = async (e) => {
-
-    try {
+    if(!drinkType ||!container ){
+      toast.error("Please select all fields");
+      return;
+    }
+    if(quantity<=0){
+      toast.error("Please select the +ve number")
+      return;
+    }
+      e.preventDefault();
       dispatch(showLoader())
+    try {
       const user = auth.currentUser;
       const userId = user.uid;
       const date = new Date().toISOString().split("T")[0];
@@ -48,13 +59,7 @@ const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
       dispatch(hideLoader());
     }
   };
-
-
-  console.log("drinkType",drinkType);
- console.log("quantity",quantity);
- console.log("totalamount",totalAmount);
   
-
   // Options for the drink type and container type dropdowns
   const drinkTypeOptions = [
     { value: "Water", label: "Water" },
@@ -68,6 +73,21 @@ const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
     { value: "Large Glass (250ml)", label: "Large Glass (250ml)" },
   ];
 
+  const formik = useFormik({
+    initialValues:{
+      drinkType: drinkTypeOptions[0],
+      container:containerOptions[0],
+      quantity:"",
+
+    },
+    validationSchema:Yup.object({
+      quantity:Yup.number()
+      .required("Height is required")
+        .positive("Height must be positive")
+        .integer("Height must be a whole number"),
+    })
+  })
+
 
   console.log("container",container);
   return (
@@ -77,11 +97,13 @@ const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
       <button className="close-button" onClick={() => setShowDrinkModal(false)}>
         X
       </button>
-
+      {/* {editToggle ?  <h2 className="modal-title" style={{ color: "black" }}>
+       Update Drink Details
+      </h2>: */}
       <h2 className="modal-title" style={{ color: "black" }}>
         Add Drink Details
       </h2>
-
+{/* } */}
       <div>
         <div className="input-group">
           <label htmlFor="drinkType">Drink Type:</label>
@@ -111,13 +133,14 @@ const DrinkModal = ({ setShowDrinkModal ,onDataUpdated}) => {
             type="number"
             min='1'
             value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+            onChange={(e)=> setQuantity(e.target.value)}
             step="1"
             required
           />
+         
       </div>
 
-      <button className="submit-button" onClick={handleDrinkData}>
+      <button className="submit-button" onClick={editToggle ? editDataModal : handleDrinkData}>
         Submit
       </button>
     </div>

@@ -41,8 +41,10 @@ import { setSignout, setSignup } from "../../Redux/logSlice";
 import SetCalorieModal from "../Modals/SetCalorieModal";
 import Table from "../Page-Components/Table";
 import Image from "../Image/Image";
-import { toast } from "react-toastify";
+
 import UpdateDrinkModal from "../Modals/UpdateDrinkModal";
+import EditDrinkModal from "../Modals/EditDrinkModal";
+import { toast } from "react-toastify";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -73,7 +75,10 @@ const Home = () => {
   const [requiredWater, setRequiredWater] = useState();
   const [requiredAlcohol, setRequiredAlcohol] = useState();
   const [requiredCaffeine, setRequiredCaffeine] = useState();
-
+  const [updateDrinkName,setUpdateDrinkName]=useState('')
+  const [editDrinkModal,setEditDrinkModal]=useState(false);
+  const [drinkId,setDrinkId]= useState();
+  const [drinkName,setDrinkName] =useState();
   const [skip, setSkip] = useState(true);
   const dispatch = useDispatch();
 
@@ -139,6 +144,14 @@ const Home = () => {
 
   const handleModalData = async (e) => {
     e.preventDefault();
+    if( !selectquantity || !selectCategory){
+      toast.error("Please Select all the fields")
+      return
+    }
+    if(!quantity &&quantity>0 ){
+      toast.error("Please Select Quantity")
+      return
+    }
     try {
       dispatch(showLoader());
       // console.log("inside modal");
@@ -161,18 +174,24 @@ const Home = () => {
         await handleGetData(user);
         console.log("Data saved successfully!");
         toast.success("Food Saved");
+        setModal(false);
       } else {
         console.log("User not authenticated.");
       }
     } catch (error) {
+      toast.error("Error in saving Data");
       console.error("Error saving data:", error);
     } finally {
-      setModal(false);
-      toast.error("Error in saving Data");
       dispatch(hideLoader());
+      setSelectCategory("")
+      
     }
   };
 
+
+  console.log("quantity",quantity);
+  console.log('select Quantity',selectquantity);
+  console.log("select category",selectCategory);
   //get user mealdata
   const handleGetData = async (user) => {
     try {
@@ -244,11 +263,11 @@ const Home = () => {
       console.log(error);
     } finally {
       dispatch(hideLoader());
-      <Stack spacing={10} direction="column" alignItems="flex-start">
-        <Notification type="success" header="Operation successful">
-          The email has been sent successfully, please check it in the mailbox.
-        </Notification>
-      </Stack>;
+      // <Stack spacing={10} direction="column" alignItems="flex-start">
+      //   <Notification type="success" header="Operation successful">
+      //     The email has been sent successfully, please check it in the mailbox.
+      //   </Notification>
+      // </Stack>;
     }
   };
 
@@ -337,13 +356,13 @@ const Home = () => {
 
   const calculateCalories =
     selectedFoodData?.foods?.length > 0
-      ? (selectedFoodData?.foods[0].nf_calories /
-          selectedFoodData?.foods[0].serving_weight_grams) *
+      ? ( selectedFoodData?.foods[0].nf_calories /
+          selectedFoodData?.foods[0].serving_weight_grams   ) *
         selectquantity *
         quantity
       : "no data";
-  console.log("calculated calorie", calculateCalories);
-  console.log("selected food", selectedFoodData);
+  // console.log("calculated calorie", calculateCalories);
+  // console.log("selected food", selectedFoodData);
 
   const protein =
     selectedFoodData?.foods.length > 0
@@ -461,7 +480,6 @@ const Home = () => {
         data: [breakfastCalorie, lunchCalorie, snackCalorie, dinnerCalorie],
         backgroundColor: [
           "rgb(255, 99, 132)",
-
           "rgb(54, 162, 235)",
           "#afc0d9",
           "#D1C28A",
@@ -585,9 +603,16 @@ const Home = () => {
     }
   }, []);
 
-  // console.log("signupmodal",isSignup)
 
-  // console.log("signup",useSelector((state) => state.loggedReducer.signedup))
+const handleUpdateDrink = (drinks)=>{
+  setUpdateDrinkName(drinks);
+  setDrinkUpdateModal(true)
+}
+
+
+// console.log(requ);
+
+
   return (
     <>
       <Navbar />
@@ -808,7 +833,7 @@ const Home = () => {
               marginLeft: "30%",
               borderRadius: "2px",
             }}
-          >
+           >
             <thead>
               <tr style={{ backgroundColor: "#f4f6f7" }}>
                 <th
@@ -861,14 +886,14 @@ const Home = () => {
                 </td>
                 <td>
                   <div style={{ display: "flex" }}>
-                    <span
-                      onClick={() => setDrinkUpdateModal(true)}
+                    {/* <span
+                      onClick={handleUpdateDrink("Water")}
                       className="icon-button delete"
                     >
                       <FaTrashAlt style={{ color: "#e15f41" }} />
-                    </span>
+                    </span> */}
                     <span
-                       onClick={() => setDrinkUpdateModal(true)}
+                      onClick={()=>handleUpdateDrink("Water")}
                       className="icon-button edit"
                     >
                       <FaEdit />
@@ -890,18 +915,14 @@ const Home = () => {
                 </td>
                 <td>
                   <div style={{ display: "flex" }}>
-                    <span
-                    onClick={() => 
-                       
-                      setDrinkUpdateModal(true)
-                      
-                    }
+                    {/* <span
+                    onClick={handleUpdateDrink("Alcohol")}
                       className="icon-button delete"
                     >
                       <FaTrashAlt style={{ color: "#e15f41" }} />
-                    </span>
+                    </span> */}
                     <span
-                     onClick={() => setDrinkUpdateModal(true)}
+                   onClick={()=>handleUpdateDrink("Alcohol")}
                       className="icon-button edit"
                     >
                       <FaEdit />
@@ -925,15 +946,14 @@ const Home = () => {
                 </td>
                 <td>
                   <div style={{ display: "flex" }}>
-                    <span
-                      onClick={() => setDrinkUpdateModal(true)}
+                    {/* <span
+                      onClick={handleUpdateDrink("caffeine")}
                       className="icon-button delete"
                     >
                       <FaTrashAlt style={{ color: "#e15f41" }} />
-                    </span>
+                    </span> */}
                     <span
-                      onClick={() => 
-                        setDrinkUpdateModal(true)}
+                      onClick={()=>handleUpdateDrink("Caffeine")}
                       className="icon-button edit"
                     >
                       <FaEdit />
@@ -948,6 +968,21 @@ const Home = () => {
           <UpdateDrinkModal
             setDrinkUpdateModal={setDrinkUpdateModal}
             onDataUpdated={handleDataUpdated}
+            updateDrinkName = {updateDrinkName}
+            editDrinkModal={editDrinkModal}
+            setEditDrinkModal={setEditDrinkModal}
+            setDrinkId = {setDrinkId}
+            setDrinkName={setDrinkName}
+          />
+        </Modal>
+
+        <Modal isOpen={editDrinkModal}>
+          <EditDrinkModal
+           setEditDrinkModal={setEditDrinkModal}
+            // editToggle={editToggle}
+            onDataUpdated={handleDataUpdated}
+            drinkName={drinkName}
+            drinkId={drinkId}
           />
         </Modal>
 
@@ -967,7 +1002,7 @@ const Home = () => {
                 {totalWater}/{requiredWater} ml
               </label>
               <Progress.Line
-                percent={Math.floor((totalWater / requiredWater) * 100)}
+                percent={totalWater>0 ? Math.floor((totalWater / requiredWater) * 100):0}
                 status="active"
                 strokeColor="#e15f41"
               />
@@ -978,7 +1013,7 @@ const Home = () => {
                 {totalAlcohol}/{requiredAlcohol}ml
               </label>
               <Progress.Line
-                percent={Math.floor((totalAlcohol / requiredAlcohol) * 100)}
+                percent={totalAlcohol>0 ? Math.floor((totalAlcohol / requiredAlcohol) * 100):0}
                 status="active"
                 strokeColor="#55a630"
               />
@@ -990,7 +1025,7 @@ const Home = () => {
                 {totalCaffeine}/{requiredCaffeine} ml
               </label>
               <Progress.Line
-                percent={Math.floor((totalCaffeine / requiredCaffeine) * 100)}
+                percent={totalCaffeine >0 ?Math.floor((totalCaffeine / requiredCaffeine) * 100):0}
                 status="active"
                 strokeColor="355070"
               />

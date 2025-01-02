@@ -43,6 +43,7 @@ const ImageSearch = ({
   };
 
   const handleSaveData = async () => {
+  
     dispatch(showLoader());
     const newData = {
       id: Date.now(),

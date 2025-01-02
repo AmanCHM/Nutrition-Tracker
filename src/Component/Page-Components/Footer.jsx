@@ -31,7 +31,7 @@ const Footer = () => {
           <p style={{ color: "white" }}><i className="fas fa-envelope"></i> aman.kumar@gmail.com</p>
         </div>
 
-        <div className="footer-section">
+        {/* <div className="footer-section">
           <h4>Stay Updated</h4>
           <input
             type="email"
@@ -39,7 +39,7 @@ const Footer = () => {
             placeholder="Your email address"
           />
           <button className="footer-button" onClick={()=> navigate('/signup')}>Sign Up</button>
-        </div>
+        </div> */}
       </div>
 
       <div className="footer-bottom">

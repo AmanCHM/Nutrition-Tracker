@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
 import GlobalSelect from "./../Page-Components/Globalselect";
+import { toast } from "react-toastify";
 
 const Exercise = () => {
   const height = useSelector((state) => state.calorieGoalReducer.height);
@@ -17,31 +18,31 @@ const Exercise = () => {
   const gender = useSelector((state) => state.calorieGoalReducer.gender);
   const goal = useSelector((state) => state.calorieGoalReducer.goal);
   const activities = useSelector((state) => state.calorieGoalReducer.activity);
-
+ 
   const [activity, setActivity] = useState(activities);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
+    if (!activity) {
+      toast.error("Please select Activity!");
+      return;
+    }
     dispatch(setActivityLevel(activity));
     dispatch(openCalorieModal());
     const { recommendedCalories } = calculateCalories();
     dispatch(setRequiredCalorie(recommendedCalories));
-
     navigate("/calorie-need");
   };
 
   const calculateCalories = () => {
     let bmrCurrent = 0;
-
     if (gender === "Male") {
       bmrCurrent = 10 * weight + 6.25 * height - 5 * age + 5;
     } else {
       bmrCurrent = 10 * weight + 6.25 * height - 5 * age - 161;
     }
-
     let activityValue = 0;
     if (activity === "Sedentary (little to no exercise)") {
       activityValue = 1.2;
@@ -76,7 +77,8 @@ const Exercise = () => {
   //   { value: "1.725", label: "Very active (hard exercise 6–7 days/week)" },
   //   { value: "1.9", label: "Extra active (very hard exercise or a physical job)" },
   // ];
-
+console.log(activity);
+console.log("activities",activities);
   const activityOptions = [
     {
       value: "Sedentary (little to no exercise)",
@@ -130,24 +132,25 @@ const Exercise = () => {
                   (option) => option.value === activity
                 )}
                 onChange={(selectedOption) => setActivity(selectedOption.value)}
+                placeholder="Select an Option"
               />
             </div>
-            <div style={{marginTop:"20px",marginLeft: "5%"}}>
-            <button className="submit">
-              <Link
-                to={"/input-weight"}
-                style={{ color: "white", fontSize: "17px",  }}
-              >
-                Back
-              </Link>{" "}
-            </button>
+            <div style={{ marginTop: "20px", marginLeft: "5%" }}>
+              <button className="submit">
+                <Link
+                  to={"/input-weight"}
+                  style={{ color: "white", fontSize: "17px" }}
+                >
+                  Back
+                </Link>{" "}
+              </button>
 
-            <button
-              type="submit"
-              style={{ color: "white", fontSize: "17px", marginLeft: "60%" }}
-            >
-              Next
-            </button>
+              <button
+                type="submit"
+                style={{ color: "white", fontSize: "17px", marginLeft: "60%" }}
+              >
+                Next
+              </button>
             </div>
           </form>
         </div>
