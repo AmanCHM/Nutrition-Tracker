@@ -92,19 +92,12 @@ const ShowCalorie = () => {
         </div>
  
  <div style={{marginTop:"20px",marginLeft: "5%"}}>
-        <button className="submit">
-            <Link
-              to={"/input-workout"}
-              style={{ color: "white", fontSize: "17px" , }}
-            >
-              Back
-            </Link>{" "}
-          </button>
+ <button onClick={() =>  navigate('/input-workout')}>Back</button>
         <button
           type="submit"
           style={{
             color: "white",
-            fontSize: "17px",
+         
             marginTop: "20px",
             marginLeft: "35%",
           }}

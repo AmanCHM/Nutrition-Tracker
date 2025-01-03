@@ -1,104 +1,88 @@
-import React, { useState } from "react";
+import React from "react";
 import { auth, db } from "../../firebase";
-import { now } from "lodash";
 import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import GlobalSelect from "../Page-Components/Globalselect";
 import { useDispatch } from "react-redux";
 import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import { toast } from "react-toastify";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-const EditDrinkModal = ({
-    setEditDrinkModal,
-    drinkName,
-    drinkId,
-    onDataUpdated
-}) => {
+const EditDrinkModal = ({ setEditDrinkModal, drinkName, drinkId, onDataUpdated }) => {
+  const dispatch = useDispatch();
 
-    const [drinkType, setDrinkType] = useState("");
-    const [quantity, setQuantity] = useState(1);
-    const [container, setContainer] = useState("");
-    const dispatch = useDispatch();
-    const  [drinkData ,setDrinkData]=useState()
-    const servingSize =
-    container === "Small Glass (100ml)" ? 100 : container === "Medium Glass (175ml)" ? 175 : 250;
-    const totalAmount = servingSize * quantity;
- 
-    const handleEditDrinkData = async () => {
-        console.log("insdie edit");
+  const drinkTypeOptions = [
+    { value: "Water", label: "Water" },
+    { value: "Alcohol", label: "Alcohol" },
+    { value: "Caffeine", label: "Caffeine" },
+  ];
 
-        if(!drinkType ||!container ){
-            toast.error("Please select  all fields");
-            return;
-          }
-          if(quantity<=0){
-            toast.error("Please select the +ve number")
-            return;
-          }
-        dispatch(showLoader());
-        try {
-          const user = auth.currentUser;
-          const userId = user.uid;
-          const data = {
-            id: Date.now(),
-            totalAmount:  totalAmount,
-            drinklabel:container,
-          };
-          const date = new Date().toISOString().split("T")[0];
-          const docRef = doc(db, "users", userId, "dailyLogs", date);
-          const getData = (await getDoc(docRef)).data();
+  const containerOptions = [
+    { value: "Small Glass (100ml)", label: "Small Glass (100ml)" },
+    { value: "Medium Glass (175ml)", label: "Medium Glass (175ml)" },
+    { value: "Large Glass (250ml)", label: "Large Glass (250ml)" },
+  ];
 
-          console.log("before update", getData);
-          console.log("drin");
-            console.log(getData[drinkName]);
-            const drinkdata = getData[drinkName].filter(
-      (item) => item.id !== drinkId
-    );
-             console.log("drinkData",drinkData);
-          await updateDoc(docRef, { [drinkName]: drinkdata });
-    
-          const newData = { [drinkType]: arrayUnion(data) };
-          await updateDoc(docRef, newData);
-          const updatedDoc = (await getDoc(docRef)).data();
-          setDrinkData(updatedDoc);
-          if (onDataUpdated) {
-            onDataUpdated(); 
-          }
-          console.log("updated doc", updatedDoc);
-        } catch (error) {
-          console.log(error);
-        } finally {
-          setEditDrinkModal(false);
-        //   setEditToggle(false);
-          dispatch(hideLoader());
-        }
-      };
+  const formik = useFormik({
+    initialValues: {
+      drinkType: "",
+      container: "",
+      quantity: 1,
+    },
+    validationSchema: Yup.object({
+      drinkType: Yup.string().required("Please select a drink type."),
+      container: Yup.string().required("Please select a container type."),
+      quantity: Yup.number()
+        .required("Please enter a quantity.")
+        .positive("Quantity must be a positive number.")
+        .integer("Quantity must be a whole number."),
+    }),
+    onSubmit: async (values) => {
+      const servingSize =
+        values.container === "Small Glass (100ml)"
+          ? 100
+          : values.container === "Medium Glass (175ml)"
+          ? 175
+          : 250;
 
-    const drinkTypeOptions = [
-        { value: "Water", label: "Water" },
-        { value: "Alcohol", label: "Alcohol" },
-        { value: "Caffeine", label: "Caffeine" },
-      ];
-    
-      const containerOptions = [
-        { value: "Small Glass (100ml)", label: "Small Glass (100ml)" },
-        { value: "Medium Glass (175ml)", label: "Medium Glass (175ml)" },
-        { value: "Large Glass (250ml)", label: "Large Glass (250ml)" },
-      ];
+      const totalAmount = servingSize * values.quantity;
 
-    //     function validateForm() {
-    // // Check if the First Name is an Empty string or not.
+      dispatch(showLoader());
+      try {
+        const user = auth.currentUser;
+        const userId = user.uid;
+        const date = new Date().toISOString().split("T")[0];
+        const docRef = doc(db, "users", userId, "dailyLogs", date);
 
-    // if (firstName.length == 0) {
-    //   alert('Invalid Form, First Name can not be empty')
-    //   return
-    // }
+        const existingData = (await getDoc(docRef)).data();
+        const updatedDrinkData = existingData[drinkName].filter(
+          (item) => item.id !== drinkId
+        );
 
-    // // Check if the Email is an Empty string or not.
+        // Remove old drink data
+        await updateDoc(docRef, { [drinkName]: updatedDrinkData });
 
-    // if (email.length == 0) {
-    //   alert('Invalid Form, Email Address can not be empty')
-    //   return
-    // }
+        // Add updated drink data
+        const newDrinkData = {
+          id: Date.now(),
+          totalAmount,
+          drinklabel: values.container,
+        };
+        const newData = { [values.drinkType]: arrayUnion(newDrinkData) };
+        await updateDoc(docRef, newData);
+
+        if (onDataUpdated) onDataUpdated();
+
+        toast.success("Drink details updated successfully!");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to update drink details.");
+      } finally {
+        setEditDrinkModal(false);
+        dispatch(hideLoader());
+      }
+    },
+  });
 
   return (
     <>
@@ -109,44 +93,57 @@ const EditDrinkModal = ({
         Update Drink Details
       </h2>
 
-      <div className="input-group">
-        <label htmlFor="drinkType">Drink Type:</label>
-        <GlobalSelect
-          options={drinkTypeOptions}
-          value={drinkTypeOptions.find((opt) => opt.value === drinkType)}
-          onChange={(selected) => setDrinkType(selected?.value || "")}
-          placeholder="Select a drink type"
-        />
-      </div>
+      <form onSubmit={formik.handleSubmit}>
+    
+        <div className="input-group">
+          <label htmlFor="drinkType">Drink Type:</label>
+          <GlobalSelect
+            options={drinkTypeOptions}
+            value={drinkTypeOptions.find((opt) => opt.value === formik.values.drinkType)}
+            onChange={(selected) => formik.setFieldValue("drinkType", selected?.value || "")}
+            onBlur={() => formik.setFieldTouched("drinkType", true)}
+            placeholder="Select a drink type"
+          />
+          {formik.touched.drinkType && formik.errors.drinkType && (
+            <p className="error-message">{formik.errors.drinkType}</p>
+          )}
+        </div>
 
-      <div className="input-group">
-        <label htmlFor="container">Container Type:</label>
-        <GlobalSelect
-          options={containerOptions}
-          value={containerOptions.find((opt) => opt.value === container)}
-          onChange={(selected) => setContainer(selected?.value || "")}
-          placeholder="Select a container type"
-        />
-      </div>
+        
+        <div className="input-group">
+          <label htmlFor="container">Container Type:</label>
+          <GlobalSelect
+            options={containerOptions}
+            value={containerOptions.find((opt) => opt.value === formik.values.container)}
+            onChange={(selected) => formik.setFieldValue("container", selected?.value || "")}
+            onBlur={() => formik.setFieldTouched("container", true)}
+            placeholder="Select a container type"
+          />
+          {formik.touched.container && formik.errors.container && (
+            <p className="error-message">{formik.errors.container}</p>
+          )}
+        </div>
 
-      <div className="input-group">
-        <label htmlFor="quantity">Quantity</label>
-        <input
-          type="number"
-          min="1"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          step="1"
-          required
-        />
-      </div>
+        <div className="input-group">
+          <label htmlFor="quantity">Quantity:</label>
+          <input
+            type="number"
+            id="quantity"
+            min="1"
+            value={formik.values.quantity}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            placeholder="Enter quantity"
+          />
+          {formik.touched.quantity && formik.errors.quantity && (
+            <p className="error-message">{formik.errors.quantity}</p>
+          )}
+        </div>
 
-      <button
-        className="submit-button"
-        onClick={handleEditDrinkData}
-      >
-        Submit
-      </button>
+        <button type="submit" className="submit-button">
+          Submit
+        </button>
+      </form>
     </>
   );
 };

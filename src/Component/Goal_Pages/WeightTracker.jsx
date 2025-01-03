@@ -11,67 +11,16 @@ import * as Yup from "yup";
 import { updateGoal } from "../../Redux/calorieGoalSlice";
 
 function WeightTracker() {
-  const currentweight = useSelector(
+  const currentWeight = useSelector(
     (state) => state.calorieGoalReducer.currentWeight
   );
-  const target = useSelector((state) => state.calorieGoalReducer.targetWeight);
-  const goaloption = useSelector((state) => state.calorieGoalReducer.goal);
-  const [presentWeight, setPresentWeight] = useState(currentweight);
-  const [targetWeight, setTargetWeight] = useState(target);
-  const [goal, setGoal] = useState(goaloption);
+  const targetWeightRedux = useSelector(
+    (state) => state.calorieGoalReducer.targetWeight
+  );
+  const goalOption = useSelector((state) => state.calorieGoalReducer.goal);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-//  const  reset = useSelector((state)=>state.calorieGoalReducer.resetGoal)
-useEffect(()=>{
-  if(goal=="Maintain Weight"){
-   setTargetWeight(presentWeight)
-  }
-} ,[presentWeight])
-
-
-
-
-
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-
-  //   if (!goal) {
-  //     toast.error("Please select a goal.");
-  //     return;
-  //   }
-  //   if (!presentWeight || !targetWeight) {
-  //     toast.error("Please enter both present and target weights.");
-  //     return;
-  //   }
-
-  //   let weightdifference = targetWeight - presentWeight;
-
-  //   console.log(weightdifference);
-  //   console.log("weightDifference", weightdifference);
-  //   if (goal === "Loose Weight" && weightdifference > 0) {
-  //     toast.error("Target weight must less than current weight");
-  //     return;
-  //   } else if (goal === "Gain Weight" && weightdifference < 0) {
-  //     toast.error("Target weight must greater than current weight");
-  //     return;
-  //   } else if (goal === "Maintain Weight" && !weightdifference == 0) {
-  //     toast.error("Target weight must equal to current weight");
-  //     return;
-  //   }
-  //   dispatch(
-  //     updateGoal({
-  //       goal,
-  //       currentWeight: presentWeight,
-  //       targetWeight,
-  //       weightdifference,
-        
-  //     })
-  //   );
- 
-  //   navigate("/input-workout");
-  // };
-
 
   const goalOptions = [
     { value: "Loose Weight", label: "Loose Weight" },
@@ -81,33 +30,58 @@ useEffect(()=>{
 
   const formik = useFormik({
     initialValues: {
-      goal: "",
-      currentWeight: "",
-      targetWeight: "",
-      weightdifference :targetWeight - presentWeight,
+      goal: goalOption || "",
+      currentWeight: currentWeight || "",
+      targetWeight: targetWeightRedux || "",
     },
     validationSchema: Yup.object({
       goal: Yup.string().required("Please select a goal."),
-      presentWeight: Yup.number()
+      currentWeight: Yup.number()
         .min(1, "Current weight must be at least 1 kg.")
-        .positive(" Current Weight must be positive.")
-        .integer("Current weight must be a whole number.")
         .required("Please enter your current weight."),
       targetWeight: Yup.number()
-      .min(1, "Current weight must be at least 1 kg.")
-      .positive(" Current Weight must be positive.")
-      .integer("Current weight must be a whole number.")
-      .required("Please enter your current weight."),
+        .min(1, "Target weight must be at least 1 kg.")
+        .required("Please enter your target weight."),
     }),
     onSubmit: (values) => {
-      dispatch(updateGoal(values));
+      const weightDifference = values.targetWeight - values.currentWeight;
+
+      if (values.goal === "Loose Weight" && weightDifference > 0) {
+        toast.error(
+          "Target weight must be less than current weight for weight loss."
+        );
+        return;
+      }
+      if (values.goal === "Gain Weight" && weightDifference < 0) {
+        toast.error(
+          "Target weight must be greater than current weight for weight gain."
+        );
+        return;
+      }
+      if (values.goal === "Maintain Weight" && weightDifference !== 0) {
+        toast.error("Target weight must equal current weight for maintenance.");
+        return;
+      }
+
+      dispatch(
+        updateGoal({
+          goal: values.goal,
+          currentWeight: values.currentWeight,
+          targetWeight: values.targetWeight,
+          weightDifference,
+        })
+      );
+
       navigate("/input-workout");
-      // toast.success("Information saved successfully!");
     },
   });
 
-console.log("current weight", currentweight);
-console.log("targeet weight",target);
+  useEffect(() => {
+    if (formik.values.goal === "Maintain Weight") {
+      formik.setFieldValue("targetWeight", formik.values.currentWeight);
+    }
+  }, [formik.values.goal, formik.values.currentWeight]);
+
   return (
     <>
       <Navbar />
@@ -125,134 +99,78 @@ console.log("targeet weight",target);
         Select your goal and provide your target weights.
       </h3>
       <div className="calorie-container">
-      <form onSubmit={formik.handleSubmit}>
-        {/* Goal Selection */}
-        <div className="input-group">
-          <label htmlFor="goal">Select Goal:</label>
-          <GlobalSelect
-            options={goalOptions}
-            value={goalOptions.find((option) => option.value === formik.values.goal)}
-            onChange={(selectedOption) => formik.setFieldValue("goal", selectedOption.value)}
-           
-            onBlur={() => formik.setFieldTouched("goal", true)}
-          />
-            {formik.touched.goal && formik.errors.goal && (
-              <p className="error-message">{formik.errors.goal}</p>
-            )}
-        </div>
-
-        {/* Current Weight */}
-        <div className="input-group">
-          <label htmlFor="presentWeight">Current Weight (kg)</label>
-          <input
-            type="number"
-            id="presentWeight"
-            min="1"
-            value={formik.values.presentWeight}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter your current weight"
-          />
-          {formik.touched.presentWeight && formik.errors.presentWeight && (
-             <p className="error-message">{formik.errors.presentWeight}</p>
-          )}
-        </div>
-
-        {/* Target Weight */}
-        <div className="input-group">
-          <label htmlFor="targetWeight">Target Weight (kg)</label>
-          <input
-            type="number"
-            id="targetWeight"
-            min="1"
-            value={formik.values.targetWeight}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter your target weight"
-          />
-          {formik.touched.targetWeight && formik.errors.targetWeight && (
-                <p className="error-message">{formik.errors.targetWeight}</p>
-          )}
-        </div>
-
-        <div style={{ marginTop: "20px", marginLeft: "5%" }}>
-            <button className="submit">
-              <Link
-                to={"/userinfo"}
-                style={{ color: "white", fontSize: "17px" }}
-              >
-                Back
-              </Link>{" "}
-            </button>
-            <button
-              type="submit"
-              style={{ color: "white", fontSize: "17px", marginLeft: "60%" }}
-            >
-              Next
-            </button>
-          </div>
-      </form>
-    </div>
-      <Footer />
-    </>
-  );
-}
-
-export default WeightTracker;
-
-
-{/* <div className="calorie-container">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={formik.handleSubmit}>
+          {/* Goal Selection */}
           <div className="input-group">
             <label htmlFor="goal">Select Goal:</label>
             <GlobalSelect
               options={goalOptions}
-              value={goalOptions.find((option) => option.value === goal)}
-              onChange={(selectedOption) => setGoal(selectedOption.value)}
-              // placeholder="-- Select a Goal --"
+              value={goalOptions.find(
+                (option) => option.value === formik.values.goal
+              )}
+              onChange={(selectedOption) =>
+                formik.setFieldValue("goal", selectedOption.value)
+              }
+              onBlur={() => formik.setFieldTouched("goal", true)}
             />
+            {formik.touched.goal && formik.errors.goal && (
+              <p className="error-message">{formik.errors.goal}</p>
+            )}
           </div>
 
+          {/* Current Weight */}
           <div className="input-group">
-            <label htmlFor="CurrentWeight">Current Weight (kg)</label>
+            <label htmlFor="currentWeight">Current Weight (kg)</label>
             <input
               type="number"
-              id="CurrentWeight"
+              id="currentWeight"
               min="1"
-              value={presentWeight}
-              onChange={(e) => setPresentWeight(e.target.value)}
+              value={formik.values.currentWeight}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               placeholder="Enter your current weight"
-              required
             />
+            {formik.touched.currentWeight && formik.errors.currentWeight && (
+              <p className="error-message">{formik.errors.currentWeight}</p>
+            )}
           </div>
 
+          {/* Target Weight */}
           <div className="input-group">
             <label htmlFor="targetWeight">Target Weight (kg)</label>
             <input
               type="number"
               id="targetWeight"
               min="1"
-              value={targetWeight}
-              onChange={(e) => setTargetWeight(e.target.value)}
+              value={formik.values.targetWeight}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               placeholder="Enter your target weight"
-              required
+              disabled={formik.values.goal === "Maintain Weight"}
             />
+            {formik.touched.targetWeight && formik.errors.targetWeight && (
+              <p className="error-message">{formik.errors.targetWeight}</p>
+            )}
           </div>
-          <div style={{ marginTop: "20px", marginLeft: "5%" }}>
-            <button className="submit">
-              <Link
-                to={"/userinfo"}
-                style={{ color: "white", fontSize: "17px" }}
-              >
-                Back
-              </Link>{" "}
-            </button>
-            <button
-              type="submit"
-              style={{ color: "white", fontSize: "17px", marginLeft: "60%" }}
-            >
+
+          {/* Buttons */}
+          <div
+            style={{
+              marginTop: "20px",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <button onClick={() =>  navigate('/userinfo')}>Back</button>
+            <button type="submit" style={{ color: "white"}}>
               Next
             </button>
           </div>
         </form>
-      </div> */}
+      </div>
+      <Footer />
+    </>
+  );
+}
+
+export default WeightTracker;

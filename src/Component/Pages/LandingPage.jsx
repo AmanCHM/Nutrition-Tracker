@@ -1,18 +1,26 @@
 import React, { useState } from "react";
 import "./LandingPage.css";
 import Footer from "../Page-Components/Footer";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import Navbar from "../Page-Components/Navbar";
 import Feature from "../LandingPage-Components/Feature";
 import Overview from "../LandingPage-Components/Overview";
 import AIFeature from "../LandingPage-Components/AIFeature";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Image from "../Image/Image";
+import { resetGoal } from "../../Redux/calorieGoalSlice";
 
 
 const LandingPage = () => {
   const islogged = useSelector((state) => state.loggedReducer.logged);
-  console.log(islogged);
+  // console.log(islogged);
+ const dispatch = useDispatch()
+  const navigate = useNavigate();
+ const handleClick = ()=>{
+       
+  dispatch(resetGoal());
+  navigate('/userinfo')
+ }
 
   return (
     <>
@@ -40,14 +48,15 @@ const LandingPage = () => {
             </h4>
 
 
-           {islogged? '' : <button id="button">
+           {islogged? '' : <button id="button"
             
-          <Link
-            to={"/userinfo"}
-            style={{ color: "white", fontSize: "17px"  }}
-          >
+         
+            // to={"/userinfo"}
+            // style={{ color: "white", fontSize: "17px"  }}
+            onClick={handleClick}>
+          
              Let's Start 
-          </Link>{" "}
+         
         </button>}
             
           </div>

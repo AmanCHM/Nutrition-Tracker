@@ -5,19 +5,22 @@ import { hideLoader, showLoader } from "../../Redux/loaderSlice";
 import axios from "axios";
 import GlobalSelect from "../Page-Components/Globalselect";
 import {  toast } from "react-toastify";
+import { auth, db } from "../../firebase";
+import { arrayUnion, doc, setDoc } from "firebase/firestore";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 const ImageSearch = ({
   setImageModal,
   setImageData,
-  setSelectCategory,
-  handelImageSearchModal,
+  handleGetData,
+  // setSelectCategory,
+  // handelImageSearchModal,
 }) => {
   const [imageSrc, setImageSrc] = useState(null);
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
-  const [loading, setLoading] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  // const loader = useSelector((state) => state.loaderReducer.loading);
-
+  const [mealCategory ,setMealCategory] = useState();
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [calories, setCalories] = useState(0);
@@ -25,10 +28,74 @@ const ImageSearch = ({
   const [fat, setFat] = useState(0);
   const [protein, setProtein] = useState(0);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [response, setResponse] = useState(null);
   const [imageId, setImageId] = useState(null);
   const [nutritionInfo, setNutritionInfo] = useState();
-  const [mealQuantity, setMealQuantity] = useState();
+
+
+  const [errors, setErrors] = useState({
+    quantity: "",
+    mealCategory: "",
+  });
+
+  // Validate Quantity
+  const validateQuantity = (value) => {
+    if (!value || value <= 0) {
+      return "Please enter a valid quantity.";
+    }
+    return "";
+  };
+
+// Validate Meal Category
+const validateMealCategory = (value) => {
+  if (!value) {
+    return "Please choose a meal category.";
+  }
+  return "";
+};
+
+const handleBlur = (e) => {
+  const { name, value } = e.target;
+  const newErrors = { ...errors };
+
+  // Trigger validation on blur
+  if (name === "quantity") {
+    newErrors.quantity = validateQuantity(value);
+  }
+  
+  if (name === "selectCategory") {
+    newErrors.selectCategory = validateMealCategory(value);
+  }
+
+  setErrors(newErrors);
+};
+
+const handleSaveData = (e) => {
+  e.preventDefault();
+
+  const newErrors = {
+    quantity: validateQuantity(quantity),
+    mealCategory: validateMealCategory(mealCategory),
+  };
+
+  setErrors(newErrors);
+
+
+  if (Object.values(newErrors).every((error) => !error)) {
+    dispatch(showLoader());
+    const newData = {
+      id: Date.now(),
+      name: name,
+      calories: calories,
+      proteins: protein,
+      carbs: carbohydrates,
+      fats: fat,
+    };
+    setImageData(newData);
+    handelImageSearchModal(newData);
+    dispatch(hideLoader());
+  }
+};
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -42,20 +109,46 @@ const ImageSearch = ({
     setSelectedFile(file);
   };
 
-  const handleSaveData = async () => {
+  // const handleSaveData = async () => {
   
+  //   dispatch(showLoader());
+  //   const newData = {
+  //     id: Date.now(),
+  //     name: name,
+  //     calories: calories,
+  //     proteins: protein,
+  //     carbs: carbohydrates,
+  //     fats: fat,
+  //   };
+  //   setImageData(newData);
+  //   handelImageSearchModal(newData);
+  //   dispatch(hideLoader());
+  // };
+
+  const handelImageSearchModal = async (data) => {
+    console.log("inside handleimage", data);
+
     dispatch(showLoader());
-    const newData = {
-      id: Date.now(),
-      name: name,
-      calories: calories,
-      proteins: protein,
-      carbs: carbohydrates,
-      fats: fat,
-    };
-    setImageData(newData);
-    handelImageSearchModal(newData);
-    dispatch(hideLoader());
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const userId = user?.uid;
+        const date = new Date().toISOString().split("T")[0];
+        const docRef = doc(db, "users", userId, "dailyLogs", date);
+        const categorisedData = { [mealCategory]: arrayUnion(data) };
+
+        await setDoc(docRef, categorisedData, { merge: true });
+        await handleGetData(user);
+        console.log("Data saved successfully!");
+        setImageModal(false);
+      } else {
+        console.log("User not authenticated.");
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+    } finally {
+      dispatch(hideLoader());
+    }
   };
 
   // ImageID API
@@ -114,6 +207,7 @@ const ImageSearch = ({
   };
 
   useEffect(() => {
+
     if (nutritionInfo) {
       setName(nutritionInfo?.foodName[0] || "");
       setCalories(
@@ -135,17 +229,20 @@ const ImageSearch = ({
         ) * quantity || 0
       );
     }
+
   }, [nutritionInfo, quantity]);
 
   console.log("name", name);
   console.log("calories", calories);
 
-  const options = [
+  const mealOptions = [
     { value: "Breakfast", label: "Breakfast" },
     { value: "Lunch", label: "Lunch" },
     { value: "Snack", label: "Snack" },
     { value: "Dinner", label: "Dinner" },
   ];
+
+
 
   return (
     <>
@@ -270,28 +367,32 @@ const ImageSearch = ({
             <div style={{ marginTop: "30px" }}>
               {/* <label className="meal-label" >Choose Meal</label> */}
 
-              <GlobalSelect
-                options={options}
-                onChange={(selectedOption) =>
-                  setSelectCategory(selectedOption.value)
-                }
-                placeholder="Choose  meal"
-                isSearchable={false}
-              />
-            </div>
+              <label className="meal-label">Choose Meal</label>
+        <GlobalSelect
+          options={mealOptions}
+          value={mealOptions.find((option) => option.value === mealCategory)}
+          onChange={(selectedOption) => setMealCategory(selectedOption.value)}
+          onBlur={handleBlur} 
+        />
+        {errors.mealCategory && <div style={{ color: "red" }}>{errors.mealCategory}</div>}
+
+            </div>  
 
             <div className="input-container">
-              {/* <label  >Choose Quantity</label> */}
-              <input
-                type="number"
-                min="1"
-                placeholder="Choose quantity"
-                value={quantity}
-                style={{ color: "black" }}
-                onChange={(e) => setQuantity(e.target.value)}
-                step="1"
-              />
-            </div>
+          <label>Choose Quantity</label>
+          <input
+            type="number"
+            name="quantity"
+            min="1"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            onBlur={handleBlur} 
+            step="1"
+          />
+          {errors.quantity && <div style={{ color: "red" }}>{errors.quantity}</div>}
+        </div>
+
+
             <div>
               <p className="calorie-info">
                 Calorie Served: {calories || "N/A"}

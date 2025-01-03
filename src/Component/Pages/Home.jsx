@@ -45,6 +45,9 @@ import Image from "../Image/Image";
 import UpdateDrinkModal from "../Modals/UpdateDrinkModal";
 import EditDrinkModal from "../Modals/EditDrinkModal";
 import { toast } from "react-toastify";
+import useDebounce from "../Hooks/useDebounce";
+
+
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -79,6 +82,7 @@ const Home = () => {
   const [editDrinkModal,setEditDrinkModal]=useState(false);
   const [drinkId,setDrinkId]= useState();
   const [drinkName,setDrinkName] =useState();
+  const [imageModal, setImageModal] = useState(false);
   const [skip, setSkip] = useState(true);
   const dispatch = useDispatch();
 
@@ -95,11 +99,17 @@ const Home = () => {
   );
 
   const handleSearch = (query) => {
-    setInputValue(query);
+  
+       setInputValue(query)
   };
+  // const debouncedFunction  = useDebounce(inputValue,500)
+ 
 
+  // useEffect(()=>{
+  //      debouncedFunction()
+  // },[debouncedFunction])
   // console.log('skip',skip)
-
+//  console.log("select category",selectCategory);
   const style = {
     width: 120,
     display: "inline-block",
@@ -125,6 +135,9 @@ const Home = () => {
     },
   ];
 
+
+
+  
   // console.log("grouped Option", groupedOptions);
   //add food
   const [addMeal, { data: selectedFoodData }] = useAddMealMutation();
@@ -142,8 +155,8 @@ const Home = () => {
 
   // Add Meal data
 
-  const handleModalData = async (e) => {
-    e.preventDefault();
+  const handleModalData = async () => {
+   
     if( !selectquantity || !selectCategory){
       toast.error("Please Select all the fields")
       return
@@ -183,15 +196,15 @@ const Home = () => {
       console.error("Error saving data:", error);
     } finally {
       dispatch(hideLoader());
-      setSelectCategory("")
+      setSelectCategory(  )
       
     }
   };
 
 
-  console.log("quantity",quantity);
-  console.log('select Quantity',selectquantity);
-  console.log("select category",selectCategory);
+  // console.log("quantity",quantity);
+  // console.log('select Quantity',selectquantity);
+  // console.log("select category",selectCategory);
   //get user mealdata
   const handleGetData = async (user) => {
     try {
@@ -261,8 +274,10 @@ const Home = () => {
       console.log("meal deleted");
     } catch (error) {
       console.log(error);
+      toast.error("Item not Deleted")
     } finally {
       dispatch(hideLoader());
+      toast.success('Item Deleted Successfully')
       // <Stack spacing={10} direction="column" alignItems="flex-start">
       //   <Notification type="success" header="Operation successful">
       //     The email has been sent successfully, please check it in the mailbox.
@@ -318,6 +333,7 @@ const Home = () => {
     } finally {
       setEditModal(false);
       dispatch(hideLoader());
+      setSelectCategory();
     }
   };
 
@@ -507,33 +523,33 @@ const Home = () => {
     // setSelectedFoodData(null);
   };
 
-  const [imageModal, setImageModal] = useState(false);
 
-  const handelImageSearchModal = async (data) => {
-    console.log("inside handleimage", data);
 
-    try {
-      dispatch(showLoader());
-      const user = auth.currentUser;
-      if (user) {
-        const userId = user?.uid;
-        const date = new Date().toISOString().split("T")[0];
-        const docRef = doc(db, "users", userId, "dailyLogs", date);
-        const categorisedData = { [selectCategory]: arrayUnion(data) };
+  // const handelImageSearchModal = async (data) => {
+  //   console.log("inside handleimage", data);
 
-        await setDoc(docRef, categorisedData, { merge: true });
-        await handleGetData(user);
-        console.log("Data saved successfully!");
-      } else {
-        console.log("User not authenticated.");
-      }
-    } catch (error) {
-      console.error("Error saving data:", error);
-    } finally {
-      setImageModal(false);
-      dispatch(hideLoader());
-    }
-  };
+  //   try {
+  //     dispatch(showLoader());
+  //     const user = auth.currentUser;
+  //     if (user) {
+  //       const userId = user?.uid;
+  //       const date = new Date().toISOString().split("T")[0];
+  //       const docRef = doc(db, "users", userId, "dailyLogs", date);
+  //       const categorisedData = { [selectCategory]: arrayUnion(data) };
+
+  //       await setDoc(docRef, categorisedData, { merge: true });
+  //       await handleGetData(user);
+  //       console.log("Data saved successfully!");
+  //     } else {
+  //       console.log("User not authenticated.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving data:", error);
+  //   } finally {
+  //     setImageModal(false);
+  //     dispatch(hideLoader());
+  //   }
+  // };
 
   // drinkdata modal
   const getDrinkData = async (user) => {
@@ -653,7 +669,8 @@ const handleUpdateDrink = (drinks)=>{
             setImageModal={setImageModal}
             setImageData={setImageData}
             setSelectCategory={setSelectCategory}
-            handelImageSearchModal={handelImageSearchModal}
+            // handelImageSearchModal={handelImageSearchModal}
+            handleGetData = {handleGetData}
           ></ImageSearch>
         </Modal>
       </div>
@@ -676,6 +693,7 @@ const handleUpdateDrink = (drinks)=>{
           selectedFoodData={selectedFoodData}
           setSelectCategory={setSelectCategory}
           calculateCalories={calculateCalories}
+          selectCategory= {selectCategory}
           handleModalData={handleModalData}
           setFoodMeasure={setFoodMeasure}
         />
@@ -777,6 +795,7 @@ const handleUpdateDrink = (drinks)=>{
           selectquantity={selectquantity}
           setSelectquantity={setSelectquantity}
           selectedFoodData={selectedFoodData}
+          selectCategory= {selectCategory}
           setSelectCategory={setSelectCategory}
           calculateCalories={calculateCalories}
           handleEditModalData={handleEditModalData}
