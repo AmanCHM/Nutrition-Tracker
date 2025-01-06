@@ -4,13 +4,6 @@ import "./MealModal.css";
 const NutritionModal = ({
   onClose,
   selectedFoodData,
-  quantity,
-  setQuantity,
-  selectquantity,
-  setSelectquantity,
-  
-  setSelectCategory,
- 
   // calories,
  
 }) => {

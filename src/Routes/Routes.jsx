@@ -7,14 +7,16 @@ import Signup from '../Component/Pages/SignUp';
 import Login from '../Component/Pages/Login';
 import Reset from '../Component/Pages/Reset';
 import CalorieCalculator from '../Component/Pages/CalorieCalculator';
-import Home from '../Component/Pages/Home';
-import ImageSearch from '../Component/Pages/ImageSearch';
-import Dashboard from '../Component/Pages/Dashboard';
+
+import ImageSearch from '../Component/Modals/ImageSearch';
+
 import WeightTracker from "../Component/Goal_Pages/WeightTracker";
 import Exercise from "../Component/Goal_Pages/Exercise";
 import UserInfo from "../Component/Goal_Pages/UserInfo";
 import ShowCalorie from "../Component/Goal_Pages/ShowCalorie";
 import ContactUs from "../Component/Pages/ContactUs";
+import Reports from "../Component/Pages/Reports";
+import Dashboard from "../Component/Pages/Dashboard";
 
 const PrivateRoute = ({ children }) => {
   const islogged = useSelector((state) => state.loggedReducer.logged);
@@ -76,7 +78,7 @@ const RoutesConfig = () => {
       path: "/dashboard",
       element: (
         <PrivateRoute>
-          <Home />
+         <Dashboard/>
         </PrivateRoute>
       ),
     },
@@ -84,7 +86,7 @@ const RoutesConfig = () => {
       path: "/reports",
       element: (
         <PrivateRoute>
-          <Dashboard/>
+          <Reports/>
         </PrivateRoute>
       ),
     },

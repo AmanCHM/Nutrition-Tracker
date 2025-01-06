@@ -1,0 +1,98 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+
+ 
+  }
+
+.pie-chart{
+   width: 60%;
+   height: auto;
+    margin-top: auto;
+   margin-right: 20vw; 
+   
+  }
+
+  .select-date{
+     
+      /* width: 100%;  */
+      /* margin-left: 45vw; */
+      padding: 20px;
+      height: 50vh;
+      /* background-image: url('src/assets/images/bdDashBoard.svg'); */
+      background-size: 100vw; 
+      background-position: center; 
+      background-repeat: no-repeat; 
+  }
+  .date-input{
+    display: block;
+    width: 25%;
+    height: 5%;
+    margin-top: 20px;
+    margin-left: 37vw;
+    padding: 30px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: larger;
+  }
+
+  p{
+    color: rgb(204, 202, 202);
+  }
+
+  .view-data{
+    width: 100vw;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+  }
+
+  .list-items{
+    margin-top: 0;
+    margin-left: 10vw;
+    width: 40vw;
+  }
+  .piechart-data{
+    width: 50%;
+   margin-left: 25%;
+  }
+  .selectDate-header{
+  text-align: center;
+  color: rgb(240, 239, 239);
+  font-size: 2.5rem;
+  padding: 20px
+  }
+
+  .dashboard-text-item{
+           width: 20vw;
+  }
+
+  .meal-log{
+    margin-top: 3vh;
+  }
+
+  .reports-chart{
+    
+      width: 25vw;
+      margin-top: 3%; 
+      display: flex;
+      gap: 50px;
+      margin-left: 32vw;
+      margin-bottom: 5vh;
+   }
+   .dashboard-text {
+    margin-top: 20vh;
+    /* text-align: center; */
+
+  }
+  
+  
+
+  /* .reports-chart-text{
+    margin-top: 15vh;
+    text-align: center;
+    margin-left: 10%;
+  } */

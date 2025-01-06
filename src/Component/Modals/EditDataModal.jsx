@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./NutritionModal.css";
 
 import GlobalSelect from './../Page-Components/Globalselect';
@@ -89,8 +89,14 @@ const EditDataModal = ({
     { value: "Dinner", label: "Dinner" },
   ];
 
-
+  useEffect(() => {
+    if (mealName) {
+      setSelectCategory(mealName);
+    }
+  }, [mealName, setSelectCategory]);
+  
   console.log(selectCategory);
+  console.log(mealName)
   return (
     <>
       <div>

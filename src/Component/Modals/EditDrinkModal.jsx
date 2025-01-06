@@ -25,7 +25,7 @@ const EditDrinkModal = ({ setEditDrinkModal, drinkName, drinkId, onDataUpdated }
 
   const formik = useFormik({
     initialValues: {
-      drinkType: "",
+      drinkType: drinkName,
       container: "",
       quantity: 1,
     },
