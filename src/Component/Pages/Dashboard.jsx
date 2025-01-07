@@ -306,7 +306,7 @@ const Dashboard = () => {
   const dailyRequiredCalorie = async () => {
     const currentUser = auth.currentUser;
     const userId = currentUser?.uid;
-     dispatch(showLoader())
+     
     if (userId) {
       const userDocRef = doc(db, "users", userId);
       try {
@@ -322,9 +322,7 @@ const Dashboard = () => {
         }
       } catch (error) {
         console.error("Error fetching calorie data:", error);
-      } finally {
-        dispatch(hideLoader());
-      }
+      } 
     }
   };
 

@@ -109,8 +109,6 @@ const UpdateDrinkModal= (
       </button>
 
 
-
-
       <h2 className="modal-title" style={{ color: "black" }}>
        Update {updateDrinkName} Details
       </h2>
