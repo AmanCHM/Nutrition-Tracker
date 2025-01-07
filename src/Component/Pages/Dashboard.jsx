@@ -94,6 +94,9 @@ const Dashboard = () => {
     setInputValue(query);
   };
 
+
+
+
   // const style = {
   //   width: 120,
   //   display: "inline-block",
@@ -209,14 +212,14 @@ const Dashboard = () => {
     }
   };
 
+ 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      handleGetData(user);
-      if (user) {
-        setloading(true);
-      } else {
-        setloading(false);
-      }
+         dispatch(showLoader());
+        handleGetData(user).then(() => {
+          dispatch(hideLoader());
+        });
+     
     });
 
     return () => unsubscribe();

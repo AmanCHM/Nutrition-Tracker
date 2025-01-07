@@ -50,8 +50,8 @@ const Signup = () => {
         dispatch(loggedin());
         navigate("/dashboard");
       } catch (error) {
-        toast.error("SignUp not successful");
         console.log(error.message);
+        toast.error("SignUp not successful");
       } finally {
         dispatch(setSignup());
         dispatch(hideLoader());

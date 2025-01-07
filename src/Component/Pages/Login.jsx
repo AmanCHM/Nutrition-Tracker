@@ -6,7 +6,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,7 +37,7 @@ const Login = () => {
 
       dispatch(loggedin());
       navigate("/dashboard"); 
-      toast.success("Logged in successfully with Google!");
+      toast.success("Google Logged in successful");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -164,7 +164,7 @@ const Login = () => {
           </form>
         </div>
       </div>
-      <ToastContainer />
+     
     </>
   );
 };

@@ -109,7 +109,7 @@ const handleSaveData = (e) => {
 
 
 const throttledHandleSaveData = useThrottle((e) => {
-  dispatch(showLoader());
+ 
   handleSaveData(e);
 }, 1000);
 
