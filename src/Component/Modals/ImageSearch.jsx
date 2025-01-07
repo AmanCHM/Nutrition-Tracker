@@ -74,7 +74,7 @@ const handleBlur = (e) => {
   setErrors(newErrors);
 };
 
-
+//save the meal details into firebase
 const handleSaveData = (e) => {
   e.preventDefault();
 
@@ -125,6 +125,7 @@ const throttledHandleSaveData = useThrottle((e) => {
     setSelectedFile(file);
   };
 
+  //set the meal details 
   const handelImageSearchModal = async (data) => {
 
     dispatch(showLoader());
@@ -202,7 +203,7 @@ const throttledHandleSaveData = useThrottle((e) => {
       );
       setNutritionInfo(result.data);
     } catch (error) {
-      toast.error("Please upload a food image");
+      toast.error("Please upload a valid food image");
       console.log(error);
     }
   };

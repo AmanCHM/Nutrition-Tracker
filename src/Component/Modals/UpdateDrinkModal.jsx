@@ -8,6 +8,7 @@ import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { Modal } from "rsuite";
 import DrinkModal from "./DrinkModal";
 import EditDrinkModal from "./EditDrinkModal";
+import { toast } from "react-toastify";
 
 const UpdateDrinkModal= (
   { 
@@ -27,7 +28,7 @@ const UpdateDrinkModal= (
     const dispatch = useDispatch();
  
   
-
+// Delete the drink 
   const handleDeleteDrink = async ( drinkType,id) => {
     
     dispatch(showLoader());
@@ -49,26 +50,23 @@ const UpdateDrinkModal= (
       console.log(error);
     } finally {
       dispatch(hideLoader());
-      
+       toast.success('Successfully item deleted')
     }
   };
 
 
-  // open modal  can be optimised using the one function
+//  set the details of editable drinkn 
    const handleEditModal = (drink ,id)=>{
          setDrinkName(drink);
          setDrinkId(id);
          setEditDrinkModal(true);
          setUpdateId(id);
          setDrinkUpdateModal(false);
-        //  setEditToggle(true);
-      
+       
    }
 
- 
 
-
-   // drinkdata modal
+   // get the drink details 
    const getDrinkData = async (user) => {
   
     try {

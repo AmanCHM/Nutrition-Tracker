@@ -14,12 +14,6 @@ const Reset = () => {
     e.preventDefault();
 
     try {
-      // const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-      // if (signInMethods.length === 0) {
-      //   toast.error("Email not registered");
-      //   return;
-      // }
-
       await sendPasswordResetEmail(auth, email);
       toast.success("Email sent");
       navigate("/login");

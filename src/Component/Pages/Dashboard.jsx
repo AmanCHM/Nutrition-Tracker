@@ -94,12 +94,13 @@ const Dashboard = () => {
     setInputValue(query);
   };
 
-  const style = {
-    width: 120,
-    display: "inline-block",
-    marginRight: 10,
-  };
+  // const style = {
+  //   width: 120,
+  //   display: "inline-block",
+  //   marginRight: 10,
+  // };
 
+    // Suggestion in  search bar categorize into common and branded items
   const groupedOptions = [
     {
       label: "Common Foods",
@@ -119,10 +120,10 @@ const Dashboard = () => {
     },
   ];
 
-
+  // Fetch Selected food details
   const [addMeal, { data: selectedFoodData }] = useAddMealMutation();
 
-
+   //set selected item by user 
   const handleSelect = (selectedOption) => {
     setSelectItem(selectedOption);
     if (selectedOption) {
@@ -132,6 +133,7 @@ const Dashboard = () => {
   };
 
 
+   // saves the meal  data  into database(firebase)
   const handleModalData = async () => {
    
     if( !selectquantity || !selectCategory){
@@ -180,7 +182,7 @@ const Dashboard = () => {
   };
 
 
-  //get user mealdata
+  // Get the Meal details
   const handleGetData = async (user) => {
     try {
       dispatch(showLoader());
@@ -220,7 +222,9 @@ const Dashboard = () => {
     return () => unsubscribe();
   }, []);
 
-  // delete food logs.
+
+  // delete meal details  from database
+
   const handleDeleteLog = async (meal, id) => {
     dispatch(showLoader());
     try {
@@ -234,7 +238,7 @@ const Dashboard = () => {
 
       const updatedDoc = (await getDoc(docRef)).data();
       setLogdata(updatedDoc);
-    } catch (error) {
+    } catch (error) { 
       console.log(error);
       toast.error("Item not Deleted")
     } finally {
@@ -244,7 +248,9 @@ const Dashboard = () => {
     }
   };
 
-  const handleEditLog = async (meal, name, id) => {
+
+   // set the details of editable item
+  const handleEditLog =  (meal, name, id) => {
     dispatch(showLoader());
     handleGetData(auth.currentUser);
     setSelectedId(id);
@@ -256,7 +262,7 @@ const Dashboard = () => {
     dispatch(hideLoader());
   };
 
- 
+ //Edit Meal details
   const handleEditModalData = async () => {
     try {
       dispatch(showLoader());
@@ -291,16 +297,16 @@ const Dashboard = () => {
       setEditModal(false);
       dispatch(hideLoader());
       setSelectCategory();
-      toast.success('Item Editted Successfully')
+      toast.success('Item Edited Successfully')
     }
   };
 
-  // required calorie
+
+  // Set the required meal and drinks details of user
   const dailyRequiredCalorie = async () => {
-    // dispatch(showLoader());
     const currentUser = auth.currentUser;
     const userId = currentUser?.uid;
-
+     dispatch(showLoader())
     if (userId) {
       const userDocRef = doc(db, "users", userId);
       try {
@@ -317,7 +323,7 @@ const Dashboard = () => {
       } catch (error) {
         console.error("Error fetching calorie data:", error);
       } finally {
-        // dispatch(hideLoader());
+        dispatch(hideLoader());
       }
     }
   };
@@ -326,8 +332,8 @@ const Dashboard = () => {
     dailyRequiredCalorie();
   }, [handleGetData]);
 
-  // Meal details in nutrientwise
 
+  //Calculte  Meal nutrients-wise
   const calculateNutrient = (selectedFoodData, nutrient, selectquantity, quantity) => {
     return selectedFoodData?.foods?.length > 0
       ? (selectedFoodData?.foods[0][nutrient] /
@@ -336,14 +342,14 @@ const Dashboard = () => {
         quantity
       : "no data";
   };
-  
+
   const calculateCalories = calculateNutrient(
     selectedFoodData,
     "nf_calories",
     selectquantity,
     quantity
   );
-  
+
   const protein = calculateNutrient(
     selectedFoodData,
     "nf_protein",
@@ -365,7 +371,7 @@ const Dashboard = () => {
     quantity
   );
   
-  //Meal Details in Calorie
+
   
   const calculateMealNutrient = (mealData, nutrient) => {
     return mealData?.length > 0
@@ -389,6 +395,8 @@ const Dashboard = () => {
     return calculateMealNutrient(mealData, "fats");
   };
   
+  // Categorise the meals details  
+
   const breakfastCalorie = calculateMealCalories(logData?.Breakfast);
   const breakfastProtein = calculateMealProtein(logData?.Breakfast);
   const breakfastCarbs = calculateMealCarbs(logData?.Breakfast);
@@ -451,7 +459,7 @@ const Dashboard = () => {
   const carbsPercentage = Math.floor((totalCarbs / carbsGrams) * 100);
   const fatsPercentage = Math.floor((totalFats / fatsGrams) * 100);
 
-  //doughnut Data
+  //Doughnut Data
 
   const doughnutdata = {
     labels: ["Breakfast", "Lunch", "Snack", "Dinner"],
@@ -488,7 +496,7 @@ const Dashboard = () => {
   };
 
 
-  // drinkdata modal
+  //  Get Drinks 
   const getDrinkData = async (user) => {
     try {
       dispatch(showLoader());
@@ -527,6 +535,8 @@ const Dashboard = () => {
     setDataUpdated((prev) => !prev);
   };
 
+
+//Drinks Calculation
   const calculateTotals = () => {
     const calculateDrinkTotals = (drinkData) => {
       return drinkData?.length > 0
@@ -545,6 +555,7 @@ const Dashboard = () => {
     }
   }, [drinkData]);
 
+
   //energy modal
   const isSignup = useSelector((state) => state.loggedReducer.signedup);
   useEffect(() => {
@@ -559,6 +570,7 @@ const handleUpdateDrink = (drinks)=>{
   setUpdateDrinkName(drinks);
   setDrinkUpdateModal(true)
 }
+
 
   return (
     <>
@@ -606,7 +618,7 @@ const handleUpdateDrink = (drinks)=>{
         </Modal>
       </div>
 
-      {/* Energy Modal */}
+    {/* Energy Modal */}
       <div>
         <Modal isOpen={energyModal}>
           <SetCalorieModal setEnergyModal={setEnergyModal} />
@@ -627,12 +639,13 @@ const handleUpdateDrink = (drinks)=>{
           selectCategory= {selectCategory}
           handleModalData={handleModalData}
           setFoodMeasure={setFoodMeasure}
-
           setAltMeasure={setAltMeasure}
 
         />
       </Modal>
 
+
+  {/* Meal Table  */}
       <Table
         logData={logData}
         handleNutritionModal={handleNutritionModal}
@@ -641,6 +654,7 @@ const handleUpdateDrink = (drinks)=>{
         showFeature={true}
       />
 
+{/* Meal Progress Line Graph  */}
       <div
         className="progress-line"
         style={{ height: "auto", width: "50vw", marginLeft: "25%" }}
@@ -653,6 +667,7 @@ const handleUpdateDrink = (drinks)=>{
             <strong> Energy : </strong>
             {totalCalories}/{dailycalorie} kcal
           </label>
+
           <Progress.Line
             percent={progressPercent}
             status="active"
@@ -696,6 +711,7 @@ const handleUpdateDrink = (drinks)=>{
         </div>
       </div>
 
+  {/* Doughnut Data */}
       <div className="total-calorie">
         <h2 style={{ marginTop: "2%", color: "darkgrey", fontSize: "2.5rem" }}>
           {" "}
@@ -720,6 +736,7 @@ const handleUpdateDrink = (drinks)=>{
         </div>
       </div>
 
+    {/* Update Meal Data  */}
       <Modal isOpen={editModal}>
         <EditDataModal
           setModal={setEditModal}
@@ -736,6 +753,7 @@ const handleUpdateDrink = (drinks)=>{
         />
       </Modal>
 
+{/* Nutrition Details */}
       <Modal isOpen={isModalOpen}>
         <NutritionModal
           onClose={handleCloseModal}
@@ -748,6 +766,9 @@ const handleUpdateDrink = (drinks)=>{
         
         />
       </Modal>
+
+
+  {/* Drink Section */}
 
       <div className="drink-section">
         <h2 style={{ color: "darkgrey", fontSize: "2.5rem" }}>
@@ -770,8 +791,8 @@ const handleUpdateDrink = (drinks)=>{
           />
         </Modal>
 
+        {/* Drinks Table */}
         <div style={{ width: "100%", margin: "20px auto" }}>
-          {/* <h2 style={{ textAlign: "center", color: "#2980b9" }}>Drink Details</h2> */}
           <table
             style={{
               width: "40%",
@@ -914,13 +935,14 @@ const handleUpdateDrink = (drinks)=>{
         <Modal isOpen={editDrinkModal}>
           <EditDrinkModal
            setEditDrinkModal={setEditDrinkModal}
-            // editToggle={editToggle}
             onDataUpdated={handleDataUpdated}
             drinkName={drinkName}
             drinkId={drinkId}
           />
          </Modal>
 
+
+          {/* Water Progress Line Graph   */}
           <div
             className="progress-line"
             style={{ height: "auto", width: "50vw", marginLeft: "25%" }}

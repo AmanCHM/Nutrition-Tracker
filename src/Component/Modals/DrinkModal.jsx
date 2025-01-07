@@ -25,6 +25,7 @@ const DrinkModal = ({ setShowDrinkModal, onDataUpdated, editDataModal, editToggl
     { value: "Large Glass (250ml)", label: "Large Glass (250ml)" },
   ];
 
+  // handle validation and set drink data 
   const formik = useFormik({
     initialValues: {
       drinkType: "",

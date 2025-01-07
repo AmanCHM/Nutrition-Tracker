@@ -18,7 +18,8 @@ const MealModal = ({
   selectCategory,
   setAltMeasure
 }) => {
-  // Prepare options for react-select
+ 
+   
   const sliceOptions = selectedFoodData?.foods.flatMap((food, foodIndex) =>
     food.alt_measures.map((measure, index) => ({
       value: measure.serving_weight,
@@ -34,6 +35,7 @@ const MealModal = ({
     { value: "Dinner", label: "Dinner" },
   ];
 
+  //fetch image 
   const image =
     selectedFoodData?.foods.length > 0
       ? selectedFoodData?.foods[0]?.photo?.thumb
@@ -88,6 +90,7 @@ const MealModal = ({
     setErrors(newErrors);
   };
 
+  //set the meal modal 
   const handleSubmit = (e) => {
     e.preventDefault();
 

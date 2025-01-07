@@ -43,13 +43,10 @@ const Reports = () => {
         return;
       }
       const userId = user.uid;
-
       const date = selectDate;
-
       const docRef = doc(db, "users", userId, "dailyLogs", date);
-
-      const sanpdata = onSnapshot(docRef, (docRef) => {
-      });
+      // const sanpdata = onSnapshot(docRef, (docRef) => {
+      // });
     
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
@@ -198,6 +195,8 @@ const Reports = () => {
 
   const totalCalories = breakfastCalorie + lunchCalorie + snackCalorie + dinnerCalorie;
 
+
+  // set the  donut chart data 
   const chartData = {
     labels: ["BreakFast", "Lunch", "Snack", "Dinner"],
     datasets: [
@@ -214,7 +213,6 @@ const Reports = () => {
     ],
   };
 
-  console.log(selectDate);
 
   return (
     <>

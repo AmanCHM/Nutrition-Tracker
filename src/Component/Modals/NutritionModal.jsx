@@ -8,6 +8,8 @@ const NutritionModal = ({
  
 }) => {
 
+
+   // fetch the details of select item 
   const calculateCalories =
   selectedFoodData?.foods?.length > 0
     ? (selectedFoodData?.foods[0].nf_calories )

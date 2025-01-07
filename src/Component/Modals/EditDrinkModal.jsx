@@ -23,6 +23,7 @@ const EditDrinkModal = ({ setEditDrinkModal, drinkName, drinkId, onDataUpdated }
     { value: "Large Glass (250ml)", label: "Large Glass (250ml)" },
   ];
 
+  //  Edit drink details 
   const formik = useFormik({
     initialValues: {
       drinkType: drinkName,

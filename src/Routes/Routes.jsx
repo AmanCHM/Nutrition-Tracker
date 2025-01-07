@@ -27,6 +27,8 @@ const PrivateRoute = ({ children }) => {
 const RoutesConfig = () => {
 
   const routes = useRoutes([
+
+    //Public Routes
     {
       path: "/",
       element: <LandingPage />,
@@ -74,6 +76,8 @@ const RoutesConfig = () => {
       element: <ContactUs/>,
     },
 
+
+    //Private Routes
     {
       path: "/dashboard",
       element: (

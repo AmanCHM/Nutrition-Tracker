@@ -46,13 +46,7 @@ const LandingPage = () => {
               <br />
               biometrics and health data.
             </h4>
-
-
            {islogged? '' : <button id="button"
-            
-         
-            // to={"/userinfo"}
-            // style={{ color: "white", fontSize: "17px"  }}
             onClick={handleClick}>
           
              Let's Start 
