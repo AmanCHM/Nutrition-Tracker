@@ -13,7 +13,7 @@ import { resetGoal } from "../../Redux/calorieGoalSlice";
 
 const LandingPage = () => {
   const islogged = useSelector((state) => state.loggedReducer.logged);
-  // console.log(islogged);
+
  const dispatch = useDispatch()
   const navigate = useNavigate();
  const handleClick = ()=>{

@@ -26,13 +26,9 @@ const UpdateDrinkModal= (
     const [editToggle,setEditToggle] =useState(false);
     const dispatch = useDispatch();
  
-      
-    //  console.log(editDrinkModal);
-  console.log("id",drinkId);
+  
 
   const handleDeleteDrink = async ( drinkType,id) => {
-    console.log("inside delete");
-
     
     dispatch(showLoader());
     try {
@@ -41,7 +37,6 @@ const UpdateDrinkModal= (
       const date = new Date().toISOString().split("T")[0];
       const docRef = doc(db, "users", userId, "dailyLogs", date);
       const getData = (await getDoc(docRef)).data();
-      console.log("before update", getData);
       const drinkdata = getData[drinkType].filter((drink) => drink.id != id);
       await updateDoc(docRef, { [drinkType]: drinkdata });
           const updatedDoc= (await getDoc(docRef)).data();
@@ -49,8 +44,7 @@ const UpdateDrinkModal= (
       if (onDataUpdated) {
         onDataUpdated(); 
       }
-      console.log("after update", getData);
-      console.log("meal deleted");
+  
     } catch (error) {
       console.log(error);
     } finally {
@@ -76,11 +70,10 @@ const UpdateDrinkModal= (
 
    // drinkdata modal
    const getDrinkData = async (user) => {
-    // console.log("inside drinkData");
+  
     try {
       dispatch(showLoader());
       if (!user) {
-        console.log("User is not authenticated");
         return;
       }
       const userId = user.uid;
@@ -105,7 +98,6 @@ const UpdateDrinkModal= (
       getDrinkData(user);
       if (user) {
       } else {
-        console.log("No user authenticated");
       }
     });
     return () => unsubscribe();

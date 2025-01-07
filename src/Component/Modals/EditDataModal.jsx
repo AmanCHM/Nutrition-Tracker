@@ -95,8 +95,7 @@ const EditDataModal = ({
     }
   }, [mealName, setSelectCategory]);
   
-  console.log(selectCategory);
-  console.log(mealName)
+
   return (
     <>
       <div>

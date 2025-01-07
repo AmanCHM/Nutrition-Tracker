@@ -16,7 +16,6 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-
 import { Doughnut, Pie, Bar } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Navbar from "../Page-Components/Navbar";
@@ -41,14 +40,10 @@ import { setSignout, setSignup } from "../../Redux/logSlice";
 import SetCalorieModal from "../Modals/SetCalorieModal";
 import Table from "../Page-Components/Table";
 import Image from "../Image/Image";
-
 import UpdateDrinkModal from "../Modals/UpdateDrinkModal";
 import EditDrinkModal from "../Modals/EditDrinkModal";
 import { toast } from "react-toastify";
 import useDebounce from './../Hooks/useDebounce';
-
-
-
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -84,8 +79,10 @@ const Dashboard = () => {
   const [drinkId,setDrinkId]= useState();
   const [drinkName,setDrinkName] =useState();
   const [imageModal, setImageModal] = useState(false);
+  const [altMeasure, setAltMeasure] = useState(null);
   const dispatch = useDispatch();
-  const debouncedInputValue = useDebounce(inputValue, 300); 
+  const debouncedInputValue = useDebounce(inputValue, 300);
+
   //food suggestion search bar
   const {
     data: suggestions,
@@ -96,9 +93,6 @@ const Dashboard = () => {
   const handleSearch = (query) => {
     setInputValue(query);
   };
-
-  console.log("input value",debouncedInputValue)
-
 
   const style = {
     width: 120,
@@ -150,7 +144,6 @@ const Dashboard = () => {
     }
     try {
       dispatch(showLoader());
-      // console.log("inside modal");
       const user = auth.currentUser;
       const data = {
         id: Date.now(),
@@ -159,6 +152,8 @@ const Dashboard = () => {
         proteins: Math.round(protein),
         carbs: Math.round(carbs),
         fats: Math.round(fats),
+        serving:altMeasure,
+        servingQuantity:selectquantity,
       };
       if (user) {
         const userId = user?.uid;
@@ -168,11 +163,11 @@ const Dashboard = () => {
 
         await setDoc(docRef, categorisedData, { merge: true });
         await handleGetData(user);
-        console.log("Data saved successfully!");
+      
         toast.success("Food Saved");
         setModal(false);
       } else {
-        console.log("User not authenticated.");
+       
       }
     } catch (error) {
       toast.error("Error in saving Data");
@@ -185,15 +180,11 @@ const Dashboard = () => {
   };
 
 
-
   //get user mealdata
   const handleGetData = async (user) => {
     try {
-      // console.log("user", user)
       dispatch(showLoader());
       if (!user) {
-        console.log("User is not authenticated");
-
         return;
       }
       const userId = user.uid;
@@ -203,10 +194,8 @@ const Dashboard = () => {
       const docRef = doc(db, "users", userId, "dailyLogs", date);
 
       const docSnap = await getDoc(docRef);
-      // console.log("getdata", docSnap.data());
       if (docSnap.exists()) {
         const mealData = docSnap.data();
-        // console.log("mealdata", mealData);
         setLogdata(mealData);
       } else {
         setLogdata({});
@@ -219,13 +208,11 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    // console.log("inside useeffect get data");
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       handleGetData(user);
       if (user) {
         setloading(true);
       } else {
-        console.log("No user authenticated");
         setloading(false);
       }
     });
@@ -235,7 +222,6 @@ const Dashboard = () => {
 
   // delete food logs.
   const handleDeleteLog = async (meal, id) => {
-    console.log("inside delete");
     dispatch(showLoader());
     try {
       const user = auth.currentUser;
@@ -243,16 +229,11 @@ const Dashboard = () => {
       const date = new Date().toISOString().split("T")[0];
       const docRef = doc(db, "users", userId, "dailyLogs", date);
       const getData = (await getDoc(docRef)).data();
-      console.log("before update", getData);
       const mealdata = getData[meal].filter((mealId) => mealId.id != id);
-      console.log(mealdata);
       await updateDoc(docRef, { [meal]: mealdata });
 
       const updatedDoc = (await getDoc(docRef)).data();
       setLogdata(updatedDoc);
-
-      console.log("after update", getData);
-      console.log("meal deleted");
     } catch (error) {
       console.log(error);
       toast.error("Item not Deleted")
@@ -264,21 +245,19 @@ const Dashboard = () => {
   };
 
   const handleEditLog = async (meal, name, id) => {
+    dispatch(showLoader());
+    handleGetData(auth.currentUser);
     setSelectedId(id);
     setQuantity(1);
     setEditMealName(meal);
-    setSelectquantity(1);
-    dispatch(showLoader());
+    setSelectquantity(logData[meal].find((item) => item.id === id).servingQuantity);
     addMeal(name);
     setEditModal(true);
     dispatch(hideLoader());
-    // console.log("id", id);
   };
 
-  // // console.log("selecteditem", selectItem?.label);
-
+ 
   const handleEditModalData = async () => {
-    console.log("insdie edit");
     try {
       dispatch(showLoader());
       const user = auth.currentUser;
@@ -290,22 +269,21 @@ const Dashboard = () => {
         proteins: Math.round(protein),
         carbs: Math.round(carbs),
         fats: Math.round(fats),
+        serving:altMeasure,
+        servingQuantity:selectquantity,
       };
       const date = new Date().toISOString().split("T")[0];
       const docRef = doc(db, "users", userId, "dailyLogs", date);
       const getData = (await getDoc(docRef)).data();
-      console.log("before update", getData);
       const mealdata = getData[editMealName].filter(
         (meal) => meal.id != selectedId
       );
-      console.log("mealData", mealdata);
       await updateDoc(docRef, { [editMealName]: mealdata });
 
       const newData = { [selectCategory]: arrayUnion(data) };
       await updateDoc(docRef, newData);
       const updatedDoc = (await getDoc(docRef)).data();
       setLogdata(updatedDoc);
-      console.log("updated doc", updatedDoc);
     } catch (error) {
       console.log(error);
       toast.error('Something went Wrong')
@@ -499,24 +477,22 @@ const Dashboard = () => {
     0
   );
 
-  const handleNutritionModal = (foodDetail) => {
+  const handleNutritionModal = (foodDetail,id) => {
     addMeal(foodDetail);
     setIsModalOpen(true);
+
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    // setSelectedFoodData(null);
   };
 
 
   // drinkdata modal
   const getDrinkData = async (user) => {
-    console.log("inside drinkData");
     try {
       dispatch(showLoader());
       if (!user) {
-        console.log("User is not authenticated");
         return;
       }
       const userId = user.uid;
@@ -584,17 +560,13 @@ const handleUpdateDrink = (drinks)=>{
   setDrinkUpdateModal(true)
 }
 
-
-// console.log(requ);
-
-
   return (
     <>
       <Navbar />
       <div
         className="search"
         style={{ backgroundImage: `url(${Image.bgSelectImage})` }}
-      >
+       >
         <h1 id="header-text">Search Your Meals Below</h1>
 
         <Select
@@ -655,6 +627,9 @@ const handleUpdateDrink = (drinks)=>{
           selectCategory= {selectCategory}
           handleModalData={handleModalData}
           setFoodMeasure={setFoodMeasure}
+
+          setAltMeasure={setAltMeasure}
+
         />
       </Modal>
 

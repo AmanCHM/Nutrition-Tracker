@@ -4,8 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../../firebase";
-import { Doughnut, Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Bar,Doughnut, Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend ,CategoryScale, LinearScale, BarElement, Title } from "chart.js";
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
 import Navbar from "../Page-Components/Navbar";
 import Footer from "../Page-Components/Footer";
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -22,19 +24,21 @@ const Reports = () => {
   const [selectDate, setSelectDate] = useState(
     new Date().toISOString().split("T")[0]
   );
-
+  const [weeklyData, setWeeklyData] = useState({
+    calories: [],
+    proteins: [],
+    carbs: [],
+    fats: [],
+  });
 
   const loader = useSelector((state)=> state.loaderReducer.loading)
-  console.log("laoder",loader);
  
   // Fetch User Data from Firestore
   const handleGetData = async (user) => {
-
     try {
-      // console.log("user", user)
       dispatch(showLoader())
       if (!user) {
-        console.log("User is not authenticated");
+       
         setLoading(false);
         return;
       }
@@ -45,16 +49,11 @@ const Reports = () => {
       const docRef = doc(db, "users", userId, "dailyLogs", date);
 
       const sanpdata = onSnapshot(docRef, (docRef) => {
-        console.log(docRef.data());
       });
     
-      console.log("snapdata", sanpdata);
       const docSnap = await getDoc(docRef);
-      console.log("snapdata", docSnap);
-
       if (docSnap.exists()) {
         const mealData = docSnap.data();
-        console.log("mealdata", mealData);
         setLogdata(mealData);
       } else {
         setLogdata({});
@@ -66,6 +65,110 @@ const Reports = () => {
     }
   };
 
+
+
+  // const handleGetWeeklyData = async (user) => {
+  //   try {
+  //     dispatch(showLoader());
+  //     if (!user) {
+  //       console.log("User is not authenticated");
+  //       setLoading(false);
+  //       return;
+  //     }
+  //     const userId = user.uid;
+  //     const currentDate = new Date();
+  //     const weekData = {
+  //       calories: [],
+  //       proteins: [],
+  //       carbs: [],
+  //       fats: [],
+  //     };
+
+  //     for (let i = 0; i < 7; i++) {
+  //       const date = new Date(currentDate);
+  //       date.setDate(currentDate.getDate() - i);
+  //       const formattedDate = date.toISOString().split("T")[0];
+  //       const docRef = doc(db, "users", userId, "dailyLogs", formattedDate);
+  //       const docSnap = await getDoc(docRef);
+  //       if (docSnap.exists()) {
+  //         const mealData = docSnap.data();
+  //         weekData.calories.push(mealData.calories || 0);
+  //         weekData.proteins.push(mealData.proteins || 0);
+  //         weekData.carbs.push(mealData.carbs || 0);
+  //         weekData.fats.push(mealData.fats || 0);
+  //       } else {
+  //         weekData.calories.push(0);
+  //         weekData.proteins.push(0);
+  //         weekData.carbs.push(0);
+  //         weekData.fats.push(0);
+  //       }
+  //     }
+
+  //     setWeeklyData(weekData);
+  //   } catch (error) {
+  //     console.error("error fetching data", error);
+  //   } finally {
+  //     dispatch(hideLoader());
+  //   }
+  // };
+
+
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       setLoading(true);
+  //       handleGetData(user, selectDate);
+  //       handleGetWeeklyData(user);
+  //     } else {
+  //       console.log("No user authenticated");
+  //       setLoading(false);
+  //     }
+  //   });
+
+  //   return () => unsubscribe();
+  // }, [auth, selectDate]);
+
+
+  // const data = {
+  //   labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+  //   datasets: [
+  //     {
+  //       label: 'Calories',
+  //       data: weeklyData.calories.reverse(),
+  //       backgroundColor: 'rgba(75, 192, 192, 0.6)',
+  //     },
+  //     {
+  //       label: 'Proteins',
+  //       data: weeklyData.proteins.reverse(),
+  //       backgroundColor: 'rgba(153, 102, 255, 0.6)',
+  //     },
+  //     {
+  //       label: 'Carbs',
+  //       data: weeklyData.carbs.reverse(),
+  //       backgroundColor: 'rgba(255, 159, 64, 0.6)',
+  //     },
+  //     {
+  //       label: 'Fats',
+  //       data: weeklyData.fats.reverse(),
+  //       backgroundColor: 'rgba(255, 99, 132, 0.6)',
+  //     },
+  //   ],
+  // };
+
+  // const options = {
+  //   responsive: true,
+  //   plugins: {
+  //     legend: {
+  //       position: 'top',
+  //     },
+  //     title: {
+  //       display: true,
+  //       text: 'Weekly Nutrient Report',
+  //     },
+  //   },
+  // };
+
+      
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -79,6 +182,7 @@ const Reports = () => {
 
     return () => unsubscribe();
   }, [selectDate]);
+
 
   //Calculate calorie
   const calculateMealCalories = (mealData) => {
@@ -158,6 +262,17 @@ const Reports = () => {
           </div>
         {/* </div> */}
       
+        {/* <div>
+      <h2>Weekly Report</h2>
+      {loading ? <p>Loading...</p> : <Bar data={data} options={options} />}
+      <h2>Date-wise Report</h2>
+      <input
+        type="date"
+        value={selectDate}
+        onChange={(e) => setSelectDate(e.target.value)}
+      />
+      <pre>{JSON.stringify(logData, null, 2)}</pre>
+    </div> */}
       <Footer />
     </>
   );

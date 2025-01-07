@@ -12,14 +12,13 @@ const NutritionModal = ({
   selectedFoodData?.foods?.length > 0
     ? (selectedFoodData?.foods[0].nf_calories )
     : "no data";
-// console.log("calculated calorie", calculateCalories);
 
 const protein =
   selectedFoodData?.foods.length > 0
     ? (
         selectedFoodData?.foods[0].nf_protein)
     : "no data";
-console.log("caloriecalculate",calculateCalories)
+
 const carbs =
   selectedFoodData?.foods.length > 0
     ? (
@@ -47,9 +46,8 @@ const fats =
 
         )
       : "no data";
-      console.log("imagea",image)
-console.log("fooddata",selectedFoodData)
-// console.log(calories)
+     
+
   return (
     <>
       <div className="logout-modal-content">

@@ -9,6 +9,7 @@ import { auth, db } from "../../firebase";
 import { arrayUnion, doc, setDoc } from "firebase/firestore";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import useThrottle from "../Hooks/useThrottle";
 const ImageSearch = ({
   setImageModal,
   setImageData,
@@ -32,10 +33,14 @@ const ImageSearch = ({
   const [nutritionInfo, setNutritionInfo] = useState();
 
 
+
+  const apiUrl = `https://api.logmeal.com/v2/image/segmentation/complete`;
   const [errors, setErrors] = useState({
     quantity: "",
     mealCategory: "",
   });
+
+
 
   // Validate Quantity
   const validateQuantity = (value) => {
@@ -69,8 +74,11 @@ const handleBlur = (e) => {
   setErrors(newErrors);
 };
 
+
 const handleSaveData = (e) => {
   e.preventDefault();
+
+  dispatch(showLoader());
 
   const newErrors = {
     quantity: validateQuantity(quantity),
@@ -79,9 +87,7 @@ const handleSaveData = (e) => {
 
   setErrors(newErrors);
 
-
   if (Object.values(newErrors).every((error) => !error)) {
-    dispatch(showLoader());
     const newData = {
       id: Date.now(),
       name: name,
@@ -92,10 +98,20 @@ const handleSaveData = (e) => {
     };
     setImageData(newData);
     handelImageSearchModal(newData);
+  
+    dispatch(hideLoader());
+    toast.success("Meal Added Successfully");
+  } else {
+   
     dispatch(hideLoader());
   }
 };
 
+
+const throttledHandleSaveData = useThrottle((e) => {
+  dispatch(showLoader());
+  handleSaveData(e);
+}, 1000);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -109,24 +125,7 @@ const handleSaveData = (e) => {
     setSelectedFile(file);
   };
 
-  // const handleSaveData = async () => {
-  
-  //   dispatch(showLoader());
-  //   const newData = {
-  //     id: Date.now(),
-  //     name: name,
-  //     calories: calories,
-  //     proteins: protein,
-  //     carbs: carbohydrates,
-  //     fats: fat,
-  //   };
-  //   setImageData(newData);
-  //   handelImageSearchModal(newData);
-  //   dispatch(hideLoader());
-  // };
-
   const handelImageSearchModal = async (data) => {
-    console.log("inside handleimage", data);
 
     dispatch(showLoader());
     try {
@@ -139,10 +138,10 @@ const handleSaveData = (e) => {
 
         await setDoc(docRef, categorisedData, { merge: true });
         await handleGetData(user);
-        console.log("Data saved successfully!");
+        
         setImageModal(false);
       } else {
-        console.log("User not authenticated.");
+       
       }
     } catch (error) {
       console.error("Error saving data:", error);
@@ -151,6 +150,8 @@ const handleSaveData = (e) => {
     }
   };
 
+
+  
   // ImageID API
   const handleUpload = async () => {
     setImageData();
@@ -170,9 +171,9 @@ const handleSaveData = (e) => {
       );
 
       setImageId(result.data?.imageId);
-      // console.log("imageId", imageId);
+   
     } catch (error) {
-    toast.error("Please upload a food Image")
+    toast.error("Please upload a valid food Image")
       console.log(error);
     } finally {
       dispatch(hideLoader());
@@ -232,8 +233,6 @@ const handleSaveData = (e) => {
 
   }, [nutritionInfo, quantity]);
 
-  console.log("name", name);
-  console.log("calories", calories);
 
   const mealOptions = [
     { value: "Breakfast", label: "Breakfast" },
@@ -397,7 +396,7 @@ const handleSaveData = (e) => {
               <p className="calorie-info">
                 Calorie Served: {calories || "N/A"}
               </p>
-              <button className="add-meal-button" onClick={handleSaveData}>
+              <button className="add-meal-button" onClick={throttledHandleSaveData}>
                 Add Meal
               </button>
             </div>

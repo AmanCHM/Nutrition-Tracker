@@ -45,7 +45,7 @@ const Table = ({
                           logData.Breakfast.map((item, index) => (
                             <tr key={`breakfast-${index}`}>
                               <td>
-                                <span onClick={() => handleNutritionModal(item.name)}>
+                                <span onClick={() => handleNutritionModal(item.name, item.id)}>
                                  <strong> {item.name?.charAt(0).toUpperCase() + item.name?.slice(1) }</strong>
                                 </span>
                               </td>

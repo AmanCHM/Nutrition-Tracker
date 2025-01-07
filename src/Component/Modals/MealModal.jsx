@@ -16,6 +16,7 @@ const MealModal = ({
   calculateCalories,
   handleModalData,
   selectCategory,
+  setAltMeasure
 }) => {
   // Prepare options for react-select
   const sliceOptions = selectedFoodData?.foods.flatMap((food, foodIndex) =>
@@ -37,8 +38,7 @@ const MealModal = ({
     selectedFoodData?.foods.length > 0
       ? selectedFoodData?.foods[0]?.photo?.thumb
       : "no data";
-  console.log("imagea", image);
-  // console.log("fooddata",selectedFoodData)
+
 
   const [errors, setErrors] = useState({
     quantity: "",
@@ -159,9 +159,14 @@ const MealModal = ({
                   }
                 : null
             }
-            onChange={(selectedOption) =>
-              setSelectquantity(selectedOption.value)
-            }
+            onChange={(selectedOption) => {
+              const selectedMeasure = selectedFoodData?.foods
+                .flatMap((food) => food.alt_measures)
+                .find((measure) => measure.serving_weight === selectedOption.value);
+              setSelectquantity(selectedOption.value);
+              setAltMeasure(selectedMeasure?.measure || null);
+            }}
+
             onBlur={handleBlur}
           />
           {errors.selectquantity && (

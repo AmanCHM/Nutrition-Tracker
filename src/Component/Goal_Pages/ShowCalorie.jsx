@@ -12,12 +12,9 @@ const ShowCalorie = () => {
   const username = useSelector((state)=> state.calorieGoalReducer.userName)
 
   const difference  =useSelector((state)=> state.calorieGoalReducer.weightDifference)
-  // if (!calories || !goal) {
-  //   return <h2>Calorie information not available. Please calculate first!</h2>;
-  // }
+ 
   const navigate = useNavigate();
 
-  // console.log(calories);
   let recommendedCalories = 0;
   let goalDescription = "";
 
